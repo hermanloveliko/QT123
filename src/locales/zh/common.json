@@ -1,0 +1,203 @@
+{
+  "common": {
+    "loading": "加载中…"
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "pt": "Português",
+    "ru": "Русский",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "th": "ไทย",
+    "vi": "Tiếng Việt"
+  },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "隔墙系统",
+        "description": "青泰精密隔墙系统结合了轻钢龙骨的结构强度与石膏板的多功能性。",
+        "features": ["高强度承载", "快速模块化安装", "卓越的隔音性能", "A 级防火认证"]
+      },
+      "s2": {
+        "title": "吊顶系统",
+        "description": "涵盖铝制方通、矿棉板及石膏吊顶，为商业与工业空间提供美观且实用的顶部解决方案。",
+        "features": ["轻质高强", "耐腐蚀表面处理", "便捷的检修入口", "丰富的色彩选择"]
+      },
+      "s3": {
+        "title": "特殊板材系统",
+        "description": "针对极端环境研发的防潮、防霉、防辐射及超高硬度特殊板材。",
+        "features": ["极端环境耐受", "医疗级防辐射", "超长使用寿命", "环保无甲醛"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "上海中心大厦内部隔墙工程",
+        "location": "上海, 中国",
+        "description": "该项目采用了我司研发的高强度轻钢龙骨系统及 A 级防火石膏板，总施工面积超过 50,000 平方米。在超高层建筑的抗震与防火性能上达到了国际领先水平。"
+      },
+      "p2": {
+        "title": "北京大兴国际机场航站楼吊顶",
+        "location": "北京, 中国",
+        "description": "为机场航站楼提供了定制化的铝制方通吊顶系统，采用特殊的氟碳喷涂工艺，确保在大流量公共空间内的耐久性与美观度。"
+      },
+      "p3": {
+        "title": "新加坡滨海湾金沙酒店扩建",
+        "location": "滨海湾, 新加坡",
+        "description": "提供了全套的隔音与饰面解决方案，满足了豪华酒店对私密性与装饰美学的极高要求。"
+      }
+    }
+  },
+  "nav": {
+    "home": "首页",
+    "catalog": "产品目录",
+    "projects": "工程案例",
+    "about": "关于我们",
+    "getQuote": "获取报价",
+    "admin": "管理员登录",
+    "searchPlaceholder": "搜索材料..."
+  },
+  "home": {
+    "badge": "建筑装饰隔墙吊顶材料专家，成立20年",
+    "heroTitleLine1": "构建未来的",
+    "heroTitleAccent": "精密基石",
+    "heroDesc1": "青泰建材提供世界级的轻钢龙骨、石膏板与铝制饰面系统。",
+    "heroDesc2": "通过精密工艺与全球物流，为您的宏伟蓝图保驾护航。",
+    "browseCatalog": "浏览产品目录",
+    "viewProjects": "查看工程案例",
+    "consultation": {
+      "title": "需要专业材料咨询？",
+      "desc": "我们的工程师团队随时为您提供技术支持、材料选型及成本估算服务。",
+      "hotlineLabel": "WhatsApp",
+      "hotlineValue": "+86 138 0000 0000",
+      "button": "在线预约咨询"
+    },
+    "systems": {
+      "label": "系统方案",
+      "viewAllProducts": "查看全部产品",
+      "sectionTitle": "核心系统解决方案"
+    },
+    "projects": {
+      "featuredLabel": "精选案例",
+      "sectionTitle": "经典工程案例",
+      "viewMore": "查看更多案例"
+    },
+    "logistics": {
+      "label": "全球物流",
+      "title": "全球物流与追踪",
+      "desc": "我们拥有完善的全球供应链网络，确保材料准时、安全地送达您的施工现场。通过实时追踪系统，您可以随时掌握订单动态。",
+      "cards": [
+        {
+          "title": "快速响应交付",
+          "desc": "核心城市 24 小时内送达，全球范围内 7-15 天交付。"
+        },
+        {
+          "title": "全程质量监控",
+          "desc": "从出库到签收，每一步都经过严格的质量检查与数字化记录。"
+        }
+      ],
+      "track": {
+        "title": "订单实时追踪",
+        "orderLabel": "订单编号:",
+        "orderId": "QT-2026-8892",
+        "status": "运输中",
+        "locationLabel": "当前位置:",
+        "location": "上海港 - 国际货运中心",
+        "etaLabel": "预计到达:",
+        "eta": "2026-03-28"
+      }
+    }
+  },
+  "about": {
+    "heroTitle": "关于青泰",
+    "profileEyebrow": "Company Profile",
+    "profileHeading": "二十年专注，铸就建筑之美",
+    "profileParagraphs": [
+      "青泰建材成立于2006年，总部位于中国上海。二十年来，我们始终致力于建筑装饰隔墙吊顶材料的研发、生产与销售。",
+      "作为行业领先的系统解决方案供应商，我们不仅提供高品质的轻钢龙骨、石膏板和铝制饰面材料，更通过精密的技术支持和完善的全球物流体系，为每一个建筑梦想提供坚实的基石。",
+      "我们的产品已广泛应用于全球超过1200个标志性工程，包括超高层建筑、国际机场、五星级酒店及大型工业厂房。"
+    ]
+  },
+  "catalog": {
+    "title": "建筑材料目录",
+    "categoriesTitle": "材料分类",
+    "all": "全部材料",
+    "sort": {
+      "label": "排序方式:",
+      "default": "默认排序",
+      "priceAsc": "价格从低到高",
+      "priceDesc": "价格从高到低"
+    },
+    "loading": "产品目录加载中…",
+    "empty": "暂无该分类下的产品，请稍后再试或联系销售。",
+    "custom": {
+      "title": "需要定制规格？",
+      "desc": "我们提供非标尺寸定制服务，满足您的特殊工程需求。",
+      "button": "联系定制"
+    }
+  },
+  
+  "cart": {
+    "title": "材料采购清单",
+    "empty": {
+      "title": "清单空空如也",
+      "desc": "您还没有添加任何建筑材料到采购清单中。",
+      "cta": "去浏览产品目录"
+    },
+    "unitPrice": "单价",
+    "remove": "移除",
+    "form": {
+      "title": "物流与联系信息",
+      "country": "目的国家",
+      "countryPlaceholder": "先选择国家",
+      "port": "目的港口",
+      "portPlaceholder": "选择港口",
+      "portPlaceholderNeedCountry": "请先选国家",
+      "method": "采购方式",
+      "methodPlaceholder": "选择采购方式",
+      "methodOptions": {
+        "exw": "EXW (工厂交货)",
+        "fob": "FOB (离岸价)",
+        "cif": "CIF (到岸价)",
+        "ddp": "DDP (完税后交货)"
+      },
+      "email": "联系邮箱",
+      "social": "社交账号 (WhatsApp/WeChat)",
+      "socialPlaceholder": "ID / 手机号",
+      "name": "联系人姓名",
+      "phone": "联系电话"
+    },
+    "summary": {
+      "title": "费用结算",
+      "fillFirst": "请先在左侧填写目的国家/港口、采购方式及全部联系方式。",
+      "calculating": "正在提交订单并计算报价…",
+      "orderId": "订单号",
+      "itemsSubtotal": "材料小计",
+      "totalCbm": "总体积 (CBM)",
+      "freight": "运费",
+      "fixedFees": "附加费",
+      "total": "总计金额"
+    },
+    "hint": "提示：请填写全部必填项后，点击按钮确认；系统不会在您输入过程中自动询价。确认后将创建后台订单并在右侧展示 USD 报价。",
+    "submitting": "提交中…",
+    "confirmAndSubmit": "确认信息并提交订单（生成报价）",
+    "waitingQuote": "必填信息已填齐。请点击左侧「确认信息并提交订单」：提交成功后此处将显示基于 CBM 的 USD 明细，并同步写入后台「订单」。",
+    "agreementNote": "提交即表示同意《材料采购协议》。修改左侧任意信息将清空此处报价，需重新确认提交。"
+  },
+  "product": {
+    "specs": {
+      "title": "规格与参数",
+      "empty": "暂无规格条目，请联系销售获取资料。"
+    },
+    "actions": {
+      "addToCart": "加入采购清单",
+      "download": "下载技术手册",
+      "share": "分享产品",
+      "consult": "咨询专家"
+    }
+  }
+}

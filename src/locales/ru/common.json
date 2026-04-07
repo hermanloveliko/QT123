@@ -1,0 +1,146 @@
+{
+  "common": {
+    "loading": "Loading…"
+  },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Wall System",
+        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
+        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+      },
+      "s2": {
+        "title": "Ceiling System",
+        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
+        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+      },
+      "s3": {
+        "title": "Special Board System",
+        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
+        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Shanghai Tower Interior Partition Project",
+        "location": "Shanghai, China",
+        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+      },
+      "p2": {
+        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "location": "Beijing, China",
+        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+      },
+      "p3": {
+        "title": "Marina Bay Sands Hotel Expansion",
+        "location": "Marina Bay, Singapore",
+        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+      }
+    }
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "pt": "Português",
+    "ru": "Русский",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "th": "ไทย",
+    "vi": "Tiếng Việt",
+    "ar": "العربية",
+    "sw": "Kiswahili"
+  },
+  "nav": {
+    "home": "Главная",
+    "catalog": "Каталог",
+    "projects": "Проекты",
+    "about": "О нас",
+    "getQuote": "Получить расчёт",
+    "admin": "Админ",
+    "searchPlaceholder": "Поиск материалов..."
+  },
+  "home": {
+    "badge": "Эксперты по материалам, 20 лет",
+    "heroTitleLine1": "Строим будущее на",
+    "heroTitleAccent": "точном основании",
+    "heroDesc1": "Qingtai предлагает мирового уровня каркасные системы, плиты и алюминиевые отделочные решения.",
+    "heroDesc2": "Точное производство и глобальная логистика поддержат ваш проект.",
+    "browseCatalog": "Открыть каталог",
+    "viewProjects": "Смотреть проекты",
+    "systems": {
+      "label": "Системы",
+      "viewAllProducts": "Смотреть все продукты"
+    },
+    "projects": {
+      "featuredLabel": "Избранные проекты",
+      "sectionTitle": "Избранные проекты",
+      "viewMore": "Смотреть больше проектов"
+    },
+    "logistics": {
+      "label": "Глобальная логистика"
+    }
+  },
+  "cart": {
+    "title": "Список закупки",
+    "empty": {
+      "title": "Список пуст",
+      "desc": "Вы ещё не добавили материалы в список закупки.",
+      "cta": "Перейти в каталог"
+    },
+    "unitPrice": "Цена за единицу",
+    "remove": "Удалить",
+    "form": {
+      "title": "Логистика и контакты",
+      "country": "Страна назначения",
+      "countryPlaceholder": "Сначала выберите страну",
+      "port": "Порт назначения",
+      "portPlaceholder": "Выберите порт",
+      "portPlaceholderNeedCountry": "Сначала выберите страну",
+      "method": "Условия поставки",
+      "methodPlaceholder": "Выберите условия",
+      "methodOptions": {
+        "exw": "EXW (самовывоз со склада)",
+        "fob": "FOB (франко борт)",
+        "cif": "CIF (стоимость, страхование и фрахт)",
+        "ddp": "DDP (поставка с оплатой пошлин)"
+      },
+      "email": "E-mail",
+      "social": "Мессенджер (WhatsApp/WeChat)",
+      "socialPlaceholder": "ID / Телефон",
+      "name": "Контактное лицо",
+      "phone": "Телефон"
+    },
+    "summary": {
+      "title": "Итоги стоимости",
+      "fillFirst": "Сначала заполните страну/порт, условия поставки и все контакты слева.",
+      "calculating": "Отправляем заказ и рассчитываем…",
+      "orderId": "Номер заказа",
+      "itemsSubtotal": "Подытог материалов",
+      "totalCbm": "Общий объём (CBM)",
+      "freight": "Фрахт",
+      "fixedFees": "Фикс. сборы",
+      "total": "Итого"
+    },
+    "hint": "Подсказка: заполните все обязательные поля и подтвердите. Система не рассчитывает цену автоматически во время ввода. После подтверждения будет создан заказ, а справа появится расчёт в USD.",
+    "submitting": "Отправка…",
+    "confirmAndSubmit": "Подтвердить и отправить заказ (создать расчёт)",
+    "waitingQuote": "Обязательная информация заполнена. Нажмите слева «Подтвердить и отправить заказ». После успеха здесь появится детализация в USD по CBM и запись синхронизируется в Admin > Заказы.",
+    "agreementNote": "Отправляя, вы соглашаетесь с соглашением о покупке материалов. Любое изменение слева очистит этот расчёт и потребует повторного подтверждения."
+  },
+  "product": {
+    "specs": {
+      "title": "Характеристики",
+      "empty": "Характеристики не указаны. Свяжитесь с нами для деталей."
+    },
+    "actions": {
+      "addToCart": "Добавить в список",
+      "download": "Скачать спецификацию",
+      "share": "Поделиться",
+      "consult": "Консультация"
+    }
+  }
+}

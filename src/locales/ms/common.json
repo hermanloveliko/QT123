@@ -1,0 +1,146 @@
+{
+  "common": {
+    "loading": "Loading…"
+  },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Wall System",
+        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
+        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+      },
+      "s2": {
+        "title": "Ceiling System",
+        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
+        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+      },
+      "s3": {
+        "title": "Special Board System",
+        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
+        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Shanghai Tower Interior Partition Project",
+        "location": "Shanghai, China",
+        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+      },
+      "p2": {
+        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "location": "Beijing, China",
+        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+      },
+      "p3": {
+        "title": "Marina Bay Sands Hotel Expansion",
+        "location": "Marina Bay, Singapore",
+        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+      }
+    }
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "pt": "Português",
+    "ru": "Русский",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "th": "ไทย",
+    "vi": "Tiếng Việt",
+    "ar": "العربية",
+    "sw": "Kiswahili"
+  },
+  "nav": {
+    "home": "Utama",
+    "catalog": "Katalog",
+    "projects": "Projek",
+    "about": "Tentang",
+    "getQuote": "Dapatkan sebut harga",
+    "admin": "Admin",
+    "searchPlaceholder": "Cari bahan..."
+  },
+  "home": {
+    "badge": "Pakar bahan binaan, 20 tahun",
+    "heroTitleLine1": "Bina masa depan dengan",
+    "heroTitleAccent": "asas ketepatan",
+    "heroDesc1": "Qingtai menyediakan sistem rangka, papan dan kemasan aluminium bertaraf dunia.",
+    "heroDesc2": "Dengan pembuatan tepat dan logistik global, kami menyokong visi anda.",
+    "browseCatalog": "Lihat katalog",
+    "viewProjects": "Lihat projek",
+    "systems": {
+      "label": "Sistem",
+      "viewAllProducts": "Lihat semua produk"
+    },
+    "projects": {
+      "featuredLabel": "Projek pilihan",
+      "sectionTitle": "Projek pilihan",
+      "viewMore": "Lihat lebih banyak projek"
+    },
+    "logistics": {
+      "label": "Logistik global"
+    }
+  },
+  "cart": {
+    "title": "Senarai pembelian",
+    "empty": {
+      "title": "Senarai anda kosong",
+      "desc": "Anda belum menambah sebarang bahan binaan ke dalam senarai pembelian.",
+      "cta": "Lihat katalog"
+    },
+    "unitPrice": "Harga seunit",
+    "remove": "Buang",
+    "form": {
+      "title": "Logistik & hubungan",
+      "country": "Negara destinasi",
+      "countryPlaceholder": "Pilih negara dahulu",
+      "port": "Pelabuhan destinasi",
+      "portPlaceholder": "Pilih pelabuhan",
+      "portPlaceholderNeedCountry": "Pilih negara dahulu",
+      "method": "Kaedah pembelian",
+      "methodPlaceholder": "Pilih kaedah",
+      "methodOptions": {
+        "exw": "EXW (Ex Works)",
+        "fob": "FOB (Free On Board)",
+        "cif": "CIF (Cost, Insurance & Freight)",
+        "ddp": "DDP (Delivered Duty Paid)"
+      },
+      "email": "E-mel",
+      "social": "Sosial (WhatsApp/WeChat)",
+      "socialPlaceholder": "ID / Nombor telefon",
+      "name": "Nama kontak",
+      "phone": "Telefon"
+    },
+    "summary": {
+      "title": "Ringkasan kos",
+      "fillFirst": "Sila isi negara/pelabuhan, kaedah pembelian dan semua maklumat hubungan di sebelah kiri terlebih dahulu.",
+      "calculating": "Menghantar pesanan & mengira sebut harga…",
+      "orderId": "ID pesanan",
+      "itemsSubtotal": "Jumlah kecil item",
+      "totalCbm": "Jumlah isipadu (CBM)",
+      "freight": "Freight",
+      "fixedFees": "Caj tetap",
+      "total": "Jumlah"
+    },
+    "hint": "Tip: lengkapkan semua medan wajib dan sahkan. Sistem tidak akan membuat sebut harga secara automatik semasa anda menaip. Selepas disahkan, pesanan akan dicipta dan sebut harga USD akan dipaparkan di sebelah kanan.",
+    "submitting": "Menghantar…",
+    "confirmAndSubmit": "Sahkan & hantar pesanan (jana sebut harga)",
+    "waitingQuote": "Maklumat wajib telah lengkap. Klik “Sahkan & hantar pesanan” di sebelah kiri. Selepas berjaya, panel ini akan memaparkan pecahan USD berasaskan CBM dan disegerakkan ke Pesanan Admin.",
+    "agreementNote": "Dengan menghantar, anda bersetuju dengan Perjanjian Pembelian Bahan. Mengubah sebarang maklumat di sebelah kiri akan mengosongkan sebut harga ini dan memerlukan pengesahan semula."
+  },
+  "product": {
+    "specs": {
+      "title": "Spesifikasi",
+      "empty": "Tiada spesifikasi disenaraikan. Sila hubungi jualan untuk maklumat lanjut."
+    },
+    "actions": {
+      "addToCart": "Tambah ke senarai",
+      "download": "Muat turun helaian data",
+      "share": "Kongsi produk",
+      "consult": "Rujuk pakar"
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "common": {
+    "loading": "Loading…"
+  },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Wall System",
+        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
+        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+      },
+      "s2": {
+        "title": "Ceiling System",
+        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
+        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+      },
+      "s3": {
+        "title": "Special Board System",
+        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
+        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Shanghai Tower Interior Partition Project",
+        "location": "Shanghai, China",
+        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+      },
+      "p2": {
+        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "location": "Beijing, China",
+        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+      },
+      "p3": {
+        "title": "Marina Bay Sands Hotel Expansion",
+        "location": "Marina Bay, Singapore",
+        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+      }
+    }
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "pt": "Português",
+    "ru": "Русский",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "th": "ไทย",
+    "vi": "Tiếng Việt",
+    "ar": "العربية",
+    "sw": "Kiswahili"
+  },
+  "nav": {
+    "home": "Inicio",
+    "catalog": "Catálogo",
+    "projects": "Proyectos",
+    "about": "Nosotros",
+    "getQuote": "Solicitar cotización",
+    "admin": "Admin",
+    "searchPlaceholder": "Buscar materiales..."
+  },
+  "home": {
+    "badge": "Expertos en materiales, 20 años",
+    "heroTitleLine1": "Construye el futuro con",
+    "heroTitleAccent": "base de precisión",
+    "heroDesc1": "Qingtai ofrece sistemas de perfilería, placas y acabados de aluminio de clase mundial.",
+    "heroDesc2": "Con fabricación de precisión y logística global, respaldamos tu visión.",
+    "browseCatalog": "Ver catálogo",
+    "viewProjects": "Ver proyectos",
+    "systems": {
+      "label": "Sistemas",
+      "viewAllProducts": "Ver todos los productos"
+    },
+    "projects": {
+      "featuredLabel": "Proyectos destacados",
+      "sectionTitle": "Proyectos destacados",
+      "viewMore": "Ver más proyectos"
+    },
+    "logistics": {
+      "label": "Logística global"
+    }
+  },
+  "cart": {
+    "title": "Lista de compras",
+    "empty": {
+      "title": "Tu lista está vacía",
+      "desc": "Aún no has añadido materiales de construcción a la lista de compras.",
+      "cta": "Ver catálogo"
+    },
+    "unitPrice": "Precio unitario",
+    "remove": "Quitar",
+    "form": {
+      "title": "Logística y contacto",
+      "country": "País de destino",
+      "countryPlaceholder": "Primero selecciona un país",
+      "port": "Puerto de destino",
+      "portPlaceholder": "Selecciona un puerto",
+      "portPlaceholderNeedCountry": "Primero selecciona un país",
+      "method": "Método de compra",
+      "methodPlaceholder": "Selecciona un método",
+      "methodOptions": {
+        "exw": "EXW (En fábrica)",
+        "fob": "FOB (Libre a bordo)",
+        "cif": "CIF (Costo, seguro y flete)",
+        "ddp": "DDP (Entregado con derechos pagados)"
+      },
+      "email": "Correo de contacto",
+      "social": "Red (WhatsApp/WeChat)",
+      "socialPlaceholder": "ID / Teléfono",
+      "name": "Nombre de contacto",
+      "phone": "Teléfono"
+    },
+    "summary": {
+      "title": "Resumen de costos",
+      "fillFirst": "Primero completa país/puerto, método de compra y todos los datos de contacto a la izquierda.",
+      "calculating": "Enviando pedido y calculando cotización…",
+      "orderId": "ID de pedido",
+      "itemsSubtotal": "Subtotal de materiales",
+      "totalCbm": "Volumen total (CBM)",
+      "freight": "Flete",
+      "fixedFees": "Cargos fijos",
+      "total": "Total"
+    },
+    "hint": "Consejo: completa los campos obligatorios y confirma. El sistema no cotiza automáticamente mientras escribes. Tras confirmar, se creará un pedido y verás la cotización en USD a la derecha.",
+    "submitting": "Enviando…",
+    "confirmAndSubmit": "Confirmar y enviar pedido (generar cotización)",
+    "waitingQuote": "La información obligatoria está completa. Haz clic en “Confirmar y enviar pedido” a la izquierda. Tras el envío, aquí verás el detalle en USD basado en CBM y se sincronizará con Pedidos en Admin.",
+    "agreementNote": "Al enviar aceptas el Acuerdo de Compra de Materiales. Cambiar cualquier dato a la izquierda borrará esta cotización y requerirá confirmar de nuevo."
+  },
+  "product": {
+    "specs": {
+      "title": "Especificaciones",
+      "empty": "No hay especificaciones. Contacta con ventas para más información."
+    },
+    "actions": {
+      "addToCart": "Añadir a la lista",
+      "download": "Descargar ficha técnica",
+      "share": "Compartir producto",
+      "consult": "Consultar a un experto"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-industrial-blue: #002045;
+  --color-structural-gray: #f4f7fa;
+  --color-heat-accent: #ffb77d;
+  --color-steel-white: #ffffff;
+  --color-dark-slate: #1a1a1a;
+}
+
+@layer base {
+  body {
+    @apply bg-structural-gray text-dark-slate font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+}
+
+.glass-nav {
+  @apply bg-white/80 backdrop-blur-md border-b border-white/20;
+}
+
+.industrial-card {
+  @apply bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300;
+}
+
+.btn-primary {
+  @apply bg-industrial-blue text-white px-6 py-3 font-semibold hover:bg-industrial-blue/90 transition-all flex items-center gap-2;
+}
+
+.btn-outline {
+  @apply border-2 border-industrial-blue text-industrial-blue px-6 py-3 font-semibold hover:bg-industrial-blue hover:text-white transition-all flex items-center gap-2;
+}
+
+.accent-border {
+  @apply border-l-4 border-heat-accent pl-4;
+}
+

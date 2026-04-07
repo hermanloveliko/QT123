@@ -1,0 +1,314 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrderStatus {
+  SUBMITTED
+  REVIEWING
+  QUOTED
+  CLOSED
+}
+
+enum AiRole {
+  user
+  ai
+  system
+  tool
+}
+
+enum Lang {
+  zh
+  en
+  fr
+  es
+  pt
+  ru
+  ko
+  ms
+  th
+  vi
+  ar
+  sw
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  i18n      SiteSettingI18n[]
+}
+
+model SiteSettingI18n {
+  id        String   @id @default(cuid())
+  key       String
+  lang      Lang
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  setting   SiteSetting @relation(fields: [key], references: [key], onDelete: Cascade)
+
+  @@unique([key, lang])
+  @@index([lang])
+}
+
+model Category {
+  id        String        @id @default(cuid())
+  name      String        @unique
+  sortOrder Int           @default(0)
+  enabled   Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  subcats   Subcategory[]
+  products  Product[]
+  i18n      CategoryI18n[]
+}
+
+model CategoryI18n {
+  id         String   @id @default(cuid())
+  categoryId String
+  lang       Lang
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, lang])
+  @@index([lang])
+}
+
+model Subcategory {
+  id         String    @id @default(cuid())
+  categoryId String
+  name       String
+  sortOrder  Int       @default(0)
+  enabled    Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products   Product[]
+  i18n       SubcategoryI18n[]
+
+  @@unique([categoryId, name])
+}
+
+model SubcategoryI18n {
+  id            String   @id @default(cuid())
+  subcategoryId String
+  lang          Lang
+  name          String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subcategory   Subcategory @relation(fields: [subcategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([subcategoryId, lang])
+  @@index([lang])
+}
+
+model Product {
+  id            String        @id @default(cuid())
+  name          String
+  categoryId    String
+  subcategoryId String?
+  priceUsd      Decimal       @db.Decimal(12, 2)
+  enabled       Boolean       @default(true)
+  imageCoverUrl String?
+  specs         Json          @default("[]")
+  description   String        @default("")
+
+  lengthCm      Int?
+  widthCm       Int?
+  heightCm      Int?
+  cbmPerUnit    Decimal?      @db.Decimal(12, 6)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  category      Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  subcategory   Subcategory?  @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+  images        ProductImage[]
+  orderItems    OrderItem[]
+  aiMessages    AiMessage[]
+  i18n          ProductI18n[]
+}
+
+model ProductI18n {
+  id          String   @id @default(cuid())
+  productId   String
+  lang        Lang
+  name        String
+  description String @default("")
+  specs       Json   @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, lang])
+  @@index([lang])
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Country {
+  id        String   @id @default(cuid())
+  name      String
+  code      String?  @unique
+  sortOrder Int      @default(0)
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ports     Port[]
+  i18n      CountryI18n[]
+
+  @@unique([name])
+}
+
+model CountryI18n {
+  id        String   @id @default(cuid())
+  countryId String
+  lang      Lang
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  @@unique([countryId, lang])
+  @@index([lang])
+}
+
+model Port {
+  id        String   @id @default(cuid())
+  countryId String
+  name      String
+  code      String?
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  country   Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  pricing   PricingRule?
+  orders    Order[]
+  i18n      PortI18n[]
+
+  @@unique([countryId, name])
+}
+
+model PortI18n {
+  id        String   @id @default(cuid())
+  portId    String
+  lang      Lang
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  port      Port @relation(fields: [portId], references: [id], onDelete: Cascade)
+
+  @@unique([portId, lang])
+  @@index([lang])
+}
+
+model PricingRule {
+  id            String   @id @default(cuid())
+  portId        String   @unique
+  usdPerCbm     Decimal  @db.Decimal(12, 2)
+  minBillableCbm Decimal? @db.Decimal(12, 6)
+  fixedFees     Json     @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  port          Port     @relation(fields: [portId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  status          OrderStatus @default(SUBMITTED)
+
+  ip              String?
+  portId          String?
+  procurementMethod String
+  contactEmail    String
+  contactSocial   String
+  contactName     String?
+  contactPhone    String?
+  notes           String      @default("")
+
+  currency        String      @default("USD")
+  totalCbm        Decimal     @db.Decimal(12, 6)
+  freightUsd      Decimal     @db.Decimal(12, 2)
+  fixedFees       Json        @default("[]")
+  totalUsd        Decimal     @db.Decimal(12, 2)
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  port            Port?       @relation(fields: [portId], references: [id], onDelete: SetNull)
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  productId   String
+  qty         Int
+  unitPriceUsd Decimal @db.Decimal(12, 2)
+
+  cbmPerUnit  Decimal? @db.Decimal(12, 6)
+  lineCbm     Decimal  @db.Decimal(12, 6)
+  lineTotalUsd Decimal @db.Decimal(12, 2)
+
+  createdAt   DateTime @default(now())
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+model AiConversation {
+  id        String      @id @default(cuid())
+  ip        String?
+  summary   String      @default("")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  messages  AiMessage[]
+}
+
+model AiMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           AiRole
+  content        String
+  productId      String?
+  createdAt      DateTime @default(now())
+
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  product        Product?       @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt])
+}
+

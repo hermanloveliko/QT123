@@ -1,0 +1,202 @@
+{
+  "common": {
+    "loading": "Loading…"
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "pt": "Português",
+    "ru": "Русский",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "th": "ไทย",
+    "vi": "Tiếng Việt"
+  },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Wall System",
+        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
+        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+      },
+      "s2": {
+        "title": "Ceiling System",
+        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
+        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+      },
+      "s3": {
+        "title": "Special Board System",
+        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
+        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Shanghai Tower Interior Partition Project",
+        "location": "Shanghai, China",
+        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+      },
+      "p2": {
+        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "location": "Beijing, China",
+        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+      },
+      "p3": {
+        "title": "Marina Bay Sands Hotel Expansion",
+        "location": "Marina Bay, Singapore",
+        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+      }
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "catalog": "Catalog",
+    "projects": "Projects",
+    "about": "About",
+    "getQuote": "Get a quote",
+    "admin": "Admin",
+    "searchPlaceholder": "Search materials..."
+  },
+  "home": {
+    "badge": "Building materials experts, 20 years",
+    "heroTitleLine1": "Build the future with",
+    "heroTitleAccent": "precision foundations",
+    "heroDesc1": "Qingtai provides world-class framing, boards, and aluminum finishing systems.",
+    "heroDesc2": "With precision manufacturing and global logistics, we support your vision.",
+    "browseCatalog": "Browse catalog",
+    "viewProjects": "View projects",
+    "consultation": {
+      "title": "Need professional material advice?",
+      "desc": "Our engineering team provides technical support, material selection, and cost estimation.",
+      "hotlineLabel": "WhatsApp",
+      "hotlineValue": "+86 138 0000 0000",
+      "button": "Book an online consultation"
+    },
+    "systems": {
+      "label": "Systems",
+      "viewAllProducts": "View all products",
+      "sectionTitle": "Core system solutions"
+    },
+    "projects": {
+      "featuredLabel": "Featured Projects",
+      "sectionTitle": "Featured projects",
+      "viewMore": "View more projects"
+    },
+    "logistics": {
+      "label": "Global Logistics",
+      "title": "Global logistics & tracking",
+      "desc": "We operate a global supply chain to ensure materials arrive safely and on time. With real-time tracking, you can monitor your order status anytime.",
+      "cards": [
+        {
+          "title": "Fast delivery response",
+          "desc": "Core cities within 24 hours; global delivery in 7–15 days."
+        },
+        {
+          "title": "End-to-end quality monitoring",
+          "desc": "From dispatch to receipt, every step is quality-checked and digitally recorded."
+        }
+      ],
+      "track": {
+        "title": "Real-time order tracking",
+        "orderLabel": "Order ID:",
+        "orderId": "QT-2026-8892",
+        "status": "In transit",
+        "locationLabel": "Current location:",
+        "location": "Shanghai Port - International Freight Center",
+        "etaLabel": "ETA:",
+        "eta": "2026-03-28"
+      }
+    }
+  },
+  "about": {
+    "heroTitle": "About Qingtai",
+    "profileEyebrow": "Company Profile",
+    "profileHeading": "Twenty years of focus, building beauty",
+    "profileParagraphs": [
+      "Founded in 2006 and headquartered in Shanghai, China, Qingtai has been dedicated to R&D, production, and sales of partition and ceiling materials for two decades.",
+      "As a leading system solution provider, we deliver high-quality steel framing, gypsum boards, and aluminum finishes—backed by precise technical support and a reliable global logistics network.",
+      "Our products have been applied in over 1,200 landmark projects worldwide, including supertall buildings, international airports, five-star hotels, and large industrial facilities."
+    ]
+  },
+  "catalog": {
+    "title": "Building materials catalog",
+    "categoriesTitle": "Categories",
+    "all": "All materials",
+    "sort": {
+      "label": "Sort:",
+      "default": "Default",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low"
+    },
+    "loading": "Loading catalog…",
+    "empty": "No products in this category yet. Please try again later or contact sales.",
+    "custom": {
+      "title": "Need custom specs?",
+      "desc": "We offer non-standard size customization to meet special project needs.",
+      "button": "Contact for customization"
+    }
+  },
+  "cart": {
+    "title": "Procurement List",
+    "empty": {
+      "title": "Your list is empty",
+      "desc": "You haven't added any building materials to the procurement list yet.",
+      "cta": "Browse the catalog"
+    },
+    "unitPrice": "Unit price",
+    "remove": "Remove",
+    "form": {
+      "title": "Logistics & contact",
+      "country": "Destination country",
+      "countryPlaceholder": "Select a country first",
+      "port": "Destination port",
+      "portPlaceholder": "Select a port",
+      "portPlaceholderNeedCountry": "Select a country first",
+      "method": "Procurement method",
+      "methodPlaceholder": "Select a method",
+      "methodOptions": {
+        "exw": "EXW (Ex Works)",
+        "fob": "FOB (Free On Board)",
+        "cif": "CIF (Cost, Insurance & Freight)",
+        "ddp": "DDP (Delivered Duty Paid)"
+      },
+      "email": "Contact email",
+      "social": "Social (WhatsApp/WeChat)",
+      "socialPlaceholder": "ID / Phone number",
+      "name": "Contact name",
+      "phone": "Phone"
+    },
+    "summary": {
+      "title": "Cost summary",
+      "fillFirst": "Please fill in destination country/port, procurement method, and all contact details on the left first.",
+      "calculating": "Submitting order and calculating quote…",
+      "orderId": "Order ID",
+      "itemsSubtotal": "Items subtotal",
+      "totalCbm": "Total volume (CBM)",
+      "freight": "Freight",
+      "fixedFees": "Fixed fees",
+      "total": "Total"
+    },
+    "hint": "Tip: Fill in all required fields and click confirm. The system won’t auto-quote while you type. After confirmation, an order will be created and a USD quote will appear on the right.",
+    "submitting": "Submitting…",
+    "confirmAndSubmit": "Confirm & submit order (generate quote)",
+    "waitingQuote": "Required info is complete. Click “Confirm & submit order” on the left. After success, this panel will show the USD breakdown based on CBM and sync to Admin Orders.",
+    "agreementNote": "Submitting means you agree to the Material Purchase Agreement. Changing any info on the left will clear this quote and requires reconfirmation."
+  },
+  "product": {
+    "specs": {
+      "title": "Specifications",
+      "empty": "No specifications listed. Please contact sales for details."
+    },
+    "actions": {
+      "addToCart": "Add to procurement list",
+      "download": "Download datasheet",
+      "share": "Share product",
+      "consult": "Consult an expert"
+    }
+  }
+}

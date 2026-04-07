@@ -1,0 +1,146 @@
+{
+  "common": {
+    "loading": "Loading…"
+  },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Wall System",
+        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
+        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+      },
+      "s2": {
+        "title": "Ceiling System",
+        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
+        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+      },
+      "s3": {
+        "title": "Special Board System",
+        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
+        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Shanghai Tower Interior Partition Project",
+        "location": "Shanghai, China",
+        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+      },
+      "p2": {
+        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "location": "Beijing, China",
+        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+      },
+      "p3": {
+        "title": "Marina Bay Sands Hotel Expansion",
+        "location": "Marina Bay, Singapore",
+        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+      }
+    }
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "pt": "Português",
+    "ru": "Русский",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "th": "ไทย",
+    "vi": "Tiếng Việt",
+    "ar": "العربية",
+    "sw": "Kiswahili"
+  },
+  "nav": {
+    "home": "Trang chủ",
+    "catalog": "Danh mục",
+    "projects": "Dự án",
+    "about": "Giới thiệu",
+    "getQuote": "Nhận báo giá",
+    "admin": "Quản trị",
+    "searchPlaceholder": "Tìm vật liệu..."
+  },
+  "home": {
+    "badge": "Chuyên gia vật liệu xây dựng, 20 năm",
+    "heroTitleLine1": "Xây dựng tương lai với",
+    "heroTitleAccent": "nền tảng chính xác",
+    "heroDesc1": "Qingtai cung cấp hệ khung, tấm và hệ hoàn thiện nhôm đẳng cấp thế giới.",
+    "heroDesc2": "Với sản xuất chính xác và logistics toàn cầu, chúng tôi đồng hành cùng tầm nhìn của bạn.",
+    "browseCatalog": "Xem danh mục",
+    "viewProjects": "Xem dự án",
+    "systems": {
+      "label": "Hệ thống",
+      "viewAllProducts": "Xem tất cả sản phẩm"
+    },
+    "projects": {
+      "featuredLabel": "Dự án nổi bật",
+      "sectionTitle": "Dự án nổi bật",
+      "viewMore": "Xem thêm dự án"
+    },
+    "logistics": {
+      "label": "Logistics toàn cầu"
+    }
+  },
+  "cart": {
+    "title": "Danh sách mua hàng",
+    "empty": {
+      "title": "Danh sách của bạn đang trống",
+      "desc": "Bạn chưa thêm vật liệu nào vào danh sách mua hàng.",
+      "cta": "Xem danh mục"
+    },
+    "unitPrice": "Đơn giá",
+    "remove": "Xóa",
+    "form": {
+      "title": "Vận chuyển & liên hệ",
+      "country": "Quốc gia đích",
+      "countryPlaceholder": "Chọn quốc gia trước",
+      "port": "Cảng đích",
+      "portPlaceholder": "Chọn cảng",
+      "portPlaceholderNeedCountry": "Vui lòng chọn quốc gia trước",
+      "method": "Phương thức mua hàng",
+      "methodPlaceholder": "Chọn phương thức",
+      "methodOptions": {
+        "exw": "EXW (Giao tại xưởng)",
+        "fob": "FOB (Giao lên tàu)",
+        "cif": "CIF (Giá gồm bảo hiểm & cước)",
+        "ddp": "DDP (Giao đã nộp thuế)"
+      },
+      "email": "Email liên hệ",
+      "social": "Mạng xã hội (WhatsApp/WeChat)",
+      "socialPlaceholder": "ID / Số điện thoại",
+      "name": "Tên liên hệ",
+      "phone": "Số điện thoại"
+    },
+    "summary": {
+      "title": "Tổng kết chi phí",
+      "fillFirst": "Vui lòng điền quốc gia/cảng, phương thức mua hàng và đầy đủ thông tin liên hệ ở bên trái trước.",
+      "calculating": "Đang gửi đơn và tính báo giá…",
+      "orderId": "Mã đơn hàng",
+      "itemsSubtotal": "Tạm tính vật liệu",
+      "totalCbm": "Tổng thể tích (CBM)",
+      "freight": "Cước vận chuyển",
+      "fixedFees": "Phí cố định",
+      "total": "Tổng cộng"
+    },
+    "hint": "Gợi ý: hãy điền đầy đủ các mục bắt buộc rồi bấm xác nhận. Hệ thống sẽ không tự động báo giá khi bạn đang nhập. Sau khi xác nhận, một đơn hàng sẽ được tạo và báo giá USD sẽ hiển thị ở bên phải.",
+    "submitting": "Đang gửi…",
+    "confirmAndSubmit": "Xác nhận & gửi đơn hàng (tạo báo giá)",
+    "waitingQuote": "Thông tin bắt buộc đã đầy đủ. Hãy bấm “Xác nhận & gửi đơn hàng” ở bên trái. Sau khi thành công, khu vực này sẽ hiển thị chi tiết USD theo CBM và đồng bộ vào Đơn hàng trong Admin.",
+    "agreementNote": "Việc gửi đồng nghĩa bạn đồng ý với Thỏa thuận mua vật liệu. Thay đổi bất kỳ thông tin nào bên trái sẽ xóa báo giá này và cần xác nhận lại."
+  },
+  "product": {
+    "specs": {
+      "title": "Thông số",
+      "empty": "Chưa có thông số. Vui lòng liên hệ để nhận tài liệu."
+    },
+    "actions": {
+      "addToCart": "Thêm vào danh sách",
+      "download": "Tải tài liệu",
+      "share": "Chia sẻ sản phẩm",
+      "consult": "Tư vấn chuyên gia"
+    }
+  }
+}

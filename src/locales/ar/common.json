@@ -1,0 +1,146 @@
+{
+  "common": {
+    "loading": "Loading…"
+  },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Wall System",
+        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
+        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+      },
+      "s2": {
+        "title": "Ceiling System",
+        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
+        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+      },
+      "s3": {
+        "title": "Special Board System",
+        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
+        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Shanghai Tower Interior Partition Project",
+        "location": "Shanghai, China",
+        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+      },
+      "p2": {
+        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "location": "Beijing, China",
+        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+      },
+      "p3": {
+        "title": "Marina Bay Sands Hotel Expansion",
+        "location": "Marina Bay, Singapore",
+        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+      }
+    }
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "pt": "Português",
+    "ru": "Русский",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "th": "ไทย",
+    "vi": "Tiếng Việt",
+    "ar": "العربية",
+    "sw": "Kiswahili"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "catalog": "الكتالوج",
+    "projects": "المشاريع",
+    "about": "حول",
+    "getQuote": "احصل على عرض سعر",
+    "admin": "المسؤول",
+    "searchPlaceholder": "ابحث عن المواد..."
+  },
+  "home": {
+    "badge": "خبراء مواد البناء، 20 عامًا",
+    "heroTitleLine1": "ابنِ المستقبل مع",
+    "heroTitleAccent": "أسس دقيقة",
+    "heroDesc1": "توفر تشينغتاي أنظمة هيكلية وألواح وأنظمة تشطيب من الألومنيوم عالمية المستوى.",
+    "heroDesc2": "بدقة التصنيع ولوجستيات عالمية، ندعم رؤيتك.",
+    "browseCatalog": "تصفح الكتالوج",
+    "viewProjects": "عرض المشاريع",
+    "systems": {
+      "label": "الأنظمة",
+      "viewAllProducts": "عرض جميع المنتجات"
+    },
+    "projects": {
+      "featuredLabel": "مشاريع مميزة",
+      "sectionTitle": "مشاريع مميزة",
+      "viewMore": "عرض المزيد من المشاريع"
+    },
+    "logistics": {
+      "label": "الخدمات اللوجستية العالمية"
+    }
+  },
+  "cart": {
+    "title": "قائمة الشراء",
+    "empty": {
+      "title": "قائمتك فارغة",
+      "desc": "لم تقم بإضافة أي مواد إلى قائمة الشراء بعد.",
+      "cta": "تصفح الكتالوج"
+    },
+    "unitPrice": "سعر الوحدة",
+    "remove": "إزالة",
+    "form": {
+      "title": "الشحن والتواصل",
+      "country": "بلد الوجهة",
+      "countryPlaceholder": "اختر البلد أولاً",
+      "port": "ميناء الوجهة",
+      "portPlaceholder": "اختر الميناء",
+      "portPlaceholderNeedCountry": "اختر البلد أولاً",
+      "method": "طريقة الشراء",
+      "methodPlaceholder": "اختر الطريقة",
+      "methodOptions": {
+        "exw": "EXW (تسليم من المصنع)",
+        "fob": "FOB (تسليم على ظهر السفينة)",
+        "cif": "CIF (التكلفة والتأمين والشحن)",
+        "ddp": "DDP (التسليم مع دفع الرسوم)"
+      },
+      "email": "البريد الإلكتروني",
+      "social": "حساب (WhatsApp/WeChat)",
+      "socialPlaceholder": "المعرّف / رقم الهاتف",
+      "name": "اسم جهة الاتصال",
+      "phone": "رقم الهاتف"
+    },
+    "summary": {
+      "title": "ملخص التكاليف",
+      "fillFirst": "يرجى تعبئة بلد/ميناء الوجهة وطريقة الشراء وجميع بيانات التواصل في الجهة اليسرى أولاً.",
+      "calculating": "جارٍ إرسال الطلب وحساب العرض…",
+      "orderId": "رقم الطلب",
+      "itemsSubtotal": "المجموع الفرعي للمواد",
+      "totalCbm": "إجمالي الحجم (CBM)",
+      "freight": "الشحن",
+      "fixedFees": "رسوم إضافية",
+      "total": "الإجمالي"
+    },
+    "hint": "ملاحظة: املأ جميع الحقول المطلوبة ثم اضغط تأكيد. لن يقوم النظام بتسعير تلقائي أثناء الكتابة. بعد التأكيد سيتم إنشاء طلب وسيظهر عرض السعر بالدولار في الجهة اليمنى.",
+    "submitting": "جارٍ الإرسال…",
+    "confirmAndSubmit": "تأكيد وإرسال الطلب (إنشاء عرض سعر)",
+    "waitingQuote": "تم استكمال المعلومات المطلوبة. اضغط على “تأكيد وإرسال الطلب” على اليسار. بعد النجاح ستظهر هنا تفاصيل USD حسب CBM وسيتم المزامنة إلى الطلبات في لوحة الإدارة.",
+    "agreementNote": "الإرسال يعني موافقتك على اتفاقية شراء المواد. تغيير أي معلومات على اليسار سيؤدي إلى مسح هذا العرض ويتطلب التأكيد مجددًا."
+  },
+  "product": {
+    "specs": {
+      "title": "المواصفات",
+      "empty": "لا توجد مواصفات مدرجة. يرجى التواصل للحصول على التفاصيل."
+    },
+    "actions": {
+      "addToCart": "إضافة إلى القائمة",
+      "download": "تنزيل الملف",
+      "share": "مشاركة المنتج",
+      "consult": "استشارة خبير"
+    }
+  }
+}

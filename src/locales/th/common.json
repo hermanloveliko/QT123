@@ -1,0 +1,146 @@
+{
+  "common": {
+    "loading": "Loading…"
+  },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Wall System",
+        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
+        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+      },
+      "s2": {
+        "title": "Ceiling System",
+        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
+        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+      },
+      "s3": {
+        "title": "Special Board System",
+        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
+        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Shanghai Tower Interior Partition Project",
+        "location": "Shanghai, China",
+        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+      },
+      "p2": {
+        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "location": "Beijing, China",
+        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+      },
+      "p3": {
+        "title": "Marina Bay Sands Hotel Expansion",
+        "location": "Marina Bay, Singapore",
+        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+      }
+    }
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "pt": "Português",
+    "ru": "Русский",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "th": "ไทย",
+    "vi": "Tiếng Việt",
+    "ar": "العربية",
+    "sw": "Kiswahili"
+  },
+  "nav": {
+    "home": "หน้าแรก",
+    "catalog": "แคตตาล็อก",
+    "projects": "โครงการ",
+    "about": "เกี่ยวกับเรา",
+    "getQuote": "ขอใบเสนอราคา",
+    "admin": "แอดมิน",
+    "searchPlaceholder": "ค้นหาวัสดุ..."
+  },
+  "home": {
+    "badge": "ผู้เชี่ยวชาญวัสดุก่อสร้าง 20 ปี",
+    "heroTitleLine1": "สร้างอนาคตด้วย",
+    "heroTitleAccent": "ความแม่นยำ",
+    "heroDesc1": "Qingtai มอบระบบโครงคร่าว แผ่น และงานตกแต่งอลูมิเนียมระดับโลก",
+    "heroDesc2": "ด้วยการผลิตที่แม่นยำและโลจิสติกส์ทั่วโลก เราสนับสนุนวิสัยทัศน์ของคุณ",
+    "browseCatalog": "ดูแคตตาล็อก",
+    "viewProjects": "ดูโครงการ",
+    "systems": {
+      "label": "ระบบ",
+      "viewAllProducts": "ดูสินค้าทั้งหมด"
+    },
+    "projects": {
+      "featuredLabel": "โครงการแนะนำ",
+      "sectionTitle": "โครงการแนะนำ",
+      "viewMore": "ดูโครงการเพิ่มเติม"
+    },
+    "logistics": {
+      "label": "โลจิสติกส์ทั่วโลก"
+    }
+  },
+  "cart": {
+    "title": "รายการสั่งซื้อ",
+    "empty": {
+      "title": "รายการของคุณว่างอยู่",
+      "desc": "คุณยังไม่ได้เพิ่มวัสดุก่อสร้างลงในรายการสั่งซื้อ",
+      "cta": "ไปที่แคตตาล็อก"
+    },
+    "unitPrice": "ราคาต่อหน่วย",
+    "remove": "ลบ",
+    "form": {
+      "title": "โลจิสติกส์และข้อมูลติดต่อ",
+      "country": "ประเทศปลายทาง",
+      "countryPlaceholder": "เลือกประเทศก่อน",
+      "port": "ท่าเรือปลายทาง",
+      "portPlaceholder": "เลือกท่าเรือ",
+      "portPlaceholderNeedCountry": "กรุณาเลือกประเทศก่อน",
+      "method": "วิธีการจัดซื้อ",
+      "methodPlaceholder": "เลือกวิธีการจัดซื้อ",
+      "methodOptions": {
+        "exw": "EXW (รับของที่โรงงาน)",
+        "fob": "FOB (ส่งมอบบนเรือ)",
+        "cif": "CIF (รวมค่าประกันและค่าขนส่ง)",
+        "ddp": "DDP (ส่งมอบรวมภาษี)"
+      },
+      "email": "อีเมลติดต่อ",
+      "social": "โซเชียล (WhatsApp/WeChat)",
+      "socialPlaceholder": "ID / เบอร์โทร",
+      "name": "ชื่อผู้ติดต่อ",
+      "phone": "เบอร์โทรติดต่อ"
+    },
+    "summary": {
+      "title": "สรุปค่าใช้จ่าย",
+      "fillFirst": "กรุณากรอกประเทศ/ท่าเรือ วิธีการจัดซื้อ และข้อมูลติดต่อทั้งหมดทางซ้ายก่อน",
+      "calculating": "กำลังส่งคำสั่งซื้อและคำนวณใบเสนอราคา…",
+      "orderId": "เลขที่คำสั่งซื้อ",
+      "itemsSubtotal": "ยอดรวมค่าวัสดุ",
+      "totalCbm": "ปริมาตรรวม (CBM)",
+      "freight": "ค่าขนส่ง",
+      "fixedFees": "ค่าธรรมเนียมเพิ่มเติม",
+      "total": "รวมทั้งหมด"
+    },
+    "hint": "คำแนะนำ: กรอกข้อมูลที่จำเป็นให้ครบแล้วกดปุ่มยืนยัน ระบบจะไม่คำนวณใบเสนอราคาอัตโนมัติระหว่างพิมพ์ หลังยืนยันจะสร้างคำสั่งซื้อและแสดงใบเสนอราคา USD ทางขวา",
+    "submitting": "กำลังส่ง…",
+    "confirmAndSubmit": "ยืนยันข้อมูลและส่งคำสั่งซื้อ (สร้างใบเสนอราคา)",
+    "waitingQuote": "กรอกข้อมูลที่จำเป็นครบแล้ว โปรดคลิก “ยืนยันข้อมูลและส่งคำสั่งซื้อ” ทางซ้าย หลังสำเร็จจะแสดงรายละเอียด USD ตาม CBM และซิงก์ไปยังคำสั่งซื้อในแอดมิน",
+    "agreementNote": "การส่งถือว่ายอมรับข้อตกลงการจัดซื้อวัสดุ การแก้ไขข้อมูลใด ๆ ทางซ้ายจะล้างใบเสนอราคานี้และต้องยืนยันใหม่"
+  },
+  "product": {
+    "specs": {
+      "title": "สเปกและพารามิเตอร์",
+      "empty": "ไม่มีรายการสเปก โปรดติดต่อฝ่ายขายเพื่อขอข้อมูล"
+    },
+    "actions": {
+      "addToCart": "เพิ่มไปยังรายการ",
+      "download": "ดาวน์โหลดเอกสาร",
+      "share": "แชร์สินค้า",
+      "consult": "ปรึกษาผู้เชี่ยวชาญ"
+    }
+  }
+}

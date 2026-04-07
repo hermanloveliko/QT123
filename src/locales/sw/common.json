@@ -1,0 +1,146 @@
+{
+  "common": {
+    "loading": "Loading…"
+  },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Wall System",
+        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
+        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+      },
+      "s2": {
+        "title": "Ceiling System",
+        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
+        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+      },
+      "s3": {
+        "title": "Special Board System",
+        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
+        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Shanghai Tower Interior Partition Project",
+        "location": "Shanghai, China",
+        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+      },
+      "p2": {
+        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "location": "Beijing, China",
+        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+      },
+      "p3": {
+        "title": "Marina Bay Sands Hotel Expansion",
+        "location": "Marina Bay, Singapore",
+        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+      }
+    }
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "pt": "Português",
+    "ru": "Русский",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "th": "ไทย",
+    "vi": "Tiếng Việt",
+    "ar": "العربية",
+    "sw": "Kiswahili"
+  },
+  "nav": {
+    "home": "Nyumbani",
+    "catalog": "Katalogi",
+    "projects": "Miradi",
+    "about": "Kuhusu",
+    "getQuote": "Pata nukuu",
+    "admin": "Msimamizi",
+    "searchPlaceholder": "Tafuta vifaa..."
+  },
+  "home": {
+    "badge": "Wataalamu wa vifaa vya ujenzi, miaka 20",
+    "heroTitleLine1": "Jenga kesho kwa",
+    "heroTitleAccent": "msingi sahihi",
+    "heroDesc1": "Qingtai hutoa mifumo ya fremu, bodi na kumalizia ya alumini ya kiwango cha dunia.",
+    "heroDesc2": "Kwa utengenezaji sahihi na usafirishaji wa kimataifa, tunaunga mkono maono yako.",
+    "browseCatalog": "Vinjari katalogi",
+    "viewProjects": "Tazama miradi",
+    "systems": {
+      "label": "Mifumo",
+      "viewAllProducts": "Tazama bidhaa zote"
+    },
+    "projects": {
+      "featuredLabel": "Miradi iliyochaguliwa",
+      "sectionTitle": "Miradi iliyochaguliwa",
+      "viewMore": "Tazama miradi zaidi"
+    },
+    "logistics": {
+      "label": "Usafirishaji wa kimataifa"
+    }
+  },
+  "cart": {
+    "title": "Orodha ya manunuzi",
+    "empty": {
+      "title": "Orodha yako iko tupu",
+      "desc": "Bado hujaongeza vifaa vyovyote kwenye orodha ya manunuzi.",
+      "cta": "Vinjari katalogi"
+    },
+    "unitPrice": "Bei ya kipande",
+    "remove": "Ondoa",
+    "form": {
+      "title": "Usafirishaji na mawasiliano",
+      "country": "Nchi ya mwisho",
+      "countryPlaceholder": "Chagua nchi kwanza",
+      "port": "Bandari ya mwisho",
+      "portPlaceholder": "Chagua bandari",
+      "portPlaceholderNeedCountry": "Chagua nchi kwanza",
+      "method": "Njia ya ununuzi",
+      "methodPlaceholder": "Chagua njia",
+      "methodOptions": {
+        "exw": "EXW (Ex Works)",
+        "fob": "FOB (Free On Board)",
+        "cif": "CIF (Cost, Insurance & Freight)",
+        "ddp": "DDP (Delivered Duty Paid)"
+      },
+      "email": "Barua pepe",
+      "social": "Akaunti (WhatsApp/WeChat)",
+      "socialPlaceholder": "ID / Simu",
+      "name": "Jina la mawasiliano",
+      "phone": "Namba ya simu"
+    },
+    "summary": {
+      "title": "Muhtasari wa gharama",
+      "fillFirst": "Tafadhali jaza nchi/bandari ya mwisho, njia ya ununuzi, na mawasiliano yote upande wa kushoto kwanza.",
+      "calculating": "Inatuma oda na kukokotoa nukuu…",
+      "orderId": "Namba ya oda",
+      "itemsSubtotal": "Jumla ndogo ya bidhaa",
+      "totalCbm": "Jumla ya ujazo (CBM)",
+      "freight": "Gharama ya usafirishaji",
+      "fixedFees": "Ada za ziada",
+      "total": "Jumla"
+    },
+    "hint": "Kidokezo: jaza taarifa zote zinazohitajika kisha thibitisha. Mfumo hautatoa nukuu kiotomatiki wakati unaandika. Baada ya kuthibitisha, oda itaundwa na nukuu ya USD itaonekana upande wa kulia.",
+    "submitting": "Inatuma…",
+    "confirmAndSubmit": "Thibitisha na tuma oda (tengeneza nukuu)",
+    "waitingQuote": "Taarifa za lazima zimekamilika. Bofya “Thibitisha na tuma oda” upande wa kushoto. Baada ya kufanikiwa, hapa utaona maelezo ya USD kulingana na CBM na yatasawazishwa kwenye Oda za Admin.",
+    "agreementNote": "Kutuma kunamaanisha umekubali Mkataba wa Ununuzi wa Vifaa. Kubadilisha taarifa yoyote upande wa kushoto kutafuta nukuu hii na kuhitaji kuthibitisha tena."
+  },
+  "product": {
+    "specs": {
+      "title": "Vipimo",
+      "empty": "Hakuna vipimo vilivyoorodheshwa. Tafadhali wasiliana nasi kwa maelezo."
+    },
+    "actions": {
+      "addToCart": "Ongeza kwenye orodha",
+      "download": "Pakua hati",
+      "share": "Shiriki bidhaa",
+      "consult": "Wasiliana na mtaalamu"
+    }
+  }
+}
