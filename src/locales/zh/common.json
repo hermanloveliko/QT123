@@ -199,5 +199,58 @@
       "share": "分享产品",
       "consult": "咨询专家"
     }
+  },
+  "projectsPage": {
+    "eyebrow": "工程案例",
+    "title": "工程案例展示"
+  },
+  "projectDetail": {
+    "contractor": "施工单位",
+    "materials": "使用材料",
+    "delivery": "交付时间",
+    "contractorValue": "青泰建材工程部",
+    "materialsValue": "轻钢龙骨, 防火石膏板",
+    "deliveryValue": "2025年12月"
+  },
+  "systemDetail": {
+    "eyebrow": "系统方案"
+  },
+  "contactModal": {
+    "title": "联系方式",
+    "phone": "电话",
+    "email": "邮箱",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "quickLinksTitle": "快速链接",
+    "contactTitle": "联系我们",
+    "defaults": {
+      "tagline": "致力于为全球建筑行业提供高品质、精密、环保的建筑装饰隔墙吊顶材料。",
+      "address": "上海市浦东新区张江高科技园区青泰大厦 888 号",
+      "copyright": "© 2026 青泰建材 (Qingtai Materials) 版权所有。"
+    },
+    "linkAlibaba": "阿里国际站",
+    "linkOfficial": "官方网站",
+    "linkMic": "中国制造",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "cookies": "Cookie 设置",
+    "newsletterTitle": "订阅通讯",
+    "newsletterDesc": "留下您的邮箱，获取最新的产品资讯和报价。",
+    "emailPlaceholder": "您的邮箱",
+    "send": "发送",
+    "sentAlert": "已发送！"
+  },
+  "ai": {
+    "chat": {
+      "welcome": "嗨，我是青泰销售顾问。三件事：介绍产品、算用量、帮你下单。需要啥直接说～",
+      "title": "AI 智能助手",
+      "subtitle": "Qingtai AI Support",
+      "cardHint": "先看卡片，点击查看详情",
+      "orderNow": "一键下单",
+      "inputPlaceholder": "输入您的问题...",
+      "requestFailed": "请求失败：{{error}}",
+      "unknownError": "未知错误"
+    }
   }
 }

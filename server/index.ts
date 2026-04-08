@@ -1030,6 +1030,59 @@ app.post("/api/public/ai/chat", async (req, res) => {
   if (!parsed.success) return res.status(400).json({ message: "参数错误" });
   const { conversationId, message } = parsed.data;
 
+  function detectUserMessageLang(text: string): Lang | null {
+    const s = String(text || "");
+    const lower = s.toLowerCase();
+
+    // Arabic
+    if (/[\u0600-\u06FF]/.test(s)) return "ar";
+    // Chinese (CJK Unified Ideographs + common CJK punctuation)
+    if (/[\u4E00-\u9FFF\u3000-\u303F]/.test(s)) return "zh";
+    // Russian (Cyrillic)
+    if (/[\u0400-\u04FF]/.test(s)) return "ru";
+    // Korean (Hangul)
+    if (/[\uAC00-\uD7AF]/.test(s)) return "ko";
+    // Thai
+    if (/[\u0E00-\u0E7F]/.test(s)) return "th";
+
+    // Vietnamese (common diacritics)
+    if (/[ăâđêôơưáàảãạấầẩẫậắằẳẵặéèẻẽẹếềểễệíìỉĩịóòỏõọốồổỗộớờởỡợúùủũụứừửữựýỳỷỹỵ]/i.test(s)) return "vi";
+
+    // French (accents + some stopwords)
+    if (/[àâçéèêëîïôùûüÿœæ]/i.test(s) || /\b(je|tu|vous|nous|bonjour|merci|besoin|catalogue|projet|devis)\b/i.test(lower)) {
+      return "fr";
+    }
+
+    // Spanish (inverted punctuation + some stopwords)
+    if (/[¡¿]/.test(s) || /\b(hola|gracias|necesito|catálogo|proyecto|cotización)\b/i.test(lower)) return "es";
+
+    // Portuguese (diacritics + some stopwords)
+    if (/[ãõçáàâéêíóôú]/i.test(s) || /\b(olá|obrigado|preciso|catálogo|projeto|cotação)\b/i.test(lower)) return "pt";
+
+    // English (ASCII only is ambiguous; treat as unknown and fall back to request lang)
+    if (/[a-z]/i.test(s) && !/[^ -~]/.test(s)) return "en";
+
+    return null;
+  }
+
+  const fallbackReqLang = resolveLang(req).lang;
+  const userMsgLang = detectUserMessageLang(message) ?? fallbackReqLang;
+  const outputLangLabelByLang: Record<Lang, string> = {
+    zh: "Chinese (Simplified)",
+    en: "English",
+    fr: "French",
+    es: "Spanish",
+    pt: "Portuguese",
+    ru: "Russian",
+    ko: "Korean",
+    ms: "Malay",
+    th: "Thai",
+    vi: "Vietnamese",
+    ar: "Arabic",
+    sw: "Swahili",
+  };
+  const outputLangLabel = outputLangLabelByLang[userMsgLang] || "English";
+
   const conversation = conversationId
     ? await prisma.aiConversation.findUnique({ where: { id: conversationId } })
     : await prisma.aiConversation.create({ data: { ip: req.ip, summary: message.slice(0, 80) } });
@@ -1074,7 +1127,11 @@ app.post("/api/public/ai/chat", async (req, res) => {
   const PRODUCT_CATALOG_TEXT = catalogLines.join("\n").slice(0, 12000);
 
   let aiContent =
-    "好的，我是青泰销售顾问，咱们长话短说：需要哪类产品、面积尺寸、我帮你算量并协助下单。";
+    userMsgLang === "zh"
+      ? "好的，我是青泰销售顾问，咱们长话短说：需要哪类产品、面积尺寸、我帮你算量并协助下单。"
+      : userMsgLang === "ar"
+        ? "تمام—أنا مستشار المبيعات من Qingtai. أخبرني بنوع المنتج والأبعاد/المساحة، وسأحسب الكميات وأساعدك في الطلب."
+        : "Got it—I'm your Qingtai sales assistant. Tell me the product type and your dimensions/area, and I’ll estimate quantities and help you place an order.";
   let deepseekOk = false;
   const toolProductIds = new Set<string>();
 
@@ -1129,6 +1186,11 @@ app.post("/api/public/ai/chat", async (req, res) => {
       const systemPrompt =
         "【角色与风格】\n"
         + "你是青泰建材专业销售。话不能太多，言简意赅，表达核心。风格：幽默、风趣、温暖。\n\n"
+        + "【语言规则（最高优先级，必须遵守）】\n"
+        + "你必须始终使用「用户最后一条消息」所使用的语言来回复。\n"
+        + "用户用英文你就用英文，用户用中文你就用中文，用户用阿拉伯语你就用阿拉伯语。\n"
+        + "不要因为界面语言或历史对话而切换语言；如果用户混用语言，以最后一条消息为准。\n"
+        + "除非用户明确要求翻译成某种语言，否则不要输出双语。\n\n"
         + "【职责范围】\n"
         + "你只做三件事：①介绍产品 ②计算用量 ③辅助下单。一切以订单成交为导向。\n\n"
         + "【工具】\n"
@@ -1174,7 +1236,18 @@ app.post("/api/public/ai/chat", async (req, res) => {
         },
       ];
 
-      const messages: any[] = [{ role: "system", content: systemPrompt }, ...historyForApi];
+      const hardLangSystem = [
+        "OUTPUT_LANGUAGE (HIGHEST PRIORITY):",
+        `The user's latest message language is ${outputLangLabel}.`,
+        `You MUST reply in ${outputLangLabel} ONLY.`,
+        "Do NOT include any other language (no bilingual output).",
+      ].join("\n");
+
+      const messages: any[] = [
+        { role: "system", content: systemPrompt },
+        { role: "system", content: hardLangSystem },
+        ...historyForApi,
+      ];
 
       for (let round = 0; round < 4; round++) {
         const r = await fetch("https://api.deepseek.com/chat/completions", {

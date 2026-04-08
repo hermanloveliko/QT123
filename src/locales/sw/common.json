@@ -71,9 +71,17 @@
     "heroDesc2": "Kwa utengenezaji sahihi na usafirishaji wa kimataifa, tunaunga mkono maono yako.",
     "browseCatalog": "Vinjari katalogi",
     "viewProjects": "Tazama miradi",
+    "consultation": {
+      "title": "Unahitaji ushauri wa kitaalamu wa vifaa?",
+      "desc": "Timu yetu ya uhandisi hutoa msaada wa kiufundi, uteuzi wa vifaa, na makadirio ya gharama.",
+      "hotlineLabel": "WhatsApp",
+      "hotlineValue": "+86 138 0000 0000",
+      "button": "Weka miadi ya ushauri mtandaoni"
+    },
     "systems": {
       "label": "Mifumo",
-      "viewAllProducts": "Tazama bidhaa zote"
+      "viewAllProducts": "Tazama bidhaa zote",
+      "sectionTitle": "Suluhisho kuu za mfumo"
     },
     "projects": {
       "featuredLabel": "Miradi iliyochaguliwa",
@@ -81,7 +89,57 @@
       "viewMore": "Tazama miradi zaidi"
     },
     "logistics": {
-      "label": "Usafirishaji wa kimataifa"
+      "label": "Usafirishaji wa kimataifa",
+      "title": "Usafirishaji & ufuatiliaji wa kimataifa",
+      "desc": "Tunaendesha mnyororo wa usambazaji wa kimataifa ili kuhakikisha vifaa vinafika salama na kwa wakati. Kwa ufuatiliaji wa muda halisi, unaweza kufuatilia hali ya oda wakati wowote.",
+      "cards": [
+        {
+          "title": "Mwitikio wa haraka wa uwasilishaji",
+          "desc": "Miji muhimu ndani ya saa 24; uwasilishaji wa kimataifa ndani ya siku 7–15."
+        },
+        {
+          "title": "Ufuatiliaji wa ubora wa mwisho hadi mwisho",
+          "desc": "Kuanzia kusafirisha hadi kupokea, kila hatua hukaguliwa ubora na kurekodiwa kidijitali."
+        }
+      ],
+      "track": {
+        "title": "Ufuatiliaji wa oda kwa muda halisi",
+        "orderLabel": "Namba ya oda:",
+        "orderId": "QT-2026-8892",
+        "status": "Njiani",
+        "locationLabel": "Mahali ilipo sasa:",
+        "location": "Bandari ya Shanghai - Kituo cha Mizigo cha Kimataifa",
+        "etaLabel": "Muda wa kufika (ETA):",
+        "eta": "2026-03-28"
+      }
+    }
+  },
+  "about": {
+    "heroTitle": "Kuhusu Qingtai",
+    "profileEyebrow": "Wasifu wa kampuni",
+    "profileHeading": "Miaka ishirini ya umakini, kujenga uzuri",
+    "profileParagraphs": [
+      "Ilianzishwa mwaka 2006 na makao makuu Shanghai, China, Qingtai imejikita katika R&D, uzalishaji na mauzo ya vifaa vya kuta za mgawanyo na dari kwa zaidi ya miongo miwili.",
+      "Kama mtoa suluhisho la mifumo anayeongoza, tunatoa fremu za chuma, mabao ya gypsum, na kumalizia ya alumini yenye ubora wa juu—ikiungwa mkono na msaada sahihi wa kiufundi na mtandao wa usafirishaji wa kimataifa unaoaminika.",
+      "Bidhaa zetu zimetumika katika zaidi ya miradi 1,200 ya alama duniani kote, ikiwemo majengo marefu sana, viwanja vya ndege vya kimataifa, hoteli za nyota tano, na vifaa vikubwa vya viwandani."
+    ]
+  },
+  "catalog": {
+    "title": "Katalogi ya vifaa vya ujenzi",
+    "categoriesTitle": "Kategoria",
+    "all": "Vifaa vyote",
+    "sort": {
+      "label": "Panga:",
+      "default": "Chaguo msingi",
+      "priceAsc": "Bei: ndogo hadi kubwa",
+      "priceDesc": "Bei: kubwa hadi ndogo"
+    },
+    "loading": "Inapakia katalogi…",
+    "empty": "Hakuna bidhaa kwenye kategoria hii kwa sasa. Tafadhali jaribu tena baadaye au wasiliana na mauzo.",
+    "custom": {
+      "title": "Unahitaji vipimo maalum?",
+      "desc": "Tunatoa uboreshaji wa ukubwa usio wa kawaida ili kukidhi mahitaji maalum ya mradi.",
+      "button": "Wasiliana kwa ubinafsishaji"
     }
   },
   "cart": {
@@ -141,6 +199,59 @@
       "download": "Pakua hati",
       "share": "Shiriki bidhaa",
       "consult": "Wasiliana na mtaalamu"
+    }
+  },
+  "projectsPage": {
+    "eyebrow": "Mifano ya miradi",
+    "title": "Onyesho la miradi"
+  },
+  "projectDetail": {
+    "contractor": "Mkandarasi",
+    "materials": "Vifaa vilivyotumika",
+    "delivery": "Uwasilishaji",
+    "contractorValue": "Idara ya Miradi ya Qingtai Materials",
+    "materialsValue": "Fremu za chuma, mabao ya gypsum yasiyoshika moto",
+    "deliveryValue": "Desemba 2025"
+  },
+  "systemDetail": {
+    "eyebrow": "Suluhisho la mfumo"
+  },
+  "contactModal": {
+    "title": "Mawasiliano",
+    "phone": "Simu",
+    "email": "Barua pepe",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "quickLinksTitle": "Viungo vya haraka",
+    "contactTitle": "Wasiliana nasi",
+    "defaults": {
+      "tagline": "Tumejikita kutoa vifaa vya kuta za mgawanyo na dari vyenye ubora wa juu, usahihi, na rafiki kwa mazingira kwa ujenzi duniani kote.",
+      "address": "888 Qingtai Tower, Zhangjiang Hi-Tech Park, Pudong, Shanghai",
+      "copyright": "© 2026 Qingtai Materials. Haki zote zimehifadhiwa."
+    },
+    "linkAlibaba": "Alibaba International",
+    "linkOfficial": "Tovuti rasmi",
+    "linkMic": "Made-in-China",
+    "privacy": "Sera ya faragha",
+    "terms": "Masharti ya huduma",
+    "cookies": "Mipangilio ya vidakuzi",
+    "newsletterTitle": "Newsletter",
+    "newsletterDesc": "Acha barua pepe yako kwa masasisho ya bidhaa na nukuu.",
+    "emailPlaceholder": "Barua pepe yako",
+    "send": "Tuma",
+    "sentAlert": "Imetumwa!"
+  },
+  "ai": {
+    "chat": {
+      "welcome": "Habari, mimi ni msaidizi wako wa mauzo wa Qingtai. Naweza kutambulisha bidhaa, kukadiria kiasi, na kukusaidia kuweka oda. Unahitaji nini?",
+      "title": "Msaidizi wa AI",
+      "subtitle": "Qingtai AI Support",
+      "cardHint": "Gusa kadi ili kuona maelezo",
+      "orderNow": "Agiza sasa",
+      "inputPlaceholder": "Andika swali lako…",
+      "requestFailed": "Ombi limeshindwa: {{error}}",
+      "unknownError": "Hitilafu isiyojulikana"
     }
   }
 }

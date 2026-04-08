@@ -142,5 +142,58 @@
       "share": "Partager le produit",
       "consult": "Consulter un expert"
     }
+  },
+  "projectsPage": {
+    "eyebrow": "Réalisations",
+    "title": "Vitrine de projets"
+  },
+  "projectDetail": {
+    "contractor": "Entreprise de construction",
+    "materials": "Matériaux utilisés",
+    "delivery": "Livraison",
+    "contractorValue": "Service projets Qingtai Materials",
+    "materialsValue": "Ossature métallique, plaques de plâtre ignifugées",
+    "deliveryValue": "Décembre 2025"
+  },
+  "systemDetail": {
+    "eyebrow": "Solution système"
+  },
+  "contactModal": {
+    "title": "Contact",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "quickLinksTitle": "Liens rapides",
+    "contactTitle": "Nous contacter",
+    "defaults": {
+      "tagline": "Fournir au secteur du bâtiment mondial des matériaux de cloisons et plafonds de haute qualité, précis et écologiques.",
+      "address": "888 Tour Qingtai, parc high-tech Zhangjiang, Pudong, Shanghai",
+      "copyright": "© 2026 Qingtai Materials. Tous droits réservés."
+    },
+    "linkAlibaba": "Alibaba International",
+    "linkOfficial": "Site officiel",
+    "linkMic": "Made-in-China",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d’utilisation",
+    "cookies": "Paramètres des cookies",
+    "newsletterTitle": "Newsletter",
+    "newsletterDesc": "Laissez votre e-mail pour les nouveautés produits et devis.",
+    "emailPlaceholder": "Votre e-mail",
+    "send": "Envoyer",
+    "sentAlert": "Envoyé !"
+  },
+  "ai": {
+    "chat": {
+      "welcome": "Bonjour, je suis votre conseiller commercial Qingtai. Je peux présenter les produits, estimer les quantités et vous aider à commander. Que souhaitez-vous ?",
+      "title": "Assistant IA",
+      "subtitle": "Support IA Qingtai",
+      "cardHint": "Touchez une carte pour voir les détails",
+      "orderNow": "Commander",
+      "inputPlaceholder": "Saisissez votre question…",
+      "requestFailed": "Échec de la requête : {{error}}",
+      "unknownError": "Erreur inconnue"
+    }
   }
 }

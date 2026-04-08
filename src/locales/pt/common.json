@@ -1,44 +1,6 @@
 {
   "common": {
-    "loading": "Loading…"
-  },
-  "systems": {
-    "items": {
-      "s1": {
-        "title": "Wall System",
-        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
-        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
-      },
-      "s2": {
-        "title": "Ceiling System",
-        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
-        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
-      },
-      "s3": {
-        "title": "Special Board System",
-        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
-        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
-      }
-    }
-  },
-  "projects": {
-    "items": {
-      "p1": {
-        "title": "Shanghai Tower Interior Partition Project",
-        "location": "Shanghai, China",
-        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
-      },
-      "p2": {
-        "title": "Beijing Daxing International Airport Terminal Ceiling",
-        "location": "Beijing, China",
-        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
-      },
-      "p3": {
-        "title": "Marina Bay Sands Hotel Expansion",
-        "location": "Marina Bay, Singapore",
-        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
-      }
-    }
+    "loading": "Carregando…"
   },
   "lang": {
     "zh": "中文",
@@ -54,6 +16,44 @@
     "ar": "العربية",
     "sw": "Kiswahili"
   },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Sistema de divisórias",
+        "description": "Os sistemas de divisórias de precisão Qingtai combinam estruturas de aço de alta resistência com placas de gesso versáteis.",
+        "features": ["Alta capacidade de carga", "Instalação modular rápida", "Excelente isolamento acústico", "Classificação de fogo classe A"]
+      },
+      "s2": {
+        "title": "Sistema de tetos",
+        "description": "Inclui baffles de alumínio, painéis de lã mineral e tetos de gesso — soluções práticas e estéticas para espaços comerciais e industriais.",
+        "features": ["Leve e resistente", "Acabamentos anticorrosão", "Fácil acesso para manutenção", "Ampla variedade de cores"]
+      },
+      "s3": {
+        "title": "Sistema de placas especiais",
+        "description": "Placas especiais projetadas para ambientes extremos: opções à prova de umidade, mofo, radiação e ultra-alta dureza.",
+        "features": ["Durabilidade em ambientes extremos", "Proteção radiológica grau médico", "Longa vida útil", "Ecológico, sem formaldeído"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Projeto de divisórias interiores da Torre de Xangai",
+        "location": "Xangai, China",
+        "description": "Este projeto utilizou nosso sistema de estruturas de aço de alta resistência e placas de gesso antifogo classe A, cobrindo mais de 50 000 m², alcançando desempenho sísmico e contra incêndios líder na indústria para arranha-céus."
+      },
+      "p2": {
+        "title": "Teto do terminal do Aeroporto Internacional Daxing de Pequim",
+        "location": "Pequim, China",
+        "description": "Entregamos sistemas de tetos de baffles de alumínio personalizados com revestimento especial de fluorocarbono para garantir durabilidade e estética em espaços públicos de alto tráfego."
+      },
+      "p3": {
+        "title": "Expansão do Hotel Marina Bay Sands",
+        "location": "Marina Bay, Singapura",
+        "description": "Fornecemos soluções completas de acústica e acabamento para atender aos altos requisitos do hotel em privacidade e estética de design."
+      }
+    }
+  },
   "nav": {
     "home": "Início",
     "catalog": "Catálogo",
@@ -64,16 +64,24 @@
     "searchPlaceholder": "Pesquisar materiais..."
   },
   "home": {
-    "badge": "Especialistas em materiais, 20 anos",
+    "badge": "Especialistas em materiais de construção, 20 anos",
     "heroTitleLine1": "Construa o futuro com",
     "heroTitleAccent": "precisão",
     "heroDesc1": "A Qingtai fornece sistemas de perfis, placas e acabamento em alumínio de padrão mundial.",
     "heroDesc2": "Com manufatura de precisão e logística global, apoiamos a sua visão.",
     "browseCatalog": "Ver catálogo",
     "viewProjects": "Ver projetos",
+    "consultation": {
+      "title": "Precisa de consultoria profissional sobre materiais?",
+      "desc": "Nossa equipe de engenheiros oferece suporte técnico, seleção de materiais e estimativa de custos.",
+      "hotlineLabel": "WhatsApp",
+      "hotlineValue": "+86 138 0000 0000",
+      "button": "Agendar uma consulta online"
+    },
     "systems": {
       "label": "Sistemas",
-      "viewAllProducts": "Ver todos os produtos"
+      "viewAllProducts": "Ver todos os produtos",
+      "sectionTitle": "Soluções de sistemas principais"
     },
     "projects": {
       "featuredLabel": "Projetos em destaque",
@@ -81,7 +89,57 @@
       "viewMore": "Ver mais projetos"
     },
     "logistics": {
-      "label": "Logística global"
+      "label": "Logística global",
+      "title": "Logística e rastreamento global",
+      "desc": "Operamos uma cadeia de suprimentos global para garantir que os materiais cheguem de forma segura e pontual. Com rastreamento em tempo real, você pode monitorar o status do seu pedido a qualquer momento.",
+      "cards": [
+        {
+          "title": "Entrega rápida",
+          "desc": "Cidades principais em 24 horas; entrega global em 7-15 dias."
+        },
+        {
+          "title": "Monitoramento de qualidade integral",
+          "desc": "Do despacho ao recebimento, cada etapa é inspecionada e registrada digitalmente."
+        }
+      ],
+      "track": {
+        "title": "Rastreamento de pedidos em tempo real",
+        "orderLabel": "ID do pedido:",
+        "orderId": "QT-2026-8892",
+        "status": "Em trânsito",
+        "locationLabel": "Localização atual:",
+        "location": "Porto de Xangai - Centro de Carga Internacional",
+        "etaLabel": "Previsão de chegada:",
+        "eta": "2026-03-28"
+      }
+    }
+  },
+  "about": {
+    "heroTitle": "Sobre a Qingtai",
+    "profileEyebrow": "Perfil da empresa",
+    "profileHeading": "Vinte anos de dedicação, construindo beleza",
+    "profileParagraphs": [
+      "Fundada em 2006 e sediada em Xangai, China, a Qingtai se dedica há duas décadas à pesquisa, desenvolvimento, produção e vendas de materiais para divisórias e tetos.",
+      "Como fornecedora líder de soluções integradas, oferecemos perfis de aço, placas de gesso e acabamentos de alumínio de alta qualidade, apoiados por suporte técnico preciso e uma rede logística global confiável.",
+      "Nossos produtos foram aplicados em mais de 1200 projetos emblemáticos em todo o mundo, incluindo arranha-céus, aeroportos internacionais, hotéis cinco estrelas e grandes instalações industriais."
+    ]
+  },
+  "catalog": {
+    "title": "Catálogo de materiais de construção",
+    "categoriesTitle": "Categorias",
+    "all": "Todos os materiais",
+    "sort": {
+      "label": "Ordenar:",
+      "default": "Padrão",
+      "priceAsc": "Preço: do menor ao maior",
+      "priceDesc": "Preço: do maior ao menor"
+    },
+    "loading": "Carregando catálogo…",
+    "empty": "Ainda não há produtos nesta categoria. Tente novamente mais tarde ou entre em contato com vendas.",
+    "custom": {
+      "title": "Precisa de medidas personalizadas?",
+      "desc": "Oferecemos personalização de tamanhos fora do padrão para necessidades especiais do seu projeto.",
+      "button": "Entrar em contato para personalização"
     }
   },
   "cart": {
@@ -128,7 +186,7 @@
     "hint": "Dica: preencha todos os campos obrigatórios e confirme. O sistema não calcula automaticamente enquanto você digita. Após confirmar, um pedido será criado e a cotação em USD aparecerá à direita.",
     "submitting": "Enviando…",
     "confirmAndSubmit": "Confirmar e enviar pedido (gerar cotação)",
-    "waitingQuote": "As informações obrigatórias estão completas. Clique em “Confirmar e enviar pedido” à esquerda. Após sucesso, este painel mostrará o detalhamento em USD baseado em CBM e sincronizará com Pedidos no Admin.",
+    "waitingQuote": "As informações obrigatórias estão completas. Clique em «Confirmar e enviar pedido» à esquerda. Após sucesso, este painel mostrará o detalhamento em USD baseado em CBM e sincronizará com Pedidos no Admin.",
     "agreementNote": "Ao enviar, você concorda com o Acordo de Compra de Materiais. Alterar qualquer informação à esquerda limpará esta cotação e exigirá nova confirmação."
   },
   "product": {
@@ -141,6 +199,59 @@
       "download": "Baixar ficha técnica",
       "share": "Compartilhar produto",
       "consult": "Consultar um especialista"
+    }
+  },
+  "projectsPage": {
+    "eyebrow": "Casos de projetos",
+    "title": "Galeria de projetos"
+  },
+  "projectDetail": {
+    "contractor": "Empreiteiro",
+    "materials": "Materiais utilizados",
+    "delivery": "Entrega",
+    "contractorValue": "Departamento de Projetos Qingtai Materials",
+    "materialsValue": "Perfis de aço, placas de gesso antifogo",
+    "deliveryValue": "Dezembro de 2025"
+  },
+  "systemDetail": {
+    "eyebrow": "Solução de sistemas"
+  },
+  "contactModal": {
+    "title": "Contato",
+    "phone": "Telefone",
+    "email": "E-mail",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "quickLinksTitle": "Links rápidos",
+    "contactTitle": "Fale conosco",
+    "defaults": {
+      "tagline": "Comprometidos com materiais de divisórias e tetos de alta qualidade, precisão e ecológicos para a construção mundial.",
+      "address": "888 Torre Qingtai, Parque de Alta Tecnologia Zhangjiang, Pudong, Xangai",
+      "copyright": "© 2026 Qingtai Materials. Todos os direitos reservados."
+    },
+    "linkAlibaba": "Alibaba Internacional",
+    "linkOfficial": "Site oficial",
+    "linkMic": "Made-in-China",
+    "privacy": "Política de privacidade",
+    "terms": "Termos de serviço",
+    "cookies": "Configurações de cookies",
+    "newsletterTitle": "Boletim informativo",
+    "newsletterDesc": "Deixe seu e-mail para receber novidades de produtos e orçamentos.",
+    "emailPlaceholder": "Seu e-mail",
+    "send": "Enviar",
+    "sentAlert": "Enviado!"
+  },
+  "ai": {
+    "chat": {
+      "welcome": "Olá, sou seu consultor comercial Qingtai. Posso apresentar produtos, calcular quantidades e ajudá-lo a fazer pedidos. O que você precisa?",
+      "title": "Assistente IA",
+      "subtitle": "Suporte IA Qingtai",
+      "cardHint": "Toque em um cartão para ver detalhes",
+      "orderNow": "Pedir agora",
+      "inputPlaceholder": "Digite sua pergunta…",
+      "requestFailed": "Falha na solicitação: {{error}}",
+      "unknownError": "Erro desconhecido"
     }
   }
 }

@@ -198,5 +198,58 @@
       "share": "Share product",
       "consult": "Consult an expert"
     }
+  },
+  "projectsPage": {
+    "eyebrow": "Project cases",
+    "title": "Project showcase"
+  },
+  "projectDetail": {
+    "contractor": "Contractor",
+    "materials": "Materials used",
+    "delivery": "Delivery",
+    "contractorValue": "Qingtai Materials Project Dept.",
+    "materialsValue": "Steel framing, fire-rated gypsum boards",
+    "deliveryValue": "December 2025"
+  },
+  "systemDetail": {
+    "eyebrow": "System solution"
+  },
+  "contactModal": {
+    "title": "Contact",
+    "phone": "Phone",
+    "email": "Email",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "quickLinksTitle": "Quick links",
+    "contactTitle": "Contact us",
+    "defaults": {
+      "tagline": "Committed to high-quality, precision, eco-friendly partition and ceiling materials for construction worldwide.",
+      "address": "888 Qingtai Tower, Zhangjiang Hi-Tech Park, Pudong, Shanghai",
+      "copyright": "© 2026 Qingtai Materials. All rights reserved."
+    },
+    "linkAlibaba": "Alibaba International",
+    "linkOfficial": "Official website",
+    "linkMic": "Made-in-China",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service",
+    "cookies": "Cookie settings",
+    "newsletterTitle": "Newsletter",
+    "newsletterDesc": "Leave your email for product updates and quotes.",
+    "emailPlaceholder": "Your email",
+    "send": "Send",
+    "sentAlert": "Sent!"
+  },
+  "ai": {
+    "chat": {
+      "welcome": "Hi, I’m your Qingtai sales assistant. I can introduce products, estimate quantities, and help you place orders. What do you need?",
+      "title": "AI assistant",
+      "subtitle": "Qingtai AI support",
+      "cardHint": "Tap a card to view details",
+      "orderNow": "Order now",
+      "inputPlaceholder": "Type your question…",
+      "requestFailed": "Request failed: {{error}}",
+      "unknownError": "Unknown error"
+    }
   }
 }

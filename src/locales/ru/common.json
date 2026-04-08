@@ -1,44 +1,6 @@
 {
   "common": {
-    "loading": "Loading…"
-  },
-  "systems": {
-    "items": {
-      "s1": {
-        "title": "Wall System",
-        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
-        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
-      },
-      "s2": {
-        "title": "Ceiling System",
-        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
-        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
-      },
-      "s3": {
-        "title": "Special Board System",
-        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
-        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
-      }
-    }
-  },
-  "projects": {
-    "items": {
-      "p1": {
-        "title": "Shanghai Tower Interior Partition Project",
-        "location": "Shanghai, China",
-        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
-      },
-      "p2": {
-        "title": "Beijing Daxing International Airport Terminal Ceiling",
-        "location": "Beijing, China",
-        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
-      },
-      "p3": {
-        "title": "Marina Bay Sands Hotel Expansion",
-        "location": "Marina Bay, Singapore",
-        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
-      }
-    }
+    "loading": "Загрузка…"
   },
   "lang": {
     "zh": "中文",
@@ -54,6 +16,44 @@
     "ar": "العربية",
     "sw": "Kiswahili"
   },
+  "systems": {
+    "items": {
+      "s1": {
+        "title": "Система перегородок",
+        "description": "Прецизионные перегородочные системы Qingtai сочетают высокопрочные стальные каркасы с универсальными гипсовыми плитами.",
+        "features": ["Высокая несущая способность", "Быстрый модульный монтаж", "Отличная звукоизоляция", "Класс огнестойкости А"]
+      },
+      "s2": {
+        "title": "Потолочная система",
+        "description": "Алюминиевые рейки, минераловатные панели и гипсовые потолки — практичные и эстетичные решения для коммерческих и промышленных помещений.",
+        "features": ["Лёгкость и прочность", "Антикоррозийная отделка", "Удобный сервисный доступ", "Богатая цветовая палитра"]
+      },
+      "s3": {
+        "title": "Система специальных плит",
+        "description": "Специальные плиты для экстремальных условий: влагостойкие, противогрибковые, радиозащитные и сверхтвёрдые.",
+        "features": ["Устойчивость к экстремальным условиям", "Радиозащита медицинского класса", "Длительный срок службы", "Экологичность, без формальдегида"]
+      }
+    }
+  },
+  "projects": {
+    "items": {
+      "p1": {
+        "title": "Проект внутренних перегородок Шанхайской башни",
+        "location": "Шанхай, Китай",
+        "description": "В проекте использовались наши высокопрочные стальные каркасы и гипсовые плиты огнестойкости класса A, общая площадь — более 50 000 м², достигнуты лидирующие в отрасли показатели сейсмо- и огнестойкости для сверхвысотных зданий."
+      },
+      "p2": {
+        "title": "Потолок терминала аэропорта Пекин Дасин",
+        "location": "Пекин, Китай",
+        "description": "Поставлены индивидуальные алюминиевые реечные потолочные системы со специальным фторуглеродным покрытием для обеспечения долговечности и эстетики в общественных пространствах с высокой проходимостью."
+      },
+      "p3": {
+        "title": "Расширение отеля Marina Bay Sands",
+        "location": "Марина-Бэй, Сингапур",
+        "description": "Предоставлены комплексные акустические и отделочные решения, отвечающие высоким требованиям отеля к приватности и дизайну."
+      }
+    }
+  },
   "nav": {
     "home": "Главная",
     "catalog": "Каталог",
@@ -64,16 +64,24 @@
     "searchPlaceholder": "Поиск материалов..."
   },
   "home": {
-    "badge": "Эксперты по материалам, 20 лет",
+    "badge": "Эксперты по строительным материалам, 20 лет",
     "heroTitleLine1": "Строим будущее на",
     "heroTitleAccent": "точном основании",
     "heroDesc1": "Qingtai предлагает мирового уровня каркасные системы, плиты и алюминиевые отделочные решения.",
     "heroDesc2": "Точное производство и глобальная логистика поддержат ваш проект.",
     "browseCatalog": "Открыть каталог",
     "viewProjects": "Смотреть проекты",
+    "consultation": {
+      "title": "Нужна профессиональная консультация по материалам?",
+      "desc": "Наша команда инженеров обеспечит техническую поддержку, подбор материалов и расчёт стоимости.",
+      "hotlineLabel": "WhatsApp",
+      "hotlineValue": "+86 138 0000 0000",
+      "button": "Записаться на онлайн-консультацию"
+    },
     "systems": {
       "label": "Системы",
-      "viewAllProducts": "Смотреть все продукты"
+      "viewAllProducts": "Смотреть все продукты",
+      "sectionTitle": "Основные системные решения"
     },
     "projects": {
       "featuredLabel": "Избранные проекты",
@@ -81,7 +89,57 @@
       "viewMore": "Смотреть больше проектов"
     },
     "logistics": {
-      "label": "Глобальная логистика"
+      "label": "Глобальная логистика",
+      "title": "Глобальная логистика и отслеживание",
+      "desc": "Мы управляем глобальной цепочкой поставок, обеспечивая безопасную и своевременную доставку материалов. Система отслеживания в реальном времени позволяет контролировать статус заказа в любой момент.",
+      "cards": [
+        {
+          "title": "Быстрая доставка",
+          "desc": "Ключевые города — 24 часа; глобальная доставка — 7–15 дней."
+        },
+        {
+          "title": "Полный контроль качества",
+          "desc": "От отгрузки до получения — каждый этап проходит контроль качества и цифровую фиксацию."
+        }
+      ],
+      "track": {
+        "title": "Отслеживание заказа в реальном времени",
+        "orderLabel": "Номер заказа:",
+        "orderId": "QT-2026-8892",
+        "status": "В пути",
+        "locationLabel": "Текущее местоположение:",
+        "location": "Порт Шанхая — Международный грузовой центр",
+        "etaLabel": "Ожидаемое прибытие:",
+        "eta": "2026-03-28"
+      }
+    }
+  },
+  "about": {
+    "heroTitle": "О компании Qingtai",
+    "profileEyebrow": "Профиль компании",
+    "profileHeading": "Двадцать лет мастерства, созидание красоты",
+    "profileParagraphs": [
+      "Основана в 2006 году, штаб-квартира в Шанхае, Китай. Два десятилетия Qingtai посвящает себя исследованиям, производству и продажам материалов для перегородок и потолков.",
+      "Будучи ведущим поставщиком комплексных решений, мы предлагаем высококачественные стальные профили, гипсовые плиты и алюминиевую отделку, подкреплённые точной технической поддержкой и надёжной глобальной логистической сетью.",
+      "Наша продукция применялась в более чем 1200 знаковых проектах по всему миру, включая сверхвысотные здания, международные аэропорты, пятизвёздочные отели и крупные промышленные объекты."
+    ]
+  },
+  "catalog": {
+    "title": "Каталог строительных материалов",
+    "categoriesTitle": "Категории",
+    "all": "Все материалы",
+    "sort": {
+      "label": "Сортировка:",
+      "default": "По умолчанию",
+      "priceAsc": "Цена: по возрастанию",
+      "priceDesc": "Цена: по убыванию"
+    },
+    "loading": "Загрузка каталога…",
+    "empty": "В этой категории пока нет продуктов. Попробуйте позже или свяжитесь с отделом продаж.",
+    "custom": {
+      "title": "Нужны нестандартные размеры?",
+      "desc": "Мы предлагаем изготовление по индивидуальным размерам для особых потребностей вашего проекта.",
+      "button": "Связаться для заказа"
     }
   },
   "cart": {
@@ -141,6 +199,59 @@
       "download": "Скачать спецификацию",
       "share": "Поделиться",
       "consult": "Консультация"
+    }
+  },
+  "projectsPage": {
+    "eyebrow": "Реализованные проекты",
+    "title": "Витрина проектов"
+  },
+  "projectDetail": {
+    "contractor": "Подрядчик",
+    "materials": "Использованные материалы",
+    "delivery": "Поставка",
+    "contractorValue": "Проектный отдел Qingtai Materials",
+    "materialsValue": "Стальные профили, огнестойкие гипсовые плиты",
+    "deliveryValue": "Декабрь 2025"
+  },
+  "systemDetail": {
+    "eyebrow": "Системное решение"
+  },
+  "contactModal": {
+    "title": "Контакты",
+    "phone": "Телефон",
+    "email": "Эл. почта",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "quickLinksTitle": "Быстрые ссылки",
+    "contactTitle": "Свяжитесь с нами",
+    "defaults": {
+      "tagline": "Высококачественные, точные и экологичные материалы для перегородок и потолков для строительства по всему миру.",
+      "address": "888 Башня Цинтай, парк высоких технологий Чжанцзян, Пудун, Шанхай",
+      "copyright": "© 2026 Qingtai Materials. Все права защищены."
+    },
+    "linkAlibaba": "Alibaba International",
+    "linkOfficial": "Официальный сайт",
+    "linkMic": "Made-in-China",
+    "privacy": "Политика конфиденциальности",
+    "terms": "Условия использования",
+    "cookies": "Настройки cookie",
+    "newsletterTitle": "Рассылка",
+    "newsletterDesc": "Оставьте e-mail для получения новостей о продуктах и расчётов.",
+    "emailPlaceholder": "Ваш e-mail",
+    "send": "Отправить",
+    "sentAlert": "Отправлено!"
+  },
+  "ai": {
+    "chat": {
+      "welcome": "Здравствуйте, я ваш торговый консультант Qingtai. Могу представить продукцию, рассчитать количество и помочь оформить заказ. Чем могу помочь?",
+      "title": "ИИ-ассистент",
+      "subtitle": "Поддержка ИИ Qingtai",
+      "cardHint": "Нажмите на карточку для подробностей",
+      "orderNow": "Заказать сейчас",
+      "inputPlaceholder": "Введите ваш вопрос…",
+      "requestFailed": "Ошибка запроса: {{error}}",
+      "unknownError": "Неизвестная ошибка"
     }
   }
 }

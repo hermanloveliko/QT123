@@ -1705,6 +1705,7 @@ const ContactModal = ({
   onClose: () => void;
   contact?: { phone?: string; email?: string; whatsapp?: string };
 }) => {
+  const { t } = useTranslation("common");
   const phone = contact?.phone ?? "+86 21 5888 8888";
   const email = contact?.email ?? "info@qingtai-materials.com";
   const wa = contact?.whatsapp ?? "+86 138 0000 0000";
@@ -1726,26 +1727,26 @@ const ContactModal = ({
           className="relative bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full"
         >
           <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-industrial-blue"><X size={24} /></button>
-          <h3 className="text-2xl font-display font-bold text-industrial-blue mb-6">联系方式</h3>
+          <h3 className="text-2xl font-display font-bold text-industrial-blue mb-6">{t("contactModal.title")}</h3>
           <div className="space-y-4">
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
               <Phone className="text-heat-accent" size={20} />
               <div>
-                <div className="text-[10px] text-gray-400 uppercase font-bold">电话</div>
+                <div className="text-[10px] text-gray-400 uppercase font-bold">{t("contactModal.phone")}</div>
                 <div className="font-bold text-industrial-blue">{phone}</div>
               </div>
             </div>
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
               <Mail className="text-heat-accent" size={20} />
               <div>
-                <div className="text-[10px] text-gray-400 uppercase font-bold">邮箱</div>
+                <div className="text-[10px] text-gray-400 uppercase font-bold">{t("contactModal.email")}</div>
                 <div className="font-bold text-industrial-blue">{email}</div>
               </div>
             </div>
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
               <div className="w-5 h-5 flex items-center justify-center text-heat-accent font-bold">W</div>
               <div>
-                <div className="text-[10px] text-gray-400 uppercase font-bold">WhatsApp</div>
+                <div className="text-[10px] text-gray-400 uppercase font-bold">{t("contactModal.whatsapp")}</div>
                 <div className="font-bold text-industrial-blue">{wa}</div>
               </div>
             </div>
@@ -1775,31 +1776,31 @@ const Footer = ({
   onShowContact: () => void;
   footerCfg?: Record<string, unknown>;
 }) => {
+  const { t } = useTranslation("common");
   const [email, setEmail] = useState("");
   const handleSend = () => {
     setEmail("");
-    alert("已发送！");
+    alert(t("footer.sentAlert"));
   };
   const tagline = String(
-    footerCfg?.tagline ??
-      "致力于为全球建筑行业提供高品质、精密、环保的建筑装饰隔墙吊顶材料。"
+    footerCfg?.tagline ?? t("footer.defaults.tagline")
   );
   const address = String(
-    footerCfg?.address ?? "上海市浦东新区张江高科技园区青泰大厦 888 号"
+    footerCfg?.address ?? t("footer.defaults.address")
   );
   const phone = String(footerCfg?.phone ?? "+86 21 5888 8888");
   const mail = String(footerCfg?.email ?? "info@qingtai-materials.com");
   const copyright = String(
-    footerCfg?.copyright ?? "© 2026 青泰建材 (Qingtai Materials) 版权所有。"
+    footerCfg?.copyright ?? t("footer.defaults.copyright")
   );
   const quickLinks = (Array.isArray(footerCfg?.quickLinks) ? footerCfg!.quickLinks : []) as Array<{
     label?: string;
     href?: string;
   }>;
   const defaultQuick = [
-    { label: "阿里国际站", href: "https://qingtai.en.alibaba.com" },
-    { label: "官方网站", href: "#" },
-    { label: "中国制造", href: "https://qingtai.made-in-china.com" },
+    { label: t("footer.linkAlibaba"), href: "https://qingtai.en.alibaba.com" },
+    { label: t("footer.linkOfficial"), href: "#" },
+    { label: t("footer.linkMic"), href: "https://qingtai.made-in-china.com" },
   ];
   const ql = quickLinks.length ? quickLinks : defaultQuick;
   const legalLinks = (Array.isArray(footerCfg?.legalLinks) ? footerCfg!.legalLinks : []) as Array<{
@@ -1807,14 +1808,14 @@ const Footer = ({
     href?: string;
   }>;
   const defaultLegal = [
-    { label: "隐私政策", href: "#" },
-    { label: "服务条款", href: "#" },
-    { label: "Cookie 设置", href: "#" },
+    { label: t("footer.privacy"), href: "#" },
+    { label: t("footer.terms"), href: "#" },
+    { label: t("footer.cookies"), href: "#" },
   ];
   const ll = legalLinks.length ? legalLinks : defaultLegal;
-  const newsletterTitle = String(footerCfg?.newsletterTitle ?? "订阅通讯");
+  const newsletterTitle = String(footerCfg?.newsletterTitle ?? t("footer.newsletterTitle"));
   const newsletterDesc = String(
-    footerCfg?.newsletterDesc ?? "留下您的邮箱，获取最新的产品资讯和报价。"
+    footerCfg?.newsletterDesc ?? t("footer.newsletterDesc")
   );
 
   return (
@@ -1839,7 +1840,7 @@ const Footer = ({
         </div>
 
         <div>
-          <h4 className="font-display font-bold text-lg mb-6">快速链接</h4>
+          <h4 className="font-display font-bold text-lg mb-6">{t("footer.quickLinksTitle")}</h4>
           <ul className="space-y-4 text-gray-400 text-sm">
             {ql.map((l, i) => (
               <li key={i}>
@@ -1857,7 +1858,7 @@ const Footer = ({
         </div>
 
         <div>
-          <h4 className="font-display font-bold text-lg mb-6">联系我们</h4>
+          <h4 className="font-display font-bold text-lg mb-6">{t("footer.contactTitle")}</h4>
           <ul className="space-y-4 text-gray-400 text-sm">
             <li className="flex items-start gap-3">
               <MapPin size={18} className="text-heat-accent shrink-0" />
@@ -1882,10 +1883,10 @@ const Footer = ({
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="您的邮箱" 
+              placeholder={t("footer.emailPlaceholder")} 
               className="bg-white/5 border border-white/10 px-4 py-2 text-sm focus:ring-1 focus:ring-heat-accent outline-none w-full" 
             />
-            <button onClick={handleSend} className="bg-heat-accent text-industrial-blue px-4 py-2 font-bold hover:bg-white transition-colors whitespace-nowrap">发送</button>
+            <button onClick={handleSend} className="bg-heat-accent text-industrial-blue px-4 py-2 font-bold hover:bg-white transition-colors whitespace-nowrap">{t("footer.send")}</button>
           </div>
         </div>
       </div>
@@ -1918,9 +1919,9 @@ const HomePage = ({
   setActiveProject: (p: Project) => void;
   publicSite?: Record<string, unknown>;
 }) => {
-  const { t } = useTranslation("common");
-  const fallbackSystems = useMemo(() => getLocalizedSystems(t), [t]);
-  const fallbackProjects = useMemo(() => getLocalizedProjects(t), [t]);
+  const { t, i18n } = useTranslation("common");
+  const fallbackSystems = useMemo(() => getLocalizedSystems(t), [t, i18n.language]);
+  const fallbackProjects = useMemo(() => getLocalizedProjects(t), [t, i18n.language]);
   const consultation = (publicSite["home.consultation"] || {}) as Record<string, unknown>;
   const consTitle = String(consultation.title ?? t("home.consultation.title"));
   const consDesc = String(
@@ -2229,17 +2230,17 @@ const ProjectsPage = ({
   setActiveProject: (p: Project) => void;
   publicSite?: Record<string, unknown>;
 }) => {
-  const { t } = useTranslation("common");
-  const fallbackProjects = useMemo(() => getLocalizedProjects(t), [t]);
+  const { t, i18n } = useTranslation("common");
+  const fallbackProjects = useMemo(() => getLocalizedProjects(t), [t, i18n.language]);
   const projectsRaw = publicSite["home.projects"];
   const projectsList =
     Array.isArray(projectsRaw) && projectsRaw.length > 0 ? (projectsRaw as Project[]) : fallbackProjects;
   return (
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
     <div className="accent-border mb-4">
-      <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">Project Cases</span>
+      <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">{t("projectsPage.eyebrow")}</span>
     </div>
-    <h1 className="text-4xl font-display font-extrabold text-industrial-blue mb-12">工程案例展示</h1>
+    <h1 className="text-4xl font-display font-extrabold text-industrial-blue mb-12">{t("projectsPage.title")}</h1>
     
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
       {projectsList.map((project) => (
@@ -2265,7 +2266,9 @@ const ProjectsPage = ({
   );
 };
 
-const ProjectDetailPage = ({ project }: { project: Project }) => (
+const ProjectDetailPage = ({ project }: { project: Project }) => {
+  const { t } = useTranslation("common");
+  return (
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
     <div className="aspect-[21/9] rounded-3xl overflow-hidden mb-12">
       <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
@@ -2278,21 +2281,22 @@ const ProjectDetailPage = ({ project }: { project: Project }) => (
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-12 border-y border-gray-100">
         <div>
-          <div className="text-xs text-gray-400 uppercase font-bold mb-2">施工单位</div>
-          <div className="font-bold text-industrial-blue">青泰建材工程部</div>
+          <div className="text-xs text-gray-400 uppercase font-bold mb-2">{t("projectDetail.contractor")}</div>
+          <div className="font-bold text-industrial-blue">{t("projectDetail.contractorValue")}</div>
         </div>
         <div>
-          <div className="text-xs text-gray-400 uppercase font-bold mb-2">使用材料</div>
-          <div className="font-bold text-industrial-blue">轻钢龙骨, 防火石膏板</div>
+          <div className="text-xs text-gray-400 uppercase font-bold mb-2">{t("projectDetail.materials")}</div>
+          <div className="font-bold text-industrial-blue">{t("projectDetail.materialsValue")}</div>
         </div>
         <div>
-          <div className="text-xs text-gray-400 uppercase font-bold mb-2">交付时间</div>
-          <div className="font-bold text-industrial-blue">2025年12月</div>
+          <div className="text-xs text-gray-400 uppercase font-bold mb-2">{t("projectDetail.delivery")}</div>
+          <div className="font-bold text-industrial-blue">{t("projectDetail.deliveryValue")}</div>
         </div>
       </div>
     </div>
   </div>
-);
+  );
+};
 
 const DEFAULT_ABOUT_VIDEO =
   "https://assets.mixkit.co/videos/preview/mixkit-construction-site-with-cranes-and-buildings-4004-large.mp4";
@@ -2339,7 +2343,9 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
   );
 };
 
-const SystemDetailPage = ({ system }: { system: System }) => (
+const SystemDetailPage = ({ system }: { system: System }) => {
+  const { t } = useTranslation("common");
+  return (
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
       <div className="rounded-3xl overflow-hidden shadow-2xl">
@@ -2347,7 +2353,7 @@ const SystemDetailPage = ({ system }: { system: System }) => (
       </div>
       <div>
         <div className="accent-border mb-4">
-          <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">System Solution</span>
+          <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">{t("systemDetail.eyebrow")}</span>
         </div>
         <h1 className="text-5xl font-display font-extrabold text-industrial-blue mb-8">{system.title}</h1>
         <p className="text-xl text-gray-600 leading-relaxed mb-10">
@@ -2366,12 +2372,7 @@ const SystemDetailPage = ({ system }: { system: System }) => (
       </div>
     </div>
   </div>
-);
-
-const AI_CHAT_WELCOME: { id: string; role: "user" | "ai"; content: string } = {
-  id: "welcome",
-  role: "ai",
-  content: "嗨，我是青泰销售顾问。三件事：介绍产品、算用量、帮你下单。需要啥直接说～",
+  );
 };
 
 const AIChatModal = ({
@@ -2387,9 +2388,21 @@ const AIChatModal = ({
   onSetActiveProduct: (p: Product) => void;
   onAddToCartWithQty: (p: Product, qty: number) => void;
 }) => {
+  const { t, i18n } = useTranslation("common");
+  const welcome = useMemo(
+    () => ({
+      id: "welcome",
+      role: "ai" as const,
+      // Always English greeting (per requirement). Replies will follow user's language.
+      content:
+        "Hi! I’m your Qingtai sales assistant. I can introduce products, estimate quantities, and help you place orders. What do you need?",
+    }),
+    []
+  );
+
   const [messages, setMessages] = useState<
     { id: string; role: "user" | "ai"; content: string; product?: Product; products?: Product[] }[]
-  >([AI_CHAT_WELCOME]);
+  >([]);
   const [input, setInput] = useState("");
   const [conversationId, setConversationId] = useState<string | undefined>(undefined);
   const [sending, setSending] = useState(false);
@@ -2397,10 +2410,21 @@ const AIChatModal = ({
   useEffect(() => {
     if (!isOpen) {
       setConversationId(undefined);
-      setMessages([AI_CHAT_WELCOME]);
+      setMessages([welcome]);
       setInput("");
+      return;
     }
-  }, [isOpen]);
+    setMessages((prev) => {
+      if (prev.length === 0) return [welcome];
+      const idx = prev.findIndex((m) => m.id === "welcome");
+      if (idx >= 0 && prev[idx].role === "ai") {
+        const copy = [...prev];
+        copy[idx] = { ...copy[idx], content: welcome.content };
+        return copy;
+      }
+      return prev;
+    });
+  }, [isOpen, welcome]);
 
   const handleSend = () => {
     if (!input.trim() || sending) return;
@@ -2437,7 +2461,14 @@ const AIChatModal = ({
       })
       .catch((e: any) => {
         const aiId = `a-err-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-        setMessages((prev) => [...prev, { id: aiId, role: "ai", content: `请求失败：${e?.message || "未知错误"}` }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: aiId,
+            role: "ai",
+            content: t("ai.chat.requestFailed", { error: e?.message || t("ai.chat.unknownError") }),
+          },
+        ]);
       })
       .finally(() => setSending(false));
   };
@@ -2458,8 +2489,8 @@ const AIChatModal = ({
                   <Zap size={20} />
                 </div>
                 <div>
-                  <div className="font-bold">AI 智能助手</div>
-                  <div className="text-[10px] text-gray-400 uppercase tracking-widest">Qingtai AI Support</div>
+                  <div className="font-bold">{t("ai.chat.title")}</div>
+                  <div className="text-[10px] text-gray-400 uppercase tracking-widest">{t("ai.chat.subtitle")}</div>
                 </div>
               </div>
               <button onClick={onClose} className="text-white/60 hover:text-white transition-colors"><X size={24} /></button>
@@ -2485,7 +2516,7 @@ const AIChatModal = ({
                         <img src={p.image} className="w-12 h-12 object-cover rounded-lg shrink-0" alt="" />
                         <div className="flex-1 min-w-0">
                           <div className="text-xs font-bold text-industrial-blue truncate">{p.name}</div>
-                          <div className="text-[10px] text-gray-400">先看卡片，点击查看详情</div>
+                          <div className="text-[10px] text-gray-400">{t("ai.chat.cardHint")}</div>
                         </div>
                         <button
                           type="button"
@@ -2495,7 +2526,7 @@ const AIChatModal = ({
                           }}
                           className="px-2 py-1 text-[10px] font-bold bg-industrial-blue text-white rounded-lg hover:bg-heat-accent hover:text-industrial-blue transition-colors shrink-0"
                         >
-                          一键下单
+                          {t("ai.chat.orderNow")}
                         </button>
                       </div>
                     ))}
@@ -2510,7 +2541,7 @@ const AIChatModal = ({
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                placeholder="输入您的问题..." 
+                placeholder={t("ai.chat.inputPlaceholder")} 
                 className="flex-1 bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-industrial-blue outline-none"
               />
               <button onClick={handleSend} className="p-3 bg-industrial-blue text-white rounded-xl hover:bg-heat-accent hover:text-industrial-blue transition-all disabled:opacity-60" disabled={sending}>
@@ -2541,7 +2572,7 @@ const CatalogPage = ({
   publicSite?: Record<string, unknown>;
   onShowCustomContact: () => void;
 }) => {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const ALL_KEY = "__all__";
   const [activeCatKey, setActiveCatKey] = useState<string>(ALL_KEY);
   const [sortKey, setSortKey] = useState<"default" | "priceAsc" | "priceDesc">("default");
@@ -2556,7 +2587,7 @@ const CatalogPage = ({
     }
     const list = Array.from(byId.values()).sort((a, b) => a.label.localeCompare(b.label));
     return [{ key: ALL_KEY, label: t("catalog.all") }, ...list];
-  }, [products, t]);
+  }, [products, t, i18n.language]);
 
   // 切语言/重拉产品后，保证当前筛选 key 仍然存在；否则回到“全部”
   useEffect(() => {

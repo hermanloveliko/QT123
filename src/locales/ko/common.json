@@ -1,6 +1,6 @@
 {
   "common": {
-    "loading": "Loading…"
+    "loading": "로딩 중…"
   },
   "systems": {
     "items": {
@@ -71,9 +71,17 @@
     "heroDesc2": "정밀 제조와 글로벌 물류로 당신의 비전을 지원합니다.",
     "browseCatalog": "카탈로그 보기",
     "viewProjects": "프로젝트 보기",
+    "consultation": {
+      "title": "전문 자재 상담이 필요하신가요?",
+      "desc": "엔지니어링 팀이 기술 지원, 자재 선택, 비용 추정까지 도와드립니다.",
+      "hotlineLabel": "WhatsApp",
+      "hotlineValue": "+86 138 0000 0000",
+      "button": "온라인 상담 예약"
+    },
     "systems": {
       "label": "시스템",
-      "viewAllProducts": "모든 제품 보기"
+      "viewAllProducts": "모든 제품 보기",
+      "sectionTitle": "핵심 시스템 솔루션"
     },
     "projects": {
       "featuredLabel": "추천 프로젝트",
@@ -81,7 +89,57 @@
       "viewMore": "더 많은 프로젝트 보기"
     },
     "logistics": {
-      "label": "글로벌 물류"
+      "label": "글로벌 물류",
+      "title": "글로벌 물류 및 추적",
+      "desc": "전 세계 공급망을 운영하여 자재가 안전하고 제시간에 도착하도록 보장합니다. 실시간 추적으로 언제든 주문 상태를 확인할 수 있습니다.",
+      "cards": [
+        {
+          "title": "빠른 배송 대응",
+          "desc": "핵심 도시는 24시간 이내, 글로벌 배송은 7–15일."
+        },
+        {
+          "title": "전 과정 품질 모니터링",
+          "desc": "출고부터 수령까지 모든 단계에서 품질을 확인하고 디지털로 기록합니다."
+        }
+      ],
+      "track": {
+        "title": "실시간 주문 추적",
+        "orderLabel": "주문 ID:",
+        "orderId": "QT-2026-8892",
+        "status": "운송 중",
+        "locationLabel": "현재 위치:",
+        "location": "상하이항 - 국제 화물 센터",
+        "etaLabel": "도착 예정:",
+        "eta": "2026-03-28"
+      }
+    }
+  },
+  "about": {
+    "heroTitle": "Qingtai 소개",
+    "profileEyebrow": "회사 소개",
+    "profileHeading": "20년의 집중, 아름다움을 짓다",
+    "profileParagraphs": [
+      "2006년 설립, 중국 상하이에 본사를 둔 Qingtai는 20년간 칸막이 및 천장 자재의 R&D, 생산, 판매에 집중해 왔습니다.",
+      "선도적인 시스템 솔루션 제공업체로서 고품질 경량 철골, 석고보드, 알루미늄 마감재를 제공하며, 정밀한 기술 지원과 신뢰할 수 있는 글로벌 물류 네트워크로 뒷받침합니다.",
+      "당사 제품은 초고층 빌딩, 국제공항, 5성급 호텔, 대형 산업시설 등 전 세계 1,200개 이상의 랜드마크 프로젝트에 적용되었습니다."
+    ]
+  },
+  "catalog": {
+    "title": "건축 자재 카탈로그",
+    "categoriesTitle": "카테고리",
+    "all": "전체 자재",
+    "sort": {
+      "label": "정렬:",
+      "default": "기본",
+      "priceAsc": "가격: 낮은 순",
+      "priceDesc": "가격: 높은 순"
+    },
+    "loading": "카탈로그 로딩 중…",
+    "empty": "해당 카테고리에 아직 제품이 없습니다. 잠시 후 다시 시도하거나 영업팀에 문의해 주세요.",
+    "custom": {
+      "title": "맞춤 규격이 필요하신가요?",
+      "desc": "프로젝트 요구사항에 맞춰 비표준 사이즈 커스터마이징을 제공합니다.",
+      "button": "맞춤 문의"
     }
   },
   "cart": {
@@ -141,6 +199,59 @@
       "download": "자료 다운로드",
       "share": "공유",
       "consult": "전문가 상담"
+    }
+  },
+  "projectsPage": {
+    "eyebrow": "프로젝트 사례",
+    "title": "프로젝트 쇼케이스"
+  },
+  "projectDetail": {
+    "contractor": "시공사",
+    "materials": "사용 자재",
+    "delivery": "납기",
+    "contractorValue": "Qingtai Materials 프로젝트팀",
+    "materialsValue": "경량 철골, 난연 석고보드",
+    "deliveryValue": "2025년 12월"
+  },
+  "systemDetail": {
+    "eyebrow": "시스템 솔루션"
+  },
+  "contactModal": {
+    "title": "연락처",
+    "phone": "전화",
+    "email": "이메일",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "quickLinksTitle": "빠른 링크",
+    "contactTitle": "문의하기",
+    "defaults": {
+      "tagline": "전 세계 건설을 위한 고품질·정밀·친환경 칸막이 및 천장 자재를 제공합니다.",
+      "address": "888 Qingtai Tower, Zhangjiang Hi-Tech Park, Pudong, Shanghai",
+      "copyright": "© 2026 Qingtai Materials. All rights reserved."
+    },
+    "linkAlibaba": "Alibaba International",
+    "linkOfficial": "공식 웹사이트",
+    "linkMic": "Made-in-China",
+    "privacy": "개인정보 처리방침",
+    "terms": "이용약관",
+    "cookies": "쿠키 설정",
+    "newsletterTitle": "Newsletter",
+    "newsletterDesc": "이메일을 남기면 제품 업데이트 및 견적 소식을 받아볼 수 있습니다.",
+    "emailPlaceholder": "이메일",
+    "send": "보내기",
+    "sentAlert": "전송 완료!"
+  },
+  "ai": {
+    "chat": {
+      "welcome": "안녕하세요, Qingtai 영업 AI 어시스턴트입니다. 제품 소개, 수량/용량 추정, 주문 안내를 도와드립니다. 무엇이 필요하신가요?",
+      "title": "AI 어시스턴트",
+      "subtitle": "Qingtai AI Support",
+      "cardHint": "카드를 탭해 상세보기",
+      "orderNow": "지금 주문",
+      "inputPlaceholder": "질문을 입력하세요…",
+      "requestFailed": "요청 실패: {{error}}",
+      "unknownError": "알 수 없는 오류"
     }
   }
 }

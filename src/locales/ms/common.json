@@ -71,9 +71,17 @@
     "heroDesc2": "Dengan pembuatan tepat dan logistik global, kami menyokong visi anda.",
     "browseCatalog": "Lihat katalog",
     "viewProjects": "Lihat projek",
+    "consultation": {
+      "title": "Perlukan nasihat bahan yang profesional?",
+      "desc": "Pasukan kejuruteraan kami menyediakan sokongan teknikal, pemilihan bahan, dan anggaran kos.",
+      "hotlineLabel": "WhatsApp",
+      "hotlineValue": "+86 138 0000 0000",
+      "button": "Tempah konsultasi dalam talian"
+    },
     "systems": {
       "label": "Sistem",
-      "viewAllProducts": "Lihat semua produk"
+      "viewAllProducts": "Lihat semua produk",
+      "sectionTitle": "Penyelesaian sistem teras"
     },
     "projects": {
       "featuredLabel": "Projek pilihan",
@@ -81,7 +89,57 @@
       "viewMore": "Lihat lebih banyak projek"
     },
     "logistics": {
-      "label": "Logistik global"
+      "label": "Logistik global",
+      "title": "Logistik & penjejakan global",
+      "desc": "Kami mengendalikan rantaian bekalan global untuk memastikan bahan sampai dengan selamat dan tepat pada masanya. Dengan penjejakan masa nyata, anda boleh memantau status pesanan pada bila-bila masa.",
+      "cards": [
+        {
+          "title": "Respons penghantaran pantas",
+          "desc": "Bandar teras dalam 24 jam; penghantaran global dalam 7–15 hari."
+        },
+        {
+          "title": "Pemantauan kualiti dari hujung ke hujung",
+          "desc": "Dari penghantaran hingga penerimaan, setiap langkah disemak kualitinya dan direkodkan secara digital."
+        }
+      ],
+      "track": {
+        "title": "Penjejakan pesanan masa nyata",
+        "orderLabel": "ID pesanan:",
+        "orderId": "QT-2026-8892",
+        "status": "Dalam transit",
+        "locationLabel": "Lokasi semasa:",
+        "location": "Pelabuhan Shanghai - Pusat Kargo Antarabangsa",
+        "etaLabel": "ETA:",
+        "eta": "2026-03-28"
+      }
+    }
+  },
+  "about": {
+    "heroTitle": "Tentang Qingtai",
+    "profileEyebrow": "Profil Syarikat",
+    "profileHeading": "Dua puluh tahun fokus, membina keindahan",
+    "profileParagraphs": [
+      "Ditubuhkan pada 2006 dan beribu pejabat di Shanghai, China, Qingtai telah berfokus pada R&D, pengeluaran dan jualan bahan partition dan siling selama dua dekad.",
+      "Sebagai penyedia penyelesaian sistem terkemuka, kami membekalkan rangka keluli, papan gipsum, dan kemasan aluminium berkualiti tinggi—disokong oleh sokongan teknikal yang tepat serta rangkaian logistik global yang boleh dipercayai.",
+      "Produk kami telah digunakan dalam lebih 1,200 projek mercu tanda di seluruh dunia, termasuk bangunan super tinggi, lapangan terbang antarabangsa, hotel lima bintang, dan kemudahan industri berskala besar."
+    ]
+  },
+  "catalog": {
+    "title": "Katalog bahan binaan",
+    "categoriesTitle": "Kategori",
+    "all": "Semua bahan",
+    "sort": {
+      "label": "Susun:",
+      "default": "Lalai",
+      "priceAsc": "Harga: rendah ke tinggi",
+      "priceDesc": "Harga: tinggi ke rendah"
+    },
+    "loading": "Memuat katalog…",
+    "empty": "Tiada produk dalam kategori ini buat masa ini. Sila cuba lagi kemudian atau hubungi jualan.",
+    "custom": {
+      "title": "Perlu spesifikasi tersuai?",
+      "desc": "Kami menyediakan penyesuaian saiz tidak standard untuk memenuhi keperluan projek khas.",
+      "button": "Hubungi untuk penyesuaian"
     }
   },
   "cart": {
@@ -141,6 +199,59 @@
       "download": "Muat turun helaian data",
       "share": "Kongsi produk",
       "consult": "Rujuk pakar"
+    }
+  },
+  "projectsPage": {
+    "eyebrow": "Kes projek",
+    "title": "Pameran projek"
+  },
+  "projectDetail": {
+    "contractor": "Kontraktor",
+    "materials": "Bahan digunakan",
+    "delivery": "Penghantaran",
+    "contractorValue": "Jabatan Projek Qingtai Materials",
+    "materialsValue": "Rangka keluli, papan gipsum berpenarafan api",
+    "deliveryValue": "Disember 2025"
+  },
+  "systemDetail": {
+    "eyebrow": "Penyelesaian sistem"
+  },
+  "contactModal": {
+    "title": "Hubungi",
+    "phone": "Telefon",
+    "email": "E-mel",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "quickLinksTitle": "Pautan pantas",
+    "contactTitle": "Hubungi kami",
+    "defaults": {
+      "tagline": "Komited kepada bahan partition dan siling yang berkualiti tinggi, tepat, dan mesra alam untuk pembinaan di seluruh dunia.",
+      "address": "888 Menara Qingtai, Taman Hi-Tech Zhangjiang, Pudong, Shanghai",
+      "copyright": "© 2026 Qingtai Materials. Hak cipta terpelihara."
+    },
+    "linkAlibaba": "Alibaba International",
+    "linkOfficial": "Laman web rasmi",
+    "linkMic": "Made-in-China",
+    "privacy": "Dasar privasi",
+    "terms": "Terma perkhidmatan",
+    "cookies": "Tetapan kuki",
+    "newsletterTitle": "Newsletter",
+    "newsletterDesc": "Tinggalkan e-mel anda untuk kemas kini produk dan sebut harga.",
+    "emailPlaceholder": "E-mel anda",
+    "send": "Hantar",
+    "sentAlert": "Dihantar!"
+  },
+  "ai": {
+    "chat": {
+      "welcome": "Hai, saya pembantu jualan Qingtai. Saya boleh memperkenalkan produk, anggar kuantiti, dan membantu anda membuat pesanan. Apa yang anda perlukan?",
+      "title": "Pembantu AI",
+      "subtitle": "Sokongan AI Qingtai",
+      "cardHint": "Ketik kad untuk lihat butiran",
+      "orderNow": "Buat pesanan",
+      "inputPlaceholder": "Taip soalan anda…",
+      "requestFailed": "Permintaan gagal: {{error}}",
+      "unknownError": "Ralat tidak diketahui"
     }
   }
 }

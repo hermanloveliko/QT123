@@ -71,9 +71,17 @@
     "heroDesc2": "Với sản xuất chính xác và logistics toàn cầu, chúng tôi đồng hành cùng tầm nhìn của bạn.",
     "browseCatalog": "Xem danh mục",
     "viewProjects": "Xem dự án",
+    "consultation": {
+      "title": "Cần tư vấn vật liệu chuyên nghiệp?",
+      "desc": "Đội ngũ kỹ sư của chúng tôi hỗ trợ kỹ thuật, lựa chọn vật liệu và ước tính chi phí.",
+      "hotlineLabel": "WhatsApp",
+      "hotlineValue": "+86 138 0000 0000",
+      "button": "Đặt lịch tư vấn online"
+    },
     "systems": {
       "label": "Hệ thống",
-      "viewAllProducts": "Xem tất cả sản phẩm"
+      "viewAllProducts": "Xem tất cả sản phẩm",
+      "sectionTitle": "Giải pháp hệ thống cốt lõi"
     },
     "projects": {
       "featuredLabel": "Dự án nổi bật",
@@ -81,7 +89,57 @@
       "viewMore": "Xem thêm dự án"
     },
     "logistics": {
-      "label": "Logistics toàn cầu"
+      "label": "Logistics toàn cầu",
+      "title": "Logistics & theo dõi toàn cầu",
+      "desc": "Chúng tôi vận hành chuỗi cung ứng toàn cầu để đảm bảo vật liệu đến nơi an toàn và đúng hẹn. Với theo dõi theo thời gian thực, bạn có thể giám sát trạng thái đơn hàng mọi lúc.",
+      "cards": [
+        {
+          "title": "Phản hồi giao hàng nhanh",
+          "desc": "Các thành phố trọng điểm trong 24 giờ; giao hàng toàn cầu trong 7–15 ngày."
+        },
+        {
+          "title": "Giám sát chất lượng xuyên suốt",
+          "desc": "Từ xuất kho đến nhận hàng, mỗi bước đều được kiểm tra chất lượng và ghi nhận số hóa."
+        }
+      ],
+      "track": {
+        "title": "Theo dõi đơn hàng thời gian thực",
+        "orderLabel": "Mã đơn hàng:",
+        "orderId": "QT-2026-8892",
+        "status": "Đang vận chuyển",
+        "locationLabel": "Vị trí hiện tại:",
+        "location": "Cảng Thượng Hải - Trung tâm vận tải quốc tế",
+        "etaLabel": "Dự kiến đến:",
+        "eta": "2026-03-28"
+      }
+    }
+  },
+  "about": {
+    "heroTitle": "Về Qingtai",
+    "profileEyebrow": "Hồ sơ công ty",
+    "profileHeading": "Hai mươi năm tập trung, kiến tạo vẻ đẹp",
+    "profileParagraphs": [
+      "Thành lập năm 2006 và đặt trụ sở tại Thượng Hải, Trung Quốc, Qingtai đã tập trung vào R&D, sản xuất và kinh doanh vật liệu vách ngăn và trần suốt hai thập kỷ.",
+      "Là nhà cung cấp giải pháp hệ thống hàng đầu, chúng tôi mang đến hệ khung thép, tấm thạch cao và hoàn thiện nhôm chất lượng cao—được hậu thuẫn bởi hỗ trợ kỹ thuật chính xác và mạng lưới logistics toàn cầu đáng tin cậy.",
+      "Sản phẩm của chúng tôi đã được ứng dụng trong hơn 1.200 dự án biểu tượng trên toàn thế giới, bao gồm các tòa nhà siêu cao tầng, sân bay quốc tế, khách sạn 5 sao và các cơ sở công nghiệp quy mô lớn."
+    ]
+  },
+  "catalog": {
+    "title": "Danh mục vật liệu xây dựng",
+    "categoriesTitle": "Danh mục",
+    "all": "Tất cả vật liệu",
+    "sort": {
+      "label": "Sắp xếp:",
+      "default": "Mặc định",
+      "priceAsc": "Giá: thấp đến cao",
+      "priceDesc": "Giá: cao đến thấp"
+    },
+    "loading": "Đang tải danh mục…",
+    "empty": "Chưa có sản phẩm trong danh mục này. Vui lòng thử lại sau hoặc liên hệ bán hàng.",
+    "custom": {
+      "title": "Cần thông số tùy chỉnh?",
+      "desc": "Chúng tôi cung cấp tùy chỉnh kích thước phi tiêu chuẩn để đáp ứng nhu cầu dự án đặc biệt.",
+      "button": "Liên hệ để tùy chỉnh"
     }
   },
   "cart": {
@@ -141,6 +199,59 @@
       "download": "Tải tài liệu",
       "share": "Chia sẻ sản phẩm",
       "consult": "Tư vấn chuyên gia"
+    }
+  },
+  "projectsPage": {
+    "eyebrow": "Dự án tiêu biểu",
+    "title": "Trưng bày dự án"
+  },
+  "projectDetail": {
+    "contractor": "Nhà thầu",
+    "materials": "Vật liệu sử dụng",
+    "delivery": "Giao hàng",
+    "contractorValue": "Phòng Dự án Qingtai Materials",
+    "materialsValue": "Hệ khung thép, tấm thạch cao chống cháy",
+    "deliveryValue": "Tháng 12/2025"
+  },
+  "systemDetail": {
+    "eyebrow": "Giải pháp hệ thống"
+  },
+  "contactModal": {
+    "title": "Liên hệ",
+    "phone": "Điện thoại",
+    "email": "Email",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "quickLinksTitle": "Liên kết nhanh",
+    "contactTitle": "Liên hệ chúng tôi",
+    "defaults": {
+      "tagline": "Cam kết cung cấp vật liệu vách ngăn & trần chất lượng cao, chính xác và thân thiện môi trường cho ngành xây dựng toàn cầu.",
+      "address": "888 Qingtai Tower, Zhangjiang Hi-Tech Park, Pudong, Thượng Hải",
+      "copyright": "© 2026 Qingtai Materials. Bảo lưu mọi quyền."
+    },
+    "linkAlibaba": "Alibaba International",
+    "linkOfficial": "Website chính thức",
+    "linkMic": "Made-in-China",
+    "privacy": "Chính sách bảo mật",
+    "terms": "Điều khoản dịch vụ",
+    "cookies": "Cài đặt cookie",
+    "newsletterTitle": "Newsletter",
+    "newsletterDesc": "Để lại email để nhận cập nhật sản phẩm và báo giá.",
+    "emailPlaceholder": "Email của bạn",
+    "send": "Gửi",
+    "sentAlert": "Đã gửi!"
+  },
+  "ai": {
+    "chat": {
+      "welcome": "Chào bạn, tôi là trợ lý bán hàng của Qingtai. Tôi có thể giới thiệu sản phẩm, ước tính khối lượng và hỗ trợ đặt hàng. Bạn cần gì?",
+      "title": "Trợ lý AI",
+      "subtitle": "Qingtai AI Support",
+      "cardHint": "Chạm vào thẻ để xem chi tiết",
+      "orderNow": "Đặt ngay",
+      "inputPlaceholder": "Nhập câu hỏi của bạn…",
+      "requestFailed": "Yêu cầu thất bại: {{error}}",
+      "unknownError": "Lỗi không xác định"
     }
   }
 }
