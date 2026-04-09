@@ -5,38 +5,38 @@
   "systems": {
     "items": {
       "s1": {
-        "title": "Wall System",
-        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
-        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+        "title": "Hệ thống vách ngăn",
+        "description": "Hệ vách ngăn chính xác của Qingtai kết hợp khung thép cường lực cao với tấm thạch cao đa năng.",
+        "features": ["Khả năng chịu tải cao", "Lắp đặt mô-đun nhanh chóng", "Cách âm tuyệt vời", "Chống cháy hạng A"]
       },
       "s2": {
-        "title": "Ceiling System",
-        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
-        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+        "title": "Hệ thống trần",
+        "description": "Bao gồm trần lam nhôm, tấm bông khoáng và trần thạch cao — giải pháp thực tiễn và thẩm mỹ cho không gian thương mại và công nghiệp.",
+        "features": ["Nhẹ và bền", "Bề mặt chống ăn mòn", "Dễ tiếp cận bảo trì", "Nhiều lựa chọn màu sắc"]
       },
       "s3": {
-        "title": "Special Board System",
-        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
-        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+        "title": "Hệ thống tấm đặc biệt",
+        "description": "Tấm đặc biệt cho môi trường khắc nghiệt: chống ẩm, chống nấm mốc, chắn bức xạ và độ cứng siêu cao.",
+        "features": ["Bền bỉ trong môi trường khắc nghiệt", "Chắn bức xạ y tế", "Tuổi thọ dài", "Thân thiện môi trường, không formaldehyde"]
       }
     }
   },
   "projects": {
     "items": {
       "p1": {
-        "title": "Shanghai Tower Interior Partition Project",
-        "location": "Shanghai, China",
-        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+        "title": "Dự án vách ngăn nội thất Tháp Thượng Hải",
+        "location": "Thượng Hải, Trung Quốc",
+        "description": "Dự án sử dụng hệ khung thép cường lực và tấm thạch cao chống cháy hạng A của chúng tôi, thi công trên 50.000 m², đạt tiêu chuẩn hàng đầu ngành về chống động đất và chống cháy trong tòa nhà siêu cao tầng."
       },
       "p2": {
-        "title": "Beijing Daxing International Airport Terminal Ceiling",
-        "location": "Beijing, China",
-        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+        "title": "Trần nhà ga Sân bay Quốc tế Bắc Kinh Đại Hưng",
+        "location": "Bắc Kinh, Trung Quốc",
+        "description": "Cung cấp hệ trần lam nhôm tùy chỉnh với lớp phủ fluorocarbon đặc biệt, đảm bảo độ bền và thẩm mỹ trong không gian công cộng lưu lượng cao."
       },
       "p3": {
-        "title": "Marina Bay Sands Hotel Expansion",
+        "title": "Mở rộng Khách sạn Marina Bay Sands",
         "location": "Marina Bay, Singapore",
-        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+        "description": "Cung cấp giải pháp âm thanh và hoàn thiện toàn diện, đáp ứng yêu cầu cao nhất của khách sạn về sự riêng tư và thẩm mỹ thiết kế."
       }
     }
   },
@@ -71,6 +71,11 @@
     "heroDesc2": "Với sản xuất chính xác và logistics toàn cầu, chúng tôi đồng hành cùng tầm nhìn của bạn.",
     "browseCatalog": "Xem danh mục",
     "viewProjects": "Xem dự án",
+    "stats": {
+      "years": "Kinh nghiệm (năm)",
+      "projects": "Dự án toàn cầu",
+      "satisfaction": "Hài lòng khách hàng"
+    },
     "consultation": {
       "title": "Cần tư vấn vật liệu chuyên nghiệp?",
       "desc": "Đội ngũ kỹ sư của chúng tôi hỗ trợ kỹ thuật, lựa chọn vật liệu và ước tính chi phí.",
@@ -186,8 +191,10 @@
     "hint": "Gợi ý: hãy điền đầy đủ các mục bắt buộc rồi bấm xác nhận. Hệ thống sẽ không tự động báo giá khi bạn đang nhập. Sau khi xác nhận, một đơn hàng sẽ được tạo và báo giá USD sẽ hiển thị ở bên phải.",
     "submitting": "Đang gửi…",
     "confirmAndSubmit": "Xác nhận & gửi đơn hàng (tạo báo giá)",
-    "waitingQuote": "Thông tin bắt buộc đã đầy đủ. Hãy bấm “Xác nhận & gửi đơn hàng” ở bên trái. Sau khi thành công, khu vực này sẽ hiển thị chi tiết USD theo CBM và đồng bộ vào Đơn hàng trong Admin.",
-    "agreementNote": "Việc gửi đồng nghĩa bạn đồng ý với Thỏa thuận mua vật liệu. Thay đổi bất kỳ thông tin nào bên trái sẽ xóa báo giá này và cần xác nhận lại."
+    "waitingQuote": "Thông tin bắt buộc đã đầy đủ. Hãy bấm «Xác nhận & gửi đơn hàng» ở bên trái. Sau khi thành công, khu vực này sẽ hiển thị chi tiết USD theo CBM và đồng bộ vào Đơn hàng trong Admin.",
+    "agreementNote": "Việc gửi đồng nghĩa bạn đồng ý với Thỏa thuận mua vật liệu. Thay đổi bất kỳ thông tin nào bên trái sẽ xóa báo giá này và cần xác nhận lại.",
+    "submitSuccess": "Gửi thành công! Báo giá đã hiển thị bên phải. Bạn có thể xem trong phần 'Đơn hàng' của Admin.",
+    "submitFailed": "Gửi thất bại"
   },
   "product": {
     "specs": {
@@ -199,7 +206,10 @@
       "download": "Tải tài liệu",
       "share": "Chia sẻ sản phẩm",
       "consult": "Tư vấn chuyên gia"
-    }
+    },
+    "inStock": "Còn hàng",
+    "reviewCount": "({{count}} đánh giá)",
+    "priceUnit": "USD / đơn vị"
   },
   "projectsPage": {
     "eyebrow": "Dự án tiêu biểu",

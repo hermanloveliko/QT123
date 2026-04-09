@@ -71,6 +71,11 @@
     "heroDesc2": "Com manufatura de precisão e logística global, apoiamos a sua visão.",
     "browseCatalog": "Ver catálogo",
     "viewProjects": "Ver projetos",
+    "stats": {
+      "years": "Anos de experiência",
+      "projects": "Projetos globais",
+      "satisfaction": "Satisfação do cliente"
+    },
     "consultation": {
       "title": "Precisa de consultoria profissional sobre materiais?",
       "desc": "Nossa equipe de engenheiros oferece suporte técnico, seleção de materiais e estimativa de custos.",
@@ -187,7 +192,9 @@
     "submitting": "Enviando…",
     "confirmAndSubmit": "Confirmar e enviar pedido (gerar cotação)",
     "waitingQuote": "As informações obrigatórias estão completas. Clique em «Confirmar e enviar pedido» à esquerda. Após sucesso, este painel mostrará o detalhamento em USD baseado em CBM e sincronizará com Pedidos no Admin.",
-    "agreementNote": "Ao enviar, você concorda com o Acordo de Compra de Materiais. Alterar qualquer informação à esquerda limpará esta cotação e exigirá nova confirmação."
+    "agreementNote": "Ao enviar, você concorda com o Acordo de Compra de Materiais. Alterar qualquer informação à esquerda limpará esta cotação e exigirá nova confirmação.",
+    "submitSuccess": "Enviado com sucesso! A cotação está à direita. Você pode vê-la em Admin > Pedidos.",
+    "submitFailed": "Falha no envio"
   },
   "product": {
     "specs": {
@@ -199,7 +206,10 @@
       "download": "Baixar ficha técnica",
       "share": "Compartilhar produto",
       "consult": "Consultar um especialista"
-    }
+    },
+    "inStock": "Em estoque",
+    "reviewCount": "({{count}} avaliações de clientes)",
+    "priceUnit": "USD / unidade"
   },
   "projectsPage": {
     "eyebrow": "Casos de projetos",

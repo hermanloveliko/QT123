@@ -5,38 +5,38 @@
   "systems": {
     "items": {
       "s1": {
-        "title": "Wall System",
-        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
-        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+        "title": "Sistem Dinding Partition",
+        "description": "Sistem dinding ketepatan Qingtai menggabungkan rangka keluli berkekuatan tinggi dengan papan gipsum pelbagai guna.",
+        "features": ["Kapasiti beban tinggi", "Pemasangan modular pantas", "Penebat bunyi cemerlang", "Penarafan api Kelas A"]
       },
       "s2": {
-        "title": "Ceiling System",
-        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
-        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+        "title": "Sistem Siling",
+        "description": "Termasuk bafel aluminium, panel bulu mineral dan siling gipsum — penyelesaian praktikal dan cantik untuk ruang komersial dan industri.",
+        "features": ["Ringan & kukuh", "Kemasan tahan karat", "Akses penyelenggaraan mudah", "Pilihan warna pelbagai"]
       },
       "s3": {
-        "title": "Special Board System",
-        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
-        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+        "title": "Sistem Papan Khas",
+        "description": "Papan khas untuk persekitaran ekstrem: kalis lembap, kalis kulat, perisai sinaran dan kekerasan ultra-tinggi.",
+        "features": ["Ketahanan persekitaran ekstrem", "Perisai sinaran gred perubatan", "Jangka hayat panjang", "Mesra alam, tanpa formaldehid"]
       }
     }
   },
   "projects": {
     "items": {
       "p1": {
-        "title": "Shanghai Tower Interior Partition Project",
+        "title": "Projek Partition Dalaman Shanghai Tower",
         "location": "Shanghai, China",
-        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+        "description": "Projek ini menggunakan sistem rangka keluli berkekuatan tinggi dan papan gipsum kalis api Kelas A, meliputi lebih 50,000 m², mencapai prestasi gempa bumi dan kebakaran terkemuka industri untuk bangunan super tinggi."
       },
       "p2": {
-        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "title": "Siling Terminal Lapangan Terbang Antarabangsa Beijing Daxing",
         "location": "Beijing, China",
-        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+        "description": "Menyampaikan sistem siling bafel aluminium tersuai dengan salutan fluorokarbon khas untuk memastikan ketahanan dan estetika di ruang awam berkepadatan tinggi."
       },
       "p3": {
-        "title": "Marina Bay Sands Hotel Expansion",
-        "location": "Marina Bay, Singapore",
-        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+        "title": "Pengembangan Hotel Marina Bay Sands",
+        "location": "Marina Bay, Singapura",
+        "description": "Menyediakan penyelesaian akustik dan kemasan lengkap untuk memenuhi keperluan tinggi hotel dari segi privasi dan estetika reka bentuk."
       }
     }
   },
@@ -71,6 +71,11 @@
     "heroDesc2": "Dengan pembuatan tepat dan logistik global, kami menyokong visi anda.",
     "browseCatalog": "Lihat katalog",
     "viewProjects": "Lihat projek",
+    "stats": {
+      "years": "Tahun pengalaman industri",
+      "projects": "Projek global",
+      "satisfaction": "Kepuasan pelanggan"
+    },
     "consultation": {
       "title": "Perlukan nasihat bahan yang profesional?",
       "desc": "Pasukan kejuruteraan kami menyediakan sokongan teknikal, pemilihan bahan, dan anggaran kos.",
@@ -186,8 +191,10 @@
     "hint": "Tip: lengkapkan semua medan wajib dan sahkan. Sistem tidak akan membuat sebut harga secara automatik semasa anda menaip. Selepas disahkan, pesanan akan dicipta dan sebut harga USD akan dipaparkan di sebelah kanan.",
     "submitting": "Menghantar…",
     "confirmAndSubmit": "Sahkan & hantar pesanan (jana sebut harga)",
-    "waitingQuote": "Maklumat wajib telah lengkap. Klik “Sahkan & hantar pesanan” di sebelah kiri. Selepas berjaya, panel ini akan memaparkan pecahan USD berasaskan CBM dan disegerakkan ke Pesanan Admin.",
-    "agreementNote": "Dengan menghantar, anda bersetuju dengan Perjanjian Pembelian Bahan. Mengubah sebarang maklumat di sebelah kiri akan mengosongkan sebut harga ini dan memerlukan pengesahan semula."
+    "waitingQuote": "Maklumat wajib telah lengkap. Klik «Sahkan & hantar pesanan» di sebelah kiri. Selepas berjaya, panel ini akan memaparkan pecahan USD berasaskan CBM dan disegerakkan ke Pesanan Admin.",
+    "agreementNote": "Dengan menghantar, anda bersetuju dengan Perjanjian Pembelian Bahan. Mengubah sebarang maklumat di sebelah kiri akan mengosongkan sebut harga ini dan memerlukan pengesahan semula.",
+    "submitSuccess": "Berjaya dihantar! Sebut harga dipaparkan di sebelah kanan. Anda boleh melihatnya di bahagian 'Pesanan' dalam Admin.",
+    "submitFailed": "Penghantaran gagal"
   },
   "product": {
     "specs": {
@@ -199,7 +206,10 @@
       "download": "Muat turun helaian data",
       "share": "Kongsi produk",
       "consult": "Rujuk pakar"
-    }
+    },
+    "inStock": "Dalam stok",
+    "reviewCount": "({{count}} ulasan pelanggan)",
+    "priceUnit": "USD / unit"
   },
   "projectsPage": {
     "eyebrow": "Kes projek",

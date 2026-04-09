@@ -120,7 +120,7 @@ export function toLegacyProduct(p: ApiProduct): Product {
   return {
     id: p.id,
     name: p.name,
-    category: p.category?.name || p.subcategory?.name || "未分类",
+    category: p.category?.name || p.subcategory?.name || "—",
     categoryId: p.category?.id || p.subcategory?.id || null,
     price: Number(p.priceUsd) || 0,
     image: cover,

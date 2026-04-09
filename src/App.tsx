@@ -122,7 +122,7 @@ function LanguageFlags({
               active ? "ring-white/70" : "ring-white/20 hover:ring-white/50",
               variant === "navbar" ? "bg-white/0" : "bg-white/10 hover:bg-white/15",
             ].join(" ")}
-            aria-label={`Switch language to ${t(`lang.${lang}`)}`}
+            aria-label={t(`lang.${lang}`)}
             title={t(`lang.${lang}`)}
           >
             <Flag className={variant === "navbar" ? "w-6 h-6 rounded-full" : "w-7 h-7 rounded-full"} />
@@ -1922,14 +1922,28 @@ const HomePage = ({
   const { t, i18n } = useTranslation("common");
   const fallbackSystems = useMemo(() => getLocalizedSystems(t), [t, i18n.language]);
   const fallbackProjects = useMemo(() => getLocalizedProjects(t), [t, i18n.language]);
+  const useSiteOverride = true;
   const consultation = (publicSite["home.consultation"] || {}) as Record<string, unknown>;
-  const consTitle = String(consultation.title ?? t("home.consultation.title"));
-  const consDesc = String(
-    consultation.description ??
-      t("home.consultation.desc")
+  const consTitle = String(
+    useSiteOverride && consultation.title
+      ? consultation.title
+      : t("home.consultation.title"),
   );
-  const hotlineLabel = String(consultation.hotlineLabel ?? t("home.consultation.hotlineLabel"));
-  const hotlineValue = String(consultation.hotlineValue ?? t("home.consultation.hotlineValue"));
+  const consDesc = String(
+    useSiteOverride && consultation.description
+      ? consultation.description
+      : t("home.consultation.desc"),
+  );
+  const hotlineLabel = String(
+    useSiteOverride && consultation.hotlineLabel
+      ? consultation.hotlineLabel
+      : t("home.consultation.hotlineLabel"),
+  );
+  const hotlineValue = String(
+    consultation.hotlineValue != null && String(consultation.hotlineValue).trim() !== ""
+      ? consultation.hotlineValue
+      : t("home.consultation.hotlineValue"),
+  );
   const bgOpacity =
     typeof consultation.backgroundOpacity === "number" ? consultation.backgroundOpacity : 0.45;
   const consultationBoxStyle: React.CSSProperties = {
@@ -1942,22 +1956,41 @@ const HomePage = ({
   const projectsList =
     Array.isArray(projectsRaw) && projectsRaw.length > 0 ? (projectsRaw as Project[]) : fallbackProjects;
   const logistics = (publicSite["home.logistics"] || {}) as Record<string, unknown>;
-  const logTitle = String(logistics.title ?? t("home.logistics.title"));
+  const logTitle = String(
+    useSiteOverride && logistics.title ? logistics.title : t("home.logistics.title"),
+  );
   const logDesc = String(
-    logistics.description ??
-      t("home.logistics.desc")
+    useSiteOverride && logistics.description
+      ? logistics.description
+      : t("home.logistics.desc"),
   );
   const cards = (Array.isArray(logistics.cards) ? logistics.cards : []) as Array<{
     title?: string;
     description?: string;
   }>;
-  const card1 = cards[0] || {
-    title: t("home.logistics.cards.0.title"),
-    description: t("home.logistics.cards.0.desc"),
+  const card1 = {
+    title: String(
+      useSiteOverride && cards[0]?.title
+        ? cards[0].title
+        : t("home.logistics.cards.0.title"),
+    ),
+    description: String(
+      useSiteOverride && cards[0]?.description
+        ? cards[0].description
+        : t("home.logistics.cards.0.desc"),
+    ),
   };
-  const card2 = cards[1] || {
-    title: t("home.logistics.cards.1.title"),
-    description: t("home.logistics.cards.1.desc"),
+  const card2 = {
+    title: String(
+      useSiteOverride && cards[1]?.title
+        ? cards[1].title
+        : t("home.logistics.cards.1.title"),
+    ),
+    description: String(
+      useSiteOverride && cards[1]?.description
+        ? cards[1].description
+        : t("home.logistics.cards.1.desc"),
+    ),
   };
   const slideUrls = (() => {
     const urls = logistics.slideImageUrls;
@@ -1966,11 +1999,29 @@ const HomePage = ({
     if (seeds.length > 0) return seeds.map((s) => `https://picsum.photos/seed/${encodeURIComponent(s)}/800/450`);
     return ["logistics1", "logistics2", "logistics3"].map((s) => `https://picsum.photos/seed/${s}/800/450`);
   })();
-  const trackTitle = String(logistics.trackTitle ?? t("home.logistics.track.title"));
-  const trackOrderId = String(logistics.trackOrderId ?? t("home.logistics.track.orderId"));
-  const trackStatus = String(logistics.trackStatus ?? t("home.logistics.track.status"));
-  const trackLocation = String(logistics.trackLocation ?? t("home.logistics.track.location"));
-  const trackEta = String(logistics.trackEta ?? t("home.logistics.track.eta"));
+  const trackTitle = String(
+    useSiteOverride && logistics.trackTitle
+      ? logistics.trackTitle
+      : t("home.logistics.track.title"),
+  );
+  const trackOrderId = String(
+    useSiteOverride && logistics.trackOrderId
+      ? logistics.trackOrderId
+      : t("home.logistics.track.orderId"),
+  );
+  const trackStatus = String(
+    useSiteOverride && logistics.trackStatus
+      ? logistics.trackStatus
+      : t("home.logistics.track.status"),
+  );
+  const trackLocation = String(
+    useSiteOverride && logistics.trackLocation
+      ? logistics.trackLocation
+      : t("home.logistics.track.location"),
+  );
+  const trackEta = String(
+    useSiteOverride && logistics.trackEta ? logistics.trackEta : t("home.logistics.track.eta"),
+  );
 
   return (
   <div className="pt-20">
@@ -2039,15 +2090,21 @@ const HomePage = ({
       <div className="absolute bottom-0 right-0 hidden lg:flex bg-white p-10 gap-12 shadow-2xl">
         <div className="flex flex-col">
           <span className="text-4xl font-display font-extrabold text-industrial-blue">20+</span>
-          <span className="text-xs text-gray-500 uppercase tracking-widest mt-1">行业经验 (年)</span>
+          <span className="text-xs text-gray-500 uppercase tracking-widest mt-1">
+            {t("home.stats.years")}
+          </span>
         </div>
         <div className="flex flex-col">
           <span className="text-4xl font-display font-extrabold text-industrial-blue">1200+</span>
-          <span className="text-xs text-gray-500 uppercase tracking-widest mt-1">全球项目</span>
+          <span className="text-xs text-gray-500 uppercase tracking-widest mt-1">
+            {t("home.stats.projects")}
+          </span>
         </div>
         <div className="flex flex-col">
           <span className="text-4xl font-display font-extrabold text-industrial-blue">98%</span>
-          <span className="text-xs text-gray-500 uppercase tracking-widest mt-1">客户满意度</span>
+          <span className="text-xs text-gray-500 uppercase tracking-widest mt-1">
+            {t("home.stats.satisfaction")}
+          </span>
         </div>
       </div>
     </section>
@@ -2084,7 +2141,9 @@ const HomePage = ({
       <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
         <div>
           <div className="accent-border mb-4">
-            <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">Core Systems</span>
+            <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">
+              {t("home.systems.label")}
+            </span>
           </div>
           <h2 className="text-4xl font-display font-extrabold text-industrial-blue">{t("home.systems.sectionTitle")}</h2>
         </div>
@@ -2393,11 +2452,9 @@ const AIChatModal = ({
     () => ({
       id: "welcome",
       role: "ai" as const,
-      // Always English greeting (per requirement). Replies will follow user's language.
-      content:
-        "Hi! I’m your Qingtai sales assistant. I can introduce products, estimate quantities, and help you place orders. What do you need?",
+      content: t("ai.chat.welcome"),
     }),
-    []
+    [t, i18n.language],
   );
 
   const [messages, setMessages] = useState<
@@ -2425,6 +2482,17 @@ const AIChatModal = ({
       return prev;
     });
   }, [isOpen, welcome]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setMessages((prev) => {
+      const idx = prev.findIndex((m) => m.id === "welcome");
+      if (idx < 0) return prev;
+      const copy = [...prev];
+      copy[idx] = {...copy[idx], content: t("ai.chat.welcome")};
+      return copy;
+    });
+  }, [isOpen, i18n.language, t]);
 
   const handleSend = () => {
     if (!input.trim() || sending) return;
@@ -2762,7 +2830,7 @@ const ProductDetailPage = ({ product, onAddToCart }: { product: Product, onAddTo
         {/* Product Info */}
         <div>
           <div className="flex items-center gap-4 mb-6">
-            <span className="bg-industrial-blue text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest">In Stock</span>
+            <span className="bg-industrial-blue text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest">{t("product.inStock")}</span>
             <span className="text-gray-400 text-sm font-mono">ID: {product.id}</span>
           </div>
           
@@ -2772,12 +2840,12 @@ const ProductDetailPage = ({ product, onAddToCart }: { product: Product, onAddTo
             <div className="flex text-heat-accent">
               {[1, 2, 3, 4, 5].map((i) => <Star key={i} size={18} fill="currentColor" />)}
             </div>
-            <span className="text-sm text-gray-400">(48 条客户评价)</span>
+            <span className="text-sm text-gray-400">{t("product.reviewCount", { count: 48 })}</span>
           </div>
 
           <div className="text-3xl font-display font-extrabold text-industrial-blue mb-8">
             <span className="text-lg font-normal mr-1">$</span>{product.price.toFixed(2)}
-            <span className="text-sm font-normal text-gray-400 ml-2">USD / 单位</span>
+            <span className="text-sm font-normal text-gray-400 ml-2">{t("product.priceUnit")}</span>
           </div>
 
           <p className="text-gray-600 mb-10 leading-relaxed">
@@ -2844,14 +2912,13 @@ const CartPage = ({
   onRemove: (id: string) => void;
   onBrowseCatalog: () => void;
 }) => {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const [countryId, setCountryId] = useState("");
   const [portId, setPortId] = useState("");
   const [method, setMethod] = useState("");
   const [contact, setContact] = useState({ email: "", social: "", name: "", phone: "" });
   const [countries, setCountries] = useState<Country[]>([]);
   const [ports, setPorts] = useState<Port[]>([]);
-  /** 仅在用户点击「确认并提交」成功后，由订单接口返回数据填充，用于右侧展示 */
   const [orderQuote, setOrderQuote] = useState<{
     orderId: string;
     itemsTotalUsd: number;
@@ -2875,7 +2942,7 @@ const CartPage = ({
 
   useEffect(() => {
     apiJson<Country[]>("/api/public/countries").then(setCountries).catch(() => setCountries([]));
-  }, []);
+  }, [i18n.language]);
   useEffect(() => {
     if (!countryId) {
       setPorts([]);
@@ -2930,10 +2997,10 @@ const CartPage = ({
         fixedFeesTotalUsd,
         totalUsd: Number(created.totalUsd),
       });
-      alert("已提交成功！报价已显示在右侧，您可在后台「订单」中查看本条记录。");
+      alert(t("cart.submitSuccess"));
     } catch (e: any) {
       setOrderQuote(null);
-      setConfirmErr(e?.message || "提交失败");
+      setConfirmErr(e?.message || t("cart.submitFailed"));
     } finally {
       setConfirming(false);
     }

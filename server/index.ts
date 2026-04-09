@@ -196,45 +196,64 @@ async function deepseekTranslateStrings(opts: { targetLang: Lang; texts: string[
     throw new Error("DEEPSEEK_API_KEY 未配置，无法机器翻译");
   }
   const systemPrompt =
-    "你是一个翻译引擎。把输入的中文短句翻译成目标语言，保持原数组顺序，输出必须是严格 JSON 数组（仅数组，不要解释）。\n"
-    + `目标语言：${targetLang}\n`
-    + "要求：\n"
-    + "- 不要添加序号、不要换行解释、不要 Markdown\n"
-    + "- 保留数字、单位、型号（如 M4）、货币符号等\n"
-    + "- 如果原文不是中文或不需要翻译，可原样返回\n";
+    "You are a translation engine.\n"
+    + "Translate each input string into the TARGET LANGUAGE, keeping the original array order.\n"
+    + "Your output MUST be a strict JSON array of strings. Output ONLY the array, no extra text.\n\n"
+    + "你是一个翻译引擎。\n"
+    + "把输入的字符串逐条翻译成【目标语言】，保持原数组顺序。\n"
+    + "输出必须是严格 JSON 字符串数组（只输出数组，不要解释，不要 Markdown）。\n\n"
+    + `TARGET LANGUAGE / 目标语言：${targetLang}\n`
+    + "Rules / 要求：\n"
+    + "- Preserve numbers, units, model names (e.g. M4), currency symbols\n"
+    + "- If a string does not need translation, return it as-is\n";
 
   const userPrompt = JSON.stringify({ texts }, null, 0);
-  const r = await fetch("https://api.deepseek.com/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "deepseek-chat",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      temperature: 0.2,
-    }),
-  });
-  const data = (await r.json()) as any;
-  const content = data?.choices?.[0]?.message?.content;
-  if (typeof content !== "string") throw new Error("机器翻译失败：无返回内容");
-  let arr: unknown = null;
+
+  const callOnce = async (extraRule?: string) => {
+    const r = await fetch("https://api.deepseek.com/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: [
+          { role: "system", content: systemPrompt + (extraRule ? `\n${extraRule}\n` : "") },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.1,
+      }),
+    });
+    const data = (await r.json()) as any;
+    const content = data?.choices?.[0]?.message?.content;
+    if (typeof content !== "string") throw new Error("机器翻译失败：无返回内容");
+    return content;
+  };
+
+  const tryParseArray = (content: string): string[] => {
+    let arr: unknown = null;
+    try {
+      arr = JSON.parse(content);
+    } catch {
+      const m = content.match(/\[[\s\S]*\]/);
+      if (!m) throw new Error("机器翻译失败：返回不是 JSON 数组");
+      arr = JSON.parse(m[0]);
+    }
+    if (!Array.isArray(arr)) throw new Error("机器翻译失败：返回不是数组");
+    const out = arr.map((x) => String(x ?? ""));
+    if (out.length !== texts.length) throw new Error("机器翻译失败：返回条数不一致");
+    return out;
+  };
+
+  // Retry once with stricter rule; some languages may trigger verbose outputs.
+  const first = await callOnce();
   try {
-    arr = JSON.parse(content);
+    return tryParseArray(first);
   } catch {
-    // Some models wrap JSON in text; try to extract
-    const m = content.match(/\[[\s\S]*\]/);
-    if (!m) throw new Error("机器翻译失败：返回不是 JSON 数组");
-    arr = JSON.parse(m[0]);
+    const second = await callOnce("STRICT: Output ONLY a JSON array of strings, no other characters.");
+    return tryParseArray(second);
   }
-  if (!Array.isArray(arr)) throw new Error("机器翻译失败：返回不是数组");
-  const out = arr.map((x) => String(x ?? ""));
-  if (out.length !== texts.length) throw new Error("机器翻译失败：返回条数不一致");
-  return out;
 }
 
 async function translateJsonValue(opts: { targetLang: Lang; value: unknown }): Promise<unknown> {
@@ -570,28 +589,48 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
 
     if (entity === "categories") {
       const rows = await prisma.category.findMany({ where: parsed.data.ids?.length ? { id: { in: parsed.data.ids } } : undefined });
+      const targets: Array<{ id: string; baseName: string }> = [];
+      const existed = new Map<string, boolean>();
       for (const c of rows) {
         try {
-          const existing = await prisma.categoryI18n.findUnique({ where: { categoryId_lang: { categoryId: c.id, lang: lang as any } } });
+          const existing = await prisma.categoryI18n.findUnique({
+            where: { categoryId_lang: { categoryId: c.id, lang: lang as any } },
+          });
           if (existing && !force) {
             skipped++;
             continue;
           }
-          let name = c.name;
-          if (mode === "empty") name = "";
-          else if (mode === "machine") {
-            const [tName] = await deepseekTranslateStrings({ targetLang: lang, texts: [c.name] });
-            name = tName || c.name;
-          }
-          await prisma.categoryI18n.upsert({
-            where: { categoryId_lang: { categoryId: c.id, lang: lang as any } },
-            update: { name },
-            create: { categoryId: c.id, lang: lang as any, name },
-          });
-          if (existing) updated++;
-          else created++;
+          existed.set(c.id, Boolean(existing));
+          targets.push({ id: c.id, baseName: c.name });
         } catch (e: any) {
           failures.push({ id: c.id, message: e?.message || "failed" });
+        }
+      }
+      let translatedNames: string[] = [];
+      if (mode === "machine") {
+        const names = targets.map((t) => t.baseName);
+        const BATCH = 40;
+        for (let i = 0; i < names.length; i += BATCH) {
+          const chunk = names.slice(i, i + BATCH);
+          const out = await deepseekTranslateStrings({ targetLang: lang, texts: chunk });
+          translatedNames.push(...out);
+        }
+      }
+      for (let i = 0; i < targets.length; i++) {
+        const t = targets[i];
+        try {
+          let name = t.baseName;
+          if (mode === "empty") name = "";
+          else if (mode === "machine") name = translatedNames[i] || t.baseName;
+          await prisma.categoryI18n.upsert({
+            where: { categoryId_lang: { categoryId: t.id, lang: lang as any } },
+            update: { name },
+            create: { categoryId: t.id, lang: lang as any, name },
+          });
+          if (existed.get(t.id)) updated++;
+          else created++;
+        } catch (e: any) {
+          failures.push({ id: t.id, message: e?.message || "failed" });
         }
       }
       return res.json({ ok: true, entity, lang, mode, created, updated, skipped, failures });
@@ -599,6 +638,8 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
 
     if (entity === "subcategories") {
       const rows = await prisma.subcategory.findMany({ where: parsed.data.ids?.length ? { id: { in: parsed.data.ids } } : undefined });
+      const targets: Array<{ id: string; baseName: string }> = [];
+      const existed = new Map<string, boolean>();
       for (const c of rows) {
         try {
           const existing = await prisma.subcategoryI18n.findUnique({
@@ -608,21 +649,37 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
             skipped++;
             continue;
           }
-          let name = c.name;
-          if (mode === "empty") name = "";
-          else if (mode === "machine") {
-            const [tName] = await deepseekTranslateStrings({ targetLang: lang, texts: [c.name] });
-            name = tName || c.name;
-          }
-          await prisma.subcategoryI18n.upsert({
-            where: { subcategoryId_lang: { subcategoryId: c.id, lang: lang as any } },
-            update: { name },
-            create: { subcategoryId: c.id, lang: lang as any, name },
-          });
-          if (existing) updated++;
-          else created++;
+          existed.set(c.id, Boolean(existing));
+          targets.push({ id: c.id, baseName: c.name });
         } catch (e: any) {
           failures.push({ id: c.id, message: e?.message || "failed" });
+        }
+      }
+      let translatedNames: string[] = [];
+      if (mode === "machine") {
+        const names = targets.map((t) => t.baseName);
+        const BATCH = 40;
+        for (let i = 0; i < names.length; i += BATCH) {
+          const chunk = names.slice(i, i + BATCH);
+          const out = await deepseekTranslateStrings({ targetLang: lang, texts: chunk });
+          translatedNames.push(...out);
+        }
+      }
+      for (let i = 0; i < targets.length; i++) {
+        const t = targets[i];
+        try {
+          let name = t.baseName;
+          if (mode === "empty") name = "";
+          else if (mode === "machine") name = translatedNames[i] || t.baseName;
+          await prisma.subcategoryI18n.upsert({
+            where: { subcategoryId_lang: { subcategoryId: t.id, lang: lang as any } },
+            update: { name },
+            create: { subcategoryId: t.id, lang: lang as any, name },
+          });
+          if (existed.get(t.id)) updated++;
+          else created++;
+        } catch (e: any) {
+          failures.push({ id: t.id, message: e?.message || "failed" });
         }
       }
       return res.json({ ok: true, entity, lang, mode, created, updated, skipped, failures });
@@ -630,28 +687,48 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
 
     if (entity === "countries") {
       const rows = await prisma.country.findMany({ where: parsed.data.ids?.length ? { id: { in: parsed.data.ids } } : undefined });
+      const targets: Array<{ id: string; baseName: string }> = [];
+      const existed = new Map<string, boolean>();
       for (const c of rows) {
         try {
-          const existing = await prisma.countryI18n.findUnique({ where: { countryId_lang: { countryId: c.id, lang: lang as any } } });
+          const existing = await prisma.countryI18n.findUnique({
+            where: { countryId_lang: { countryId: c.id, lang: lang as any } },
+          });
           if (existing && !force) {
             skipped++;
             continue;
           }
-          let name = c.name;
-          if (mode === "empty") name = "";
-          else if (mode === "machine") {
-            const [tName] = await deepseekTranslateStrings({ targetLang: lang, texts: [c.name] });
-            name = tName || c.name;
-          }
-          await prisma.countryI18n.upsert({
-            where: { countryId_lang: { countryId: c.id, lang: lang as any } },
-            update: { name },
-            create: { countryId: c.id, lang: lang as any, name },
-          });
-          if (existing) updated++;
-          else created++;
+          existed.set(c.id, Boolean(existing));
+          targets.push({ id: c.id, baseName: c.name });
         } catch (e: any) {
           failures.push({ id: c.id, message: e?.message || "failed" });
+        }
+      }
+      let translatedNames: string[] = [];
+      if (mode === "machine") {
+        const names = targets.map((t) => t.baseName);
+        const BATCH = 40;
+        for (let i = 0; i < names.length; i += BATCH) {
+          const chunk = names.slice(i, i + BATCH);
+          const out = await deepseekTranslateStrings({ targetLang: lang, texts: chunk });
+          translatedNames.push(...out);
+        }
+      }
+      for (let i = 0; i < targets.length; i++) {
+        const t = targets[i];
+        try {
+          let name = t.baseName;
+          if (mode === "empty") name = "";
+          else if (mode === "machine") name = translatedNames[i] || t.baseName;
+          await prisma.countryI18n.upsert({
+            where: { countryId_lang: { countryId: t.id, lang: lang as any } },
+            update: { name },
+            create: { countryId: t.id, lang: lang as any, name },
+          });
+          if (existed.get(t.id)) updated++;
+          else created++;
+        } catch (e: any) {
+          failures.push({ id: t.id, message: e?.message || "failed" });
         }
       }
       return res.json({ ok: true, entity, lang, mode, created, updated, skipped, failures });
@@ -659,28 +736,48 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
 
     if (entity === "ports") {
       const rows = await prisma.port.findMany({ where: parsed.data.ids?.length ? { id: { in: parsed.data.ids } } : undefined });
+      const targets: Array<{ id: string; baseName: string }> = [];
+      const existed = new Map<string, boolean>();
       for (const p of rows) {
         try {
-          const existing = await prisma.portI18n.findUnique({ where: { portId_lang: { portId: p.id, lang: lang as any } } });
+          const existing = await prisma.portI18n.findUnique({
+            where: { portId_lang: { portId: p.id, lang: lang as any } },
+          });
           if (existing && !force) {
             skipped++;
             continue;
           }
-          let name = p.name;
-          if (mode === "empty") name = "";
-          else if (mode === "machine") {
-            const [tName] = await deepseekTranslateStrings({ targetLang: lang, texts: [p.name] });
-            name = tName || p.name;
-          }
-          await prisma.portI18n.upsert({
-            where: { portId_lang: { portId: p.id, lang: lang as any } },
-            update: { name },
-            create: { portId: p.id, lang: lang as any, name },
-          });
-          if (existing) updated++;
-          else created++;
+          existed.set(p.id, Boolean(existing));
+          targets.push({ id: p.id, baseName: p.name });
         } catch (e: any) {
           failures.push({ id: p.id, message: e?.message || "failed" });
+        }
+      }
+      let translatedNames: string[] = [];
+      if (mode === "machine") {
+        const names = targets.map((t) => t.baseName);
+        const BATCH = 40;
+        for (let i = 0; i < names.length; i += BATCH) {
+          const chunk = names.slice(i, i + BATCH);
+          const out = await deepseekTranslateStrings({ targetLang: lang, texts: chunk });
+          translatedNames.push(...out);
+        }
+      }
+      for (let i = 0; i < targets.length; i++) {
+        const t = targets[i];
+        try {
+          let name = t.baseName;
+          if (mode === "empty") name = "";
+          else if (mode === "machine") name = translatedNames[i] || t.baseName;
+          await prisma.portI18n.upsert({
+            where: { portId_lang: { portId: t.id, lang: lang as any } },
+            update: { name },
+            create: { portId: t.id, lang: lang as any, name },
+          });
+          if (existed.get(t.id)) updated++;
+          else created++;
+        } catch (e: any) {
+          failures.push({ id: t.id, message: e?.message || "failed" });
         }
       }
       return res.json({ ok: true, entity, lang, mode, created, updated, skipped, failures });
@@ -1059,9 +1156,13 @@ app.post("/api/public/ai/chat", async (req, res) => {
     // Portuguese (diacritics + some stopwords)
     if (/[ãõçáàâéêíóôú]/i.test(s) || /\b(olá|obrigado|preciso|catálogo|projeto|cotação)\b/i.test(lower)) return "pt";
 
-    // English (ASCII only is ambiguous; treat as unknown and fall back to request lang)
-    if (/[a-z]/i.test(s) && !/[^ -~]/.test(s)) return "en";
+    // Malay (common stopwords)
+    if (/\b(saya|anda|untuk|dengan|dalam|produk|bahan|harga|projek|katalog|sebut\s*harga)\b/i.test(lower)) return "ms";
 
+    // Swahili (common stopwords)
+    if (/\b(mimi|wewe|kwa|na|bidhaa|bei|mradi|katalogi|tafadhali|habari|asante)\b/i.test(lower)) return "sw";
+
+    // 纯拉丁字母无accent时无法可靠判断语种：返回 null，由界面语言（query lang）决定回复语言
     return null;
   }
 
@@ -1122,16 +1223,25 @@ app.post("/api/public/ai/chat", async (req, res) => {
     const sub = p.subcategory?.name ? ` / ${p.subcategory.name}` : "";
     const price = Number(p.priceUsd).toFixed(2);
     const desc = (p.description || "").replace(/\s+/g, " ").slice(0, 120);
-    return `- 【${p.name}】${cat}${sub} · USD ${price}${desc ? ` · ${desc}` : ""}`;
+    return `- [${p.name}] ${cat}${sub} · USD ${price}${desc ? ` · ${desc}` : ""}`;
   });
   const PRODUCT_CATALOG_TEXT = catalogLines.join("\n").slice(0, 12000);
 
-  let aiContent =
-    userMsgLang === "zh"
-      ? "好的，我是青泰销售顾问，咱们长话短说：需要哪类产品、面积尺寸、我帮你算量并协助下单。"
-      : userMsgLang === "ar"
-        ? "تمام—أنا مستشار المبيعات من Qingtai. أخبرني بنوع المنتج والأبعاد/المساحة، وسأحسب الكميات وأساعدك في الطلب."
-        : "Got it—I'm your Qingtai sales assistant. Tell me the product type and your dimensions/area, and I’ll estimate quantities and help you place an order.";
+  const aiFallbackByLang: Record<string, string> = {
+    zh: "好的，我是青泰销售顾问，咱们长话短说：需要哪类产品、面积尺寸、我帮你算量并协助下单。",
+    en: "Got it — I'm your Qingtai sales assistant. Tell me the product type and your dimensions/area, and I'll estimate quantities and help you place an order.",
+    fr: "Bien reçu — je suis votre assistant commercial Qingtai. Indiquez-moi le type de produit et les dimensions, et je calculerai les quantités.",
+    es: "Entendido — soy su asistente comercial de Qingtai. Dígame el tipo de producto y las dimensiones, y le estimaré las cantidades.",
+    pt: "Entendido — sou seu assistente comercial Qingtai. Diga-me o tipo de produto e as dimensões, e eu estimarei as quantidades.",
+    ru: "Понял — я ваш торговый консультант Qingtai. Укажите тип продукции и размеры, а я рассчитаю количество и помогу оформить заказ.",
+    ko: "알겠습니다 — Qingtai 영업 어시스턴트입니다. 필요한 제품 종류와 면적/규격을 알려주시면 수량을 산출하고 주문을 도와드리겠습니다.",
+    ms: "Baik — saya pembantu jualan Qingtai. Beritahu jenis produk dan dimensi, saya akan anggarkan kuantiti serta bantu membuat pesanan.",
+    th: "ได้เลย — ผมคือผู้ช่วยฝ่ายขาย Qingtai บอกประเภทสินค้าและขนาดที่ต้องการ แล้วผมจะคำนวณปริมาณและช่วยสั่งซื้อให้ครับ",
+    vi: "Được rồi — tôi là trợ lý bán hàng Qingtai. Cho tôi biết loại sản phẩm và kích thước, tôi sẽ tính toán số lượng và hỗ trợ đặt hàng.",
+    ar: "تمام — أنا مستشار المبيعات من Qingtai. أخبرني بنوع المنتج والأبعاد/المساحة، وسأحسب الكميات وأساعدك في الطلب.",
+    sw: "Sawa — mimi ni msaidizi wako wa mauzo wa Qingtai. Niambie aina ya bidhaa na vipimo, nami nitakadiria kiasi na kukusaidia kuweka oda.",
+  };
+  let aiContent = aiFallbackByLang[userMsgLang] || aiFallbackByLang.en;
   let deepseekOk = false;
   const toolProductIds = new Set<string>();
 
@@ -1166,53 +1276,77 @@ app.post("/api/public/ai/chat", async (req, res) => {
       const heightCm = Number(args.heightCm);
       const qty = Math.max(1, Math.floor(Number(args.qty) || 1));
       if (!lengthCm || !widthCm || !heightCm) {
-        return JSON.stringify({ error: "请提供长宽高（厘米）" });
+        return JSON.stringify({ error: "Please provide length, width, and height (cm)" });
       }
       const unitCbm = (lengthCm * widthCm * heightCm) / 1_000_000;
       return JSON.stringify({ unitCbm, qty, totalCbm: unitCbm * qty, unit: "m³" });
     }
-    return JSON.stringify({ error: "未知工具" });
+    return JSON.stringify({ error: "Unknown tool" });
   }
 
   if (process.env.DEEPSEEK_API_KEY) {
     try {
       const cardBlock =
         matchedProducts.length > 0
-          ? `\n\n【产品卡片（必须遵守）】\n`
-            + `系统已从用户话里命中以下产品，前端会展示对应产品卡片。你必须先用一两句话明确引导用户「先看下方产品卡片」了解规格与价格，再回答其余问题；不要假装用户看不到卡片。\n`
-            + `命中产品：${matchedProducts.map((p) => p.name).join("、")}\n`
+          ? userMsgLang === "zh"
+            ? `\n\n【产品卡片（必须遵守）】\n系统已从用户话里命中以下产品，前端会展示对应产品卡片。你必须先用一两句话明确引导用户「先看下方产品卡片」了解规格与价格，再回答其余问题；不要假装用户看不到卡片。\n命中产品：${matchedProducts.map((p) => p.name).join("、")}\n`
+            : `\n\n[Product Cards (MUST follow)]\nThe system matched the following products from the user's message. The frontend will display product cards. You MUST first guide the user to "check the product cards below" for specs and pricing, then answer other questions. Do not pretend the user cannot see the cards.\nMatched products: ${matchedProducts.map((p) => p.name).join(", ")}\n`
           : "";
 
-      const systemPrompt =
-        "【角色与风格】\n"
-        + "你是青泰建材专业销售。话不能太多，言简意赅，表达核心。风格：幽默、风趣、温暖。\n\n"
-        + "【语言规则（最高优先级，必须遵守）】\n"
-        + "你必须始终使用「用户最后一条消息」所使用的语言来回复。\n"
-        + "用户用英文你就用英文，用户用中文你就用中文，用户用阿拉伯语你就用阿拉伯语。\n"
-        + "不要因为界面语言或历史对话而切换语言；如果用户混用语言，以最后一条消息为准。\n"
-        + "除非用户明确要求翻译成某种语言，否则不要输出双语。\n\n"
-        + "【职责范围】\n"
-        + "你只做三件事：①介绍产品 ②计算用量 ③辅助下单。一切以订单成交为导向。\n\n"
-        + "【工具】\n"
-        + "需要按名称找产品时调用 search_products；需要按长宽高（厘米）算体积时调用 compute_cbm。\n\n"
-        + "【产品目录】\n"
-        + "你能参照下方「当前产品目录」中的每一款产品。客户提到具体产品时，须引导其查看界面中的产品卡片。\n\n"
-        + "【计算与资料】\n"
-        + "用量计算须遵循下方「计算资料」中的规则与公式；资料未写明的不要编造，可说明缺什么尺寸/参数并引导补充或下单。\n"
-        + cardBlock
-        + "\n【当前产品目录】\n"
-        + (PRODUCT_CATALOG_TEXT || "（暂无上架产品）")
-        + (AI_KNOWLEDGE_TEXT ? `\n\n【计算资料】\n${AI_KNOWLEDGE_TEXT}` : "");
+      const systemPrompt = userMsgLang === "zh"
+        ? "【角色与风格】\n"
+          + "你是青泰建材专业销售。话不能太多，言简意赅，表达核心。风格：幽默、风趣、温暖。\n\n"
+          + "【语言规则（最高优先级，必须遵守）】\n"
+          + "你必须始终使用「用户最后一条消息」所使用的语言来回复。\n"
+          + "用户用英文你就用英文，用户用中文你就用中文，用户用阿拉伯语你就用阿拉伯语。\n"
+          + "若用户最后一条消息无法判断语种（例如只有纯拉丁字母且无明确特征），则使用界面语言回复，当前界面语言为："
+          + outputLangLabel
+          + "。\n"
+          + "如果用户混用语言，以最后一条消息中能明确识别的语种为准。\n"
+          + "除非用户明确要求翻译成某种语言，否则不要输出双语。\n\n"
+          + "【职责范围】\n"
+          + "你只做三件事：①介绍产品 ②计算用量 ③辅助下单。一切以订单成交为导向。\n\n"
+          + "【工具】\n"
+          + "需要按名称找产品时调用 search_products；需要按长宽高（厘米）算体积时调用 compute_cbm。\n\n"
+          + "【产品目录】\n"
+          + "你能参照下方「当前产品目录」中的每一款产品。客户提到具体产品时，须引导其查看界面中的产品卡片。\n\n"
+          + "【计算与资料】\n"
+          + "用量计算须遵循下方「计算资料」中的规则与公式；资料未写明的不要编造，可说明缺什么尺寸/参数并引导补充或下单。\n"
+          + cardBlock
+          + "\n【当前产品目录】\n"
+          + (PRODUCT_CATALOG_TEXT || "（暂无上架产品）")
+          + (AI_KNOWLEDGE_TEXT ? `\n\n【计算资料】\n${AI_KNOWLEDGE_TEXT}` : "")
+        : "[Role & Style]\n"
+          + "You are a professional Qingtai Materials sales assistant. Be concise and to the point. Style: friendly, warm, with a touch of humor.\n\n"
+          + "[Language Rules (HIGHEST PRIORITY)]\n"
+          + "You MUST always reply in the language of the user's latest message.\n"
+          + "If the user's latest message language cannot be determined (e.g. only plain Latin letters with no distinguishing features), use the interface language: "
+          + outputLangLabel
+          + ".\n"
+          + "If the user mixes languages, follow the last clearly identifiable language.\n"
+          + "Do NOT output bilingual text unless the user explicitly requests translation.\n\n"
+          + "[Responsibilities]\n"
+          + "You do three things: 1) Introduce products 2) Calculate quantities 3) Assist with ordering. Everything is oriented toward closing the deal.\n\n"
+          + "[Tools]\n"
+          + "Call search_products to find products by name; call compute_cbm to calculate volume from dimensions (cm).\n\n"
+          + "[Product Catalog]\n"
+          + "You can refer to every product in the Current Product Catalog below. When the customer mentions a specific product, guide them to view the product card in the interface.\n\n"
+          + "[Calculation & Reference]\n"
+          + "Quantity calculations must follow the rules and formulas in the Calculation Reference below. Do not fabricate anything not stated; explain what dimensions/parameters are missing and guide the user to supplement or place an order.\n"
+          + cardBlock
+          + "\n[Current Product Catalog]\n"
+          + (PRODUCT_CATALOG_TEXT || "(No products listed yet)")
+          + (AI_KNOWLEDGE_TEXT ? `\n\n[Calculation Reference]\n${AI_KNOWLEDGE_TEXT}` : "");
 
       const tools = [
         {
           type: "function" as const,
           function: {
             name: "search_products",
-            description: "按关键词在产品目录中搜索名称（模糊匹配）",
+            description: "Search products by keyword (fuzzy match)",
             parameters: {
               type: "object",
-              properties: { keyword: { type: "string", description: "搜索词，如 石膏板、龙骨" } },
+              properties: { keyword: { type: "string", description: "Search keyword, e.g. gypsum board, steel frame" } },
               required: ["keyword"],
             },
           },
@@ -1221,14 +1355,14 @@ app.post("/api/public/ai/chat", async (req, res) => {
           type: "function" as const,
           function: {
             name: "compute_cbm",
-            description: "用长宽高（厘米）计算单件体积 m³，可选件数得到总体积",
+            description: "Calculate unit volume (m³) from length/width/height in cm, optional quantity for total volume",
             parameters: {
               type: "object",
               properties: {
                 lengthCm: { type: "number" },
                 widthCm: { type: "number" },
                 heightCm: { type: "number" },
-                qty: { type: "number", description: "件数，默认 1" },
+                qty: { type: "number", description: "Quantity, default 1" },
               },
               required: ["lengthCm", "widthCm", "heightCm"],
             },

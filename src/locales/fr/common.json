@@ -1,42 +1,42 @@
 {
   "common": {
-    "loading": "Loading…"
+    "loading": "Chargement…"
   },
   "systems": {
     "items": {
       "s1": {
-        "title": "Wall System",
-        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
-        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+        "title": "Système de cloisons",
+        "description": "Les systèmes de cloisons de précision Qingtai allient des ossatures métalliques haute résistance à des plaques de plâtre polyvalentes.",
+        "features": ["Haute capacité portante", "Installation modulaire rapide", "Excellente isolation acoustique", "Classement feu classe A"]
       },
       "s2": {
-        "title": "Ceiling System",
-        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
-        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+        "title": "Système de plafonds",
+        "description": "Comprend des lames aluminium, des panneaux de laine minérale et des plafonds en plâtre — solutions pratiques et esthétiques pour les espaces commerciaux et industriels.",
+        "features": ["Léger et solide", "Finitions anticorrosion", "Accès de maintenance facile", "Large choix de couleurs"]
       },
       "s3": {
-        "title": "Special Board System",
-        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
-        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+        "title": "Système de plaques spéciales",
+        "description": "Plaques spéciales pour environnements extrêmes : résistantes à l'humidité, aux moisissures, aux radiations et à ultra-haute dureté.",
+        "features": ["Résistance aux environnements extrêmes", "Protection radiologique de grade médical", "Longue durée de vie", "Écologique, sans formaldéhyde"]
       }
     }
   },
   "projects": {
     "items": {
       "p1": {
-        "title": "Shanghai Tower Interior Partition Project",
-        "location": "Shanghai, China",
-        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+        "title": "Projet de cloisons intérieures de la Tour de Shanghai",
+        "location": "Shanghai, Chine",
+        "description": "Ce projet a utilisé notre système d'ossature métallique haute résistance et des plaques de plâtre ignifugées classe A, couvrant plus de 50 000 m², atteignant des performances sismiques et anti-incendie de référence dans les bâtiments de très grande hauteur."
       },
       "p2": {
-        "title": "Beijing Daxing International Airport Terminal Ceiling",
-        "location": "Beijing, China",
-        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+        "title": "Plafond du terminal de l'aéroport international de Pékin Daxing",
+        "location": "Pékin, Chine",
+        "description": "Nous avons livré des systèmes de plafonds à lames aluminium personnalisés avec un revêtement fluorocarbone spécial pour garantir durabilité et esthétique dans les espaces publics à fort trafic."
       },
       "p3": {
-        "title": "Marina Bay Sands Hotel Expansion",
-        "location": "Marina Bay, Singapore",
-        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+        "title": "Extension de l'hôtel Marina Bay Sands",
+        "location": "Marina Bay, Singapour",
+        "description": "Nous avons fourni des solutions acoustiques et de finition complètes pour répondre aux exigences élevées de l'hôtel en matière de confidentialité et d'esthétique."
       }
     }
   },
@@ -65,15 +65,28 @@
   },
   "home": {
     "badge": "Experts en matériaux, 20 ans",
-    "heroTitleLine1": "Construire l’avenir avec",
+    "heroTitleLine1": "Construire l'avenir avec",
     "heroTitleAccent": "une base de précision",
     "heroDesc1": "Qingtai fournit des ossatures, plaques et systèmes de finition aluminium de classe mondiale.",
     "heroDesc2": "Fabrication de précision et logistique mondiale pour accompagner votre vision.",
     "browseCatalog": "Voir le catalogue",
     "viewProjects": "Voir les projets",
+    "stats": {
+      "years": "Années d'expérience",
+      "projects": "Projets mondiaux",
+      "satisfaction": "Satisfaction client"
+    },
+    "consultation": {
+      "title": "Besoin de conseils professionnels sur les matériaux ?",
+      "desc": "Notre équipe d'ingénieurs fournit un support technique, une aide au choix des matériaux et une estimation des coûts.",
+      "hotlineLabel": "WhatsApp",
+      "hotlineValue": "+86 138 0000 0000",
+      "button": "Réserver une consultation en ligne"
+    },
     "systems": {
       "label": "Systèmes",
-      "viewAllProducts": "Voir tous les produits"
+      "viewAllProducts": "Voir tous les produits",
+      "sectionTitle": "Solutions systèmes essentielles"
     },
     "projects": {
       "featuredLabel": "Projets à la une",
@@ -81,14 +94,64 @@
       "viewMore": "Voir plus de projets"
     },
     "logistics": {
-      "label": "Logistique mondiale"
+      "label": "Logistique mondiale",
+      "title": "Logistique mondiale et suivi",
+      "desc": "Nous exploitons une chaîne d'approvisionnement mondiale pour garantir que les matériaux arrivent en toute sécurité et à temps. Grâce au suivi en temps réel, vous pouvez consulter l'état de votre commande à tout moment.",
+      "cards": [
+        {
+          "title": "Réponse de livraison rapide",
+          "desc": "Villes principales sous 24 heures ; livraison mondiale en 7 à 15 jours."
+        },
+        {
+          "title": "Contrôle qualité de bout en bout",
+          "desc": "De l'expédition à la réception, chaque étape est contrôlée et enregistrée numériquement."
+        }
+      ],
+      "track": {
+        "title": "Suivi de commande en temps réel",
+        "orderLabel": "N° de commande :",
+        "orderId": "QT-2026-8892",
+        "status": "En transit",
+        "locationLabel": "Position actuelle :",
+        "location": "Port de Shanghai - Centre de fret international",
+        "etaLabel": "Arrivée prévue :",
+        "eta": "2026-03-28"
+      }
+    }
+  },
+  "about": {
+    "heroTitle": "À propos de Qingtai",
+    "profileEyebrow": "Profil de l'entreprise",
+    "profileHeading": "Vingt ans de spécialisation, bâtir la beauté",
+    "profileParagraphs": [
+      "Fondée en 2006 et basée à Shanghai, en Chine, Qingtai se consacre depuis deux décennies à la R&D, la production et la vente de matériaux de cloisons et de plafonds.",
+      "En tant que fournisseur leader de solutions systèmes intégrées, nous proposons des ossatures métalliques, des plaques de plâtre et des finitions aluminium de haute qualité, soutenus par un support technique précis et un réseau logistique mondial fiable.",
+      "Nos produits ont été utilisés dans plus de 1 200 projets emblématiques à travers le monde, notamment des gratte-ciels, des aéroports internationaux, des hôtels cinq étoiles et de grandes installations industrielles."
+    ]
+  },
+  "catalog": {
+    "title": "Catalogue de matériaux de construction",
+    "categoriesTitle": "Catégories",
+    "all": "Tous les matériaux",
+    "sort": {
+      "label": "Trier :",
+      "default": "Par défaut",
+      "priceAsc": "Prix : croissant",
+      "priceDesc": "Prix : décroissant"
+    },
+    "loading": "Chargement du catalogue…",
+    "empty": "Aucun produit dans cette catégorie pour le moment. Veuillez réessayer plus tard ou contacter l'équipe commerciale.",
+    "custom": {
+      "title": "Besoin de spécifications sur mesure ?",
+      "desc": "Nous proposons des personnalisations de dimensions non standard pour répondre aux besoins spécifiques de votre projet.",
+      "button": "Contactez-nous pour une personnalisation"
     }
   },
   "cart": {
-    "title": "Liste d’achat",
+    "title": "Liste d'achat",
     "empty": {
       "title": "Votre liste est vide",
-      "desc": "Vous n’avez encore ajouté aucun matériau à la liste d’achat.",
+      "desc": "Vous n'avez encore ajouté aucun matériau à la liste d'achat.",
       "cta": "Parcourir le catalogue"
     },
     "unitPrice": "Prix unitaire",
@@ -96,11 +159,11 @@
     "form": {
       "title": "Logistique et contact",
       "country": "Pays de destination",
-      "countryPlaceholder": "Sélectionnez d’abord un pays",
+      "countryPlaceholder": "Sélectionnez d'abord un pays",
       "port": "Port de destination",
       "portPlaceholder": "Sélectionnez un port",
-      "portPlaceholderNeedCountry": "Sélectionnez d’abord un pays",
-      "method": "Mode d’achat",
+      "portPlaceholderNeedCountry": "Sélectionnez d'abord un pays",
+      "method": "Mode d'achat",
       "methodPlaceholder": "Sélectionnez un mode",
       "methodOptions": {
         "exw": "EXW (départ usine)",
@@ -116,7 +179,7 @@
     },
     "summary": {
       "title": "Récapitulatif des coûts",
-      "fillFirst": "Veuillez d’abord renseigner le pays/port, le mode d’achat et toutes les coordonnées à gauche.",
+      "fillFirst": "Veuillez d'abord renseigner le pays/port, le mode d'achat et toutes les coordonnées à gauche.",
       "calculating": "Envoi de la commande et calcul du devis…",
       "orderId": "N° de commande",
       "itemsSubtotal": "Sous-total articles",
@@ -129,7 +192,9 @@
     "submitting": "Envoi…",
     "confirmAndSubmit": "Confirmer et envoyer la commande (générer le devis)",
     "waitingQuote": "Les informations obligatoires sont complètes. Cliquez sur « Confirmer et envoyer la commande » à gauche. Après succès, ce panneau affichera le détail en USD basé sur le CBM et sera synchronisé dans Admin > Commandes.",
-    "agreementNote": "En envoyant, vous acceptez l’accord d’achat de matériaux. Toute modification à gauche effacera ce devis et nécessitera une nouvelle confirmation."
+    "agreementNote": "En envoyant, vous acceptez l'accord d'achat de matériaux. Toute modification à gauche effacera ce devis et nécessitera une nouvelle confirmation.",
+    "submitSuccess": "Soumission réussie ! Le devis est affiché à droite. Vous pouvez le consulter dans « Commandes » dans l'administration.",
+    "submitFailed": "Échec de la soumission"
   },
   "product": {
     "specs": {
@@ -137,11 +202,14 @@
       "empty": "Aucune spécification. Contactez-nous pour les détails."
     },
     "actions": {
-      "addToCart": "Ajouter à la liste d’achat",
+      "addToCart": "Ajouter à la liste d'achat",
       "download": "Télécharger la fiche technique",
       "share": "Partager le produit",
       "consult": "Consulter un expert"
-    }
+    },
+    "inStock": "En stock",
+    "reviewCount": "({{count}} avis clients)",
+    "priceUnit": "USD / unité"
   },
   "projectsPage": {
     "eyebrow": "Réalisations",
@@ -176,7 +244,7 @@
     "linkOfficial": "Site officiel",
     "linkMic": "Made-in-China",
     "privacy": "Politique de confidentialité",
-    "terms": "Conditions d’utilisation",
+    "terms": "Conditions d'utilisation",
     "cookies": "Paramètres des cookies",
     "newsletterTitle": "Newsletter",
     "newsletterDesc": "Laissez votre e-mail pour les nouveautés produits et devis.",

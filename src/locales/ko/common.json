@@ -5,38 +5,38 @@
   "systems": {
     "items": {
       "s1": {
-        "title": "Wall System",
-        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
-        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+        "title": "벽체 시스템",
+        "description": "칭타이 정밀 벽체 시스템은 고강도 경량 철골 프레임과 다용도 석고보드를 결합합니다.",
+        "features": ["높은 하중 지지력", "빠른 모듈식 설치", "우수한 방음 성능", "A급 방화 등급"]
       },
       "s2": {
-        "title": "Ceiling System",
-        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
-        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+        "title": "천장 시스템",
+        "description": "알루미늄 배플, 미네랄울 패널, 석고 천장을 포함하여 상업 및 산업 공간을 위한 실용적이고 아름다운 솔루션입니다.",
+        "features": ["경량 고강도", "내식성 마감", "간편한 점검 접근", "다양한 색상 옵션"]
       },
       "s3": {
-        "title": "Special Board System",
-        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
-        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+        "title": "특수 보드 시스템",
+        "description": "극한 환경을 위한 특수 보드: 방습, 방곰팡이, 방사선 차폐 및 초고경도 옵션.",
+        "features": ["극한 환경 내구성", "의료용 방사선 차폐", "장기 수명", "친환경, 포름알데히드 무함유"]
       }
     }
   },
   "projects": {
     "items": {
       "p1": {
-        "title": "Shanghai Tower Interior Partition Project",
-        "location": "Shanghai, China",
-        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+        "title": "상하이 타워 내부 칸막이 공사",
+        "location": "상하이, 중국",
+        "description": "이 프로젝트는 당사의 고강도 경량 철골 시스템과 A급 방화 석고보드를 사용하여 50,000m² 이상을 시공하였으며, 초고층 건물의 내진 및 방화 성능에서 업계 최고 수준을 달성했습니다."
       },
       "p2": {
-        "title": "Beijing Daxing International Airport Terminal Ceiling",
-        "location": "Beijing, China",
-        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+        "title": "베이징 다싱 국제공항 터미널 천장",
+        "location": "베이징, 중국",
+        "description": "대규모 공공 공간에서의 내구성과 미관을 보장하기 위해 특수 불소수지 코팅 맞춤형 알루미늄 배플 천장 시스템을 제공했습니다."
       },
       "p3": {
-        "title": "Marina Bay Sands Hotel Expansion",
-        "location": "Marina Bay, Singapore",
-        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+        "title": "마리나 베이 샌즈 호텔 확장",
+        "location": "마리나 베이, 싱가포르",
+        "description": "프라이버시와 디자인 미학에 대한 호텔의 높은 요구사항을 충족하는 완벽한 음향 및 마감 솔루션을 제공했습니다."
       }
     }
   },
@@ -71,6 +71,11 @@
     "heroDesc2": "정밀 제조와 글로벌 물류로 당신의 비전을 지원합니다.",
     "browseCatalog": "카탈로그 보기",
     "viewProjects": "프로젝트 보기",
+    "stats": {
+      "years": "업계 경력 (년)",
+      "projects": "글로벌 프로젝트",
+      "satisfaction": "고객 만족도"
+    },
     "consultation": {
       "title": "전문 자재 상담이 필요하신가요?",
       "desc": "엔지니어링 팀이 기술 지원, 자재 선택, 비용 추정까지 도와드립니다.",
@@ -186,8 +191,10 @@
     "hint": "팁: 필수 항목을 모두 입력한 뒤 확인을 눌러주세요. 입력 중에는 자동 견적이 계산되지 않습니다. 확인 후 주문이 생성되고 오른쪽에 USD 견적이 표시됩니다.",
     "submitting": "제출 중…",
     "confirmAndSubmit": "정보 확인 후 주문 제출(견적 생성)",
-    "waitingQuote": "필수 정보가 모두 입력되었습니다. 왼쪽의 “정보 확인 후 주문 제출”을 클릭하세요. 성공 후 이 영역에 CBM 기반 USD 상세가 표시되고 관리자 주문에 동기화됩니다.",
-    "agreementNote": "제출하면 자재 구매 약관에 동의한 것으로 간주됩니다. 왼쪽 정보를 변경하면 이 견적이 초기화되며 다시 확인/제출이 필요합니다."
+    "waitingQuote": "필수 정보가 모두 입력되었습니다. 왼쪽의 «정보 확인 후 주문 제출»을 클릭하세요. 성공 후 이 영역에 CBM 기반 USD 상세가 표시되고 관리자 주문에 동기화됩니다.",
+    "agreementNote": "제출하면 자재 구매 약관에 동의한 것으로 간주됩니다. 왼쪽 정보를 변경하면 이 견적이 초기화되며 다시 확인/제출이 필요합니다.",
+    "submitSuccess": "제출 완료! 견적이 오른쪽에 표시됩니다. 관리자 '주문'에서도 확인할 수 있습니다.",
+    "submitFailed": "제출 실패"
   },
   "product": {
     "specs": {
@@ -199,7 +206,10 @@
       "download": "자료 다운로드",
       "share": "공유",
       "consult": "전문가 상담"
-    }
+    },
+    "inStock": "재고 있음",
+    "reviewCount": "({{count}}건의 고객 리뷰)",
+    "priceUnit": "USD / 단위"
   },
   "projectsPage": {
     "eyebrow": "프로젝트 사례",

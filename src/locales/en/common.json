@@ -12,7 +12,9 @@
     "ko": "한국어",
     "ms": "Bahasa Melayu",
     "th": "ไทย",
-    "vi": "Tiếng Việt"
+    "vi": "Tiếng Việt",
+    "ar": "Arabic",
+    "sw": "Swahili"
   },
   "systems": {
     "items": {
@@ -69,6 +71,11 @@
     "heroDesc2": "With precision manufacturing and global logistics, we support your vision.",
     "browseCatalog": "Browse catalog",
     "viewProjects": "View projects",
+    "stats": {
+      "years": "Years in industry",
+      "projects": "Global projects",
+      "satisfaction": "Client satisfaction"
+    },
     "consultation": {
       "title": "Need professional material advice?",
       "desc": "Our engineering team provides technical support, material selection, and cost estimation.",
@@ -185,7 +192,9 @@
     "submitting": "Submitting…",
     "confirmAndSubmit": "Confirm & submit order (generate quote)",
     "waitingQuote": "Required info is complete. Click “Confirm & submit order” on the left. After success, this panel will show the USD breakdown based on CBM and sync to Admin Orders.",
-    "agreementNote": "Submitting means you agree to the Material Purchase Agreement. Changing any info on the left will clear this quote and requires reconfirmation."
+    "agreementNote": "Submitting means you agree to the Material Purchase Agreement. Changing any info on the left will clear this quote and requires reconfirmation.",
+    "submitSuccess": "Submitted successfully! The quote is displayed on the right. You can view it in Admin > Orders.",
+    "submitFailed": "Submission failed"
   },
   "product": {
     "specs": {
@@ -197,7 +206,10 @@
       "download": "Download datasheet",
       "share": "Share product",
       "consult": "Consult an expert"
-    }
+    },
+    "inStock": "In Stock",
+    "reviewCount": "({{count}} customer reviews)",
+    "priceUnit": "USD / unit"
   },
   "projectsPage": {
     "eyebrow": "Project cases",

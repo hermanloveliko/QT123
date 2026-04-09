@@ -12,7 +12,9 @@
     "ko": "한국어",
     "ms": "Bahasa Melayu",
     "th": "ไทย",
-    "vi": "Tiếng Việt"
+    "vi": "Tiếng Việt",
+    "ar": "阿拉伯语",
+    "sw": "斯瓦希里语"
   },
   "systems": {
     "items": {
@@ -69,6 +71,11 @@
     "heroDesc2": "通过精密工艺与全球物流，为您的宏伟蓝图保驾护航。",
     "browseCatalog": "浏览产品目录",
     "viewProjects": "查看工程案例",
+    "stats": {
+      "years": "行业经验 (年)",
+      "projects": "全球项目",
+      "satisfaction": "客户满意度"
+    },
     "consultation": {
       "title": "需要专业材料咨询？",
       "desc": "我们的工程师团队随时为您提供技术支持、材料选型及成本估算服务。",
@@ -186,7 +193,9 @@
     "submitting": "提交中…",
     "confirmAndSubmit": "确认信息并提交订单（生成报价）",
     "waitingQuote": "必填信息已填齐。请点击左侧「确认信息并提交订单」：提交成功后此处将显示基于 CBM 的 USD 明细，并同步写入后台「订单」。",
-    "agreementNote": "提交即表示同意《材料采购协议》。修改左侧任意信息将清空此处报价，需重新确认提交。"
+    "agreementNote": "提交即表示同意《材料采购协议》。修改左侧任意信息将清空此处报价，需重新确认提交。",
+    "submitSuccess": "已提交成功！报价已显示在右侧，您可在后台「订单」中查看本条记录。",
+    "submitFailed": "提交失败"
   },
   "product": {
     "specs": {
@@ -198,7 +207,10 @@
       "download": "下载技术手册",
       "share": "分享产品",
       "consult": "咨询专家"
-    }
+    },
+    "inStock": "有现货",
+    "reviewCount": "({{count}} 条客户评价)",
+    "priceUnit": "USD / 单位"
   },
   "projectsPage": {
     "eyebrow": "工程案例",

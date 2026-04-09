@@ -5,38 +5,38 @@
   "systems": {
     "items": {
       "s1": {
-        "title": "Wall System",
-        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
-        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+        "title": "نظام القواطع الجدارية",
+        "description": "تجمع أنظمة القواطع الدقيقة من تشينغتاي بين الهياكل الفولاذية عالية القوة وألواح الجبس متعددة الاستخدامات.",
+        "features": ["قدرة تحمّل عالية", "تركيب معياري سريع", "عزل صوتي ممتاز", "تصنيف حريق الفئة A"]
       },
       "s2": {
-        "title": "Ceiling System",
-        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
-        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+        "title": "نظام الأسقف",
+        "description": "يشمل بافلات الألمنيوم وألواح الصوف المعدني وأسقف الجبس — حلول عملية وأنيقة للمساحات التجارية والصناعية.",
+        "features": ["خفيف ومتين", "طلاء مقاوم للتآكل", "سهولة الوصول للصيانة", "خيارات ألوان غنية"]
       },
       "s3": {
-        "title": "Special Board System",
-        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
-        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+        "title": "نظام الألواح الخاصة",
+        "description": "ألواح خاصة مصممة للبيئات القاسية: مقاومة للرطوبة والعفن وحماية من الإشعاع وصلابة فائقة.",
+        "features": ["متانة في البيئات القاسية", "حماية إشعاعية بمعايير طبية", "عمر خدمة طويل", "صديق للبيئة، خالٍ من الفورمالدهيد"]
       }
     }
   },
   "projects": {
     "items": {
       "p1": {
-        "title": "Shanghai Tower Interior Partition Project",
-        "location": "Shanghai, China",
-        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+        "title": "مشروع القواطع الداخلية لبرج شنغهاي",
+        "location": "شنغهاي، الصين",
+        "description": "استخدم هذا المشروع نظام الهياكل الفولاذية عالية القوة وألواح الجبس المقاومة للحريق من الفئة A، بمساحة تزيد عن 50,000 م²، محققًا أداءً رائدًا على مستوى الصناعة في مقاومة الزلازل والحرائق للمباني فائقة الارتفاع."
       },
       "p2": {
-        "title": "Beijing Daxing International Airport Terminal Ceiling",
-        "location": "Beijing, China",
-        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+        "title": "سقف صالة مطار بكين داشينغ الدولي",
+        "location": "بكين، الصين",
+        "description": "قدمنا أنظمة أسقف بافلات ألمنيوم مخصصة بطلاء فلوروكربون خاص لضمان المتانة والجمال في الأماكن العامة ذات الحركة الكثيفة."
       },
       "p3": {
-        "title": "Marina Bay Sands Hotel Expansion",
-        "location": "Marina Bay, Singapore",
-        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+        "title": "توسعة فندق مارينا باي ساندز",
+        "location": "مارينا باي، سنغافورة",
+        "description": "قدمنا حلولاً صوتية وتشطيبات متكاملة لتلبية متطلبات الفندق العالية من حيث الخصوصية وجماليات التصميم."
       }
     }
   },
@@ -71,6 +71,11 @@
     "heroDesc2": "بدقة التصنيع ولوجستيات عالمية، ندعم رؤيتك.",
     "browseCatalog": "تصفح الكتالوج",
     "viewProjects": "عرض المشاريع",
+    "stats": {
+      "years": "سنوات الخبرة",
+      "projects": "مشاريع عالمية",
+      "satisfaction": "رضا العملاء"
+    },
     "consultation": {
       "title": "تحتاج إلى استشارة مواد احترافية؟",
       "desc": "يوفّر فريقنا الهندسي دعماً تقنياً واختيار مواد وتقديراً للتكاليف.",
@@ -186,8 +191,10 @@
     "hint": "ملاحظة: املأ جميع الحقول المطلوبة ثم اضغط تأكيد. لن يقوم النظام بتسعير تلقائي أثناء الكتابة. بعد التأكيد سيتم إنشاء طلب وسيظهر عرض السعر بالدولار في الجهة اليمنى.",
     "submitting": "جارٍ الإرسال…",
     "confirmAndSubmit": "تأكيد وإرسال الطلب (إنشاء عرض سعر)",
-    "waitingQuote": "تم استكمال المعلومات المطلوبة. اضغط على “تأكيد وإرسال الطلب” على اليسار. بعد النجاح ستظهر هنا تفاصيل USD حسب CBM وسيتم المزامنة إلى الطلبات في لوحة الإدارة.",
-    "agreementNote": "الإرسال يعني موافقتك على اتفاقية شراء المواد. تغيير أي معلومات على اليسار سيؤدي إلى مسح هذا العرض ويتطلب التأكيد مجددًا."
+    "waitingQuote": "تم استكمال المعلومات المطلوبة. اضغط على «تأكيد وإرسال الطلب» على اليسار. بعد النجاح ستظهر هنا تفاصيل USD حسب CBM وسيتم المزامنة إلى الطلبات في لوحة الإدارة.",
+    "agreementNote": "الإرسال يعني موافقتك على اتفاقية شراء المواد. تغيير أي معلومات على اليسار سيؤدي إلى مسح هذا العرض ويتطلب التأكيد مجددًا.",
+    "submitSuccess": "تم الإرسال بنجاح! يظهر عرض السعر على اليمين ويمكنك الاطلاع عليه في قسم «الطلبات» في لوحة الإدارة.",
+    "submitFailed": "فشل الإرسال"
   },
   "product": {
     "specs": {
@@ -199,7 +206,10 @@
       "download": "تنزيل الملف",
       "share": "مشاركة المنتج",
       "consult": "استشارة خبير"
-    }
+    },
+    "inStock": "متوفر",
+    "reviewCount": "({{count}} تقييم عملاء)",
+    "priceUnit": "USD / الوحدة"
   },
   "projectsPage": {
     "eyebrow": "حالات المشاريع",

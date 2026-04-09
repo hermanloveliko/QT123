@@ -5,38 +5,38 @@
   "systems": {
     "items": {
       "s1": {
-        "title": "Wall System",
-        "description": "Qingtai precision wall systems combine high-strength steel framing with versatile gypsum boards.",
-        "features": ["High load capacity", "Fast modular installation", "Excellent sound insulation", "A-class fire rating"]
+        "title": "Mfumo wa Kuta za Mgawanyo",
+        "description": "Mifumo sahihi ya kuta ya Qingtai inachanganya fremu za chuma zenye nguvu kubwa na mabao ya gypsum yanayoweza kutumika kwa njia nyingi.",
+        "features": ["Uwezo mkubwa wa kubeba mzigo", "Ufungaji wa haraka wa moduli", "Kuzuia sauti bora", "Daraja la moto la A"]
       },
       "s2": {
-        "title": "Ceiling System",
-        "description": "Including aluminum baffles, mineral wool panels, and gypsum ceilings—practical and beautiful solutions for commercial and industrial spaces.",
-        "features": ["Lightweight & strong", "Corrosion-resistant finishes", "Easy maintenance access", "Rich color options"]
+        "title": "Mfumo wa Dari",
+        "description": "Unajumuisha bafeli za alumini, paneli za pamba ya madini na dari za gypsum — suluhisho bora na za vitendo kwa nafasi za kibiashara na viwandani.",
+        "features": ["Nyepesi na imara", "Umaliziaji unaostahimili kutu", "Urahisi wa kufikia kwa matengenezo", "Chaguzi nyingi za rangi"]
       },
       "s3": {
-        "title": "Special Board System",
-        "description": "Special boards engineered for extreme environments: moisture-proof, mold-resistant, radiation-shielding, and ultra-hard options.",
-        "features": ["Extreme-environment durability", "Medical-grade radiation shielding", "Long service life", "Eco-friendly, formaldehyde-free"]
+        "title": "Mfumo wa Bodi Maalum",
+        "description": "Bodi maalum kwa mazingira makali: kuzuia unyevu, kuvu, mionzi na ugumu wa hali ya juu.",
+        "features": ["Ustahimilivu katika mazingira makali", "Kinga ya mionzi ya kiwango cha matibabu", "Maisha marefu ya huduma", "Rafiki kwa mazingira, bila formaldehyde"]
       }
     }
   },
   "projects": {
     "items": {
       "p1": {
-        "title": "Shanghai Tower Interior Partition Project",
+        "title": "Mradi wa Kuta za Ndani wa Mnara wa Shanghai",
         "location": "Shanghai, China",
-        "description": "This project used our high-strength steel framing system and A-class fire-resistant gypsum boards, covering over 50,000 m², achieving industry-leading seismic and fire performance in supertall buildings."
+        "description": "Mradi huu ulitumia mfumo wetu wa fremu za chuma zenye nguvu kubwa na mabao ya gypsum yanayostahimili moto daraja A, yakifunika zaidi ya m² 50,000, na kufikia utendaji bora wa kustahimili tetemeko na moto katika majengo marefu sana."
       },
       "p2": {
-        "title": "Beijing Daxing International Airport Terminal Ceiling",
+        "title": "Dari ya Kituo cha Uwanja wa Ndege wa Kimataifa wa Beijing Daxing",
         "location": "Beijing, China",
-        "description": "We delivered customized aluminum baffle ceiling systems with special fluorocarbon coating to ensure durability and aesthetics in high-traffic public spaces."
+        "description": "Tulisambaza mifumo ya dari ya bafeli za alumini iliyotengenezwa kwa maagizo maalum na upakaji wa fluorocarbon ili kuhakikisha ustahimilivu na uzuri katika maeneo ya umma yenye msongamano mkubwa."
       },
       "p3": {
-        "title": "Marina Bay Sands Hotel Expansion",
+        "title": "Upanuzi wa Hoteli ya Marina Bay Sands",
         "location": "Marina Bay, Singapore",
-        "description": "We provided complete acoustic and finishing solutions to meet the hotel’s high requirements for privacy and design aesthetics."
+        "description": "Tulitoa suluhisho kamili za akustiki na umaliziaji ili kutimiza mahitaji ya juu ya hoteli kuhusu faragha na uzuri wa muundo."
       }
     }
   },
@@ -71,6 +71,11 @@
     "heroDesc2": "Kwa utengenezaji sahihi na usafirishaji wa kimataifa, tunaunga mkono maono yako.",
     "browseCatalog": "Vinjari katalogi",
     "viewProjects": "Tazama miradi",
+    "stats": {
+      "years": "Miaka ya uzoefu",
+      "projects": "Miradi ya kimataifa",
+      "satisfaction": "Kuridhika kwa wateja"
+    },
     "consultation": {
       "title": "Unahitaji ushauri wa kitaalamu wa vifaa?",
       "desc": "Timu yetu ya uhandisi hutoa msaada wa kiufundi, uteuzi wa vifaa, na makadirio ya gharama.",
@@ -186,8 +191,10 @@
     "hint": "Kidokezo: jaza taarifa zote zinazohitajika kisha thibitisha. Mfumo hautatoa nukuu kiotomatiki wakati unaandika. Baada ya kuthibitisha, oda itaundwa na nukuu ya USD itaonekana upande wa kulia.",
     "submitting": "Inatuma…",
     "confirmAndSubmit": "Thibitisha na tuma oda (tengeneza nukuu)",
-    "waitingQuote": "Taarifa za lazima zimekamilika. Bofya “Thibitisha na tuma oda” upande wa kushoto. Baada ya kufanikiwa, hapa utaona maelezo ya USD kulingana na CBM na yatasawazishwa kwenye Oda za Admin.",
-    "agreementNote": "Kutuma kunamaanisha umekubali Mkataba wa Ununuzi wa Vifaa. Kubadilisha taarifa yoyote upande wa kushoto kutafuta nukuu hii na kuhitaji kuthibitisha tena."
+    "waitingQuote": "Taarifa za lazima zimekamilika. Bofya «Thibitisha na tuma oda» upande wa kushoto. Baada ya kufanikiwa, hapa utaona maelezo ya USD kulingana na CBM na yatasawazishwa kwenye Oda za Admin.",
+    "agreementNote": "Kutuma kunamaanisha umekubali Mkataba wa Ununuzi wa Vifaa. Kubadilisha taarifa yoyote upande wa kushoto kutafuta nukuu hii na kuhitaji kuthibitisha tena.",
+    "submitSuccess": "Imetumwa kwa mafanikio! Nukuu inaonekana upande wa kulia. Unaweza kuiona katika sehemu ya 'Oda' kwenye Admin.",
+    "submitFailed": "Kutuma kumeshindwa"
   },
   "product": {
     "specs": {
@@ -199,7 +206,10 @@
       "download": "Pakua hati",
       "share": "Shiriki bidhaa",
       "consult": "Wasiliana na mtaalamu"
-    }
+    },
+    "inStock": "Ipo stokini",
+    "reviewCount": "(Maoni {{count}} ya wateja)",
+    "priceUnit": "USD / kipande"
   },
   "projectsPage": {
     "eyebrow": "Mifano ya miradi",
