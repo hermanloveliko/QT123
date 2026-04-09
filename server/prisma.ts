@@ -1,5 +1,5 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@prisma/client";
+import prismaPkg from "@prisma/client";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -8,6 +8,8 @@ if (!connectionString) {
 }
 
 const adapter = new PrismaPg({ connectionString });
+
+const { PrismaClient } = prismaPkg as unknown as { PrismaClient: new (opts: any) => any };
 
 export const prisma = new PrismaClient({ adapter });
 
