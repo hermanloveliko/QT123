@@ -98,7 +98,13 @@ export async function apiJson<T>(path: string, init?: RequestInit): Promise<T> {
     mergedHeaders.Authorization = `Bearer ${token}`;
   }
 
-  const url = new URL(`${API_BASE}${path}`);
+  const base =
+    API_BASE && String(API_BASE).trim() !== ""
+      ? String(API_BASE)
+      : typeof window !== "undefined"
+        ? window.location.origin
+        : "http://localhost";
+  const url = new URL(path, base);
   if (!url.searchParams.get("lang")) url.searchParams.set("lang", lang);
 
   const res = await fetch(url.toString(), {
