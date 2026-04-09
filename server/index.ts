@@ -13,6 +13,14 @@ import { prisma } from "./prisma";
 const app = express();
 const PORT = Number(process.env.API_PORT || 8787);
 const WEB_ORIGIN = process.env.WEB_ORIGIN || "http://localhost:3000";
+const WEB_ORIGINS = Array.from(
+  new Set(
+    String(process.env.WEB_ORIGINS || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  ),
+);
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || "dev-secret";
 const AI_KNOWLEDGE_DIR = process.env.AI_KNOWLEDGE_DIR || "C:\\Users\\李\\Desktop\\网站修改方向\\AI训练资料";
 const AI_KNOWLEDGE_MAX_CHARS = Number(process.env.AI_KNOWLEDGE_MAX_CHARS || 16000);
@@ -108,11 +116,14 @@ app.use(
     origin(origin, cb) {
       if (!origin) return cb(null, true);
       if (origin === WEB_ORIGIN) return cb(null, true);
+      if (WEB_ORIGINS.includes(origin)) return cb(null, true);
       if (/^http:\/\/localhost:\d+$/.test(origin)) return cb(null, true);
       if (/^http:\/\/192\.168\.\d+\.\d+:\d+$/.test(origin)) return cb(null, true);
       // 允许直接用服务器 IP/域名访问前端（例如 http://43.162.107.11），
       // 当前端与 API 不同端口时（80 vs 8787）会触发 CORS，需要放行该来源。
       if (/^https?:\/\/\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?$/.test(origin)) return cb(null, true);
+      // 允许域名访问（建议通过 WEB_ORIGINS 配置更精确）
+      if (/^https?:\/\/(?:www\.)?qingtai-group\.store(?::\d+)?$/i.test(origin)) return cb(null, true);
       return cb(new Error("CORS blocked"), false);
     },
     credentials: true,
