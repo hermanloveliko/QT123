@@ -1241,23 +1241,29 @@ app.post("/api/public/ai/chat", async (req, res) => {
   });
   const PRODUCT_CATALOG_TEXT = catalogLines.join("\n").slice(0, 12000);
 
-  const aiFallbackByLang: Record<string, string> = {
-    zh: "好的，我是青泰销售顾问，咱们长话短说：需要哪类产品、面积尺寸、我帮你算量并协助下单。",
-    en: "Got it — I'm your Qingtai sales assistant. Tell me the product type and your dimensions/area, and I'll estimate quantities and help you place an order.",
-    fr: "Bien reçu — je suis votre assistant commercial Qingtai. Indiquez-moi le type de produit et les dimensions, et je calculerai les quantités.",
-    es: "Entendido — soy su asistente comercial de Qingtai. Dígame el tipo de producto y las dimensiones, y le estimaré las cantidades.",
-    pt: "Entendido — sou seu assistente comercial Qingtai. Diga-me o tipo de produto e as dimensões, e eu estimarei as quantidades.",
-    ru: "Понял — я ваш торговый консультант Qingtai. Укажите тип продукции и размеры, а я рассчитаю количество и помогу оформить заказ.",
-    ko: "알겠습니다 — Qingtai 영업 어시스턴트입니다. 필요한 제품 종류와 면적/규격을 알려주시면 수량을 산출하고 주문을 도와드리겠습니다.",
-    ms: "Baik — saya pembantu jualan Qingtai. Beritahu jenis produk dan dimensi, saya akan anggarkan kuantiti serta bantu membuat pesanan.",
-    th: "ได้เลย — ผมคือผู้ช่วยฝ่ายขาย Qingtai บอกประเภทสินค้าและขนาดที่ต้องการ แล้วผมจะคำนวณปริมาณและช่วยสั่งซื้อให้ครับ",
-    vi: "Được rồi — tôi là trợ lý bán hàng Qingtai. Cho tôi biết loại sản phẩm và kích thước, tôi sẽ tính toán số lượng và hỗ trợ đặt hàng.",
-    ar: "تمام — أنا مستشار المبيعات من Qingtai. أخبرني بنوع المنتج والأبعاد/المساحة، وسأحسب الكميات وأساعدك في الطلب.",
-    sw: "Sawa — mimi ni msaidizi wako wa mauzo wa Qingtai. Niambie aina ya bidhaa na vipimo, nami nitakadiria kiasi na kukusaidia kuweka oda.",
-  };
-  let aiContent = aiFallbackByLang[userMsgLang] || aiFallbackByLang.en;
+  function fallbackReply(lang: Lang, userText: string): string {
+    const t = String(userText || "").trim();
+    if (lang === "zh") {
+      const lower = t.toLowerCase();
+      const isGreeting = /^(你好|您好|hi|hello|hey)\b/.test(t) || /\b(hi|hello|hey)\b/.test(lower);
+      if (isGreeting) {
+        return "你好～我是青泰销售顾问。你想要哪类材料（轻钢龙骨/石膏板/吊顶铝材等）？另外项目在什么国家/城市？我好按场景给你推荐。";
+      }
+      const excerpt = t.length > 60 ? `${t.slice(0, 60)}…` : t;
+      return `收到：${excerpt}\n\n为了更快给你报价/算量，发我 3 个信息：\n1）需要的材料类型\n2）面积/长度×宽度（或图纸）\n3）交付国家/港口（如有）`;
+    }
+    if (lang === "en") {
+      return "Got it. Tell me the material type + your dimensions/area + destination country/port, and I’ll estimate quantities and help you order.";
+    }
+    // Other languages: keep concise and non-repetitive by echoing the request topic lightly.
+    const excerpt = t.length > 48 ? `${t.slice(0, 48)}…` : t;
+    return `${excerpt ? `Noted: ${excerpt}\n\n` : ""}Tell me the product type, dimensions/area, and destination, and I’ll help with quantities and ordering.`;
+  }
+
+  let aiContent = fallbackReply(userMsgLang, message);
   let deepseekOk = false;
   const toolProductIds = new Set<string>();
+  let deepseekErr: string | null = null;
 
   async function runAiTool(name: string, rawArgs: string): Promise<string> {
     let args: Record<string, unknown> = {};
@@ -1435,8 +1441,9 @@ app.post("/api/public/ai/chat", async (req, res) => {
         }
         break;
       }
-    } catch {
-      // ignore
+    } catch (e: any) {
+      deepseekErr = e?.message || String(e || "deepseek_failed");
+      console.error("[ai] deepseek call failed:", deepseekErr);
     }
   }
 
@@ -1450,6 +1457,10 @@ app.post("/api/public/ai/chat", async (req, res) => {
   if (!deepseekOk && responseProducts.length > 0) {
     const names = responseProducts.map((p) => p.name).join("、");
     aiContent = `已为您匹配：${names}。请先查看下方产品卡片了解规格与价格，需要再一键加购。`;
+  }
+  if (!deepseekOk && responseProducts.length === 0 && deepseekErr) {
+    // Keep user experience smooth: provide actionable fallback without exposing internal stack traces.
+    aiContent = fallbackReply(userMsgLang, message);
   }
 
   const aiMessage = await prisma.aiMessage.create({
