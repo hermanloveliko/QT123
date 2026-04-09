@@ -110,6 +110,9 @@ app.use(
       if (origin === WEB_ORIGIN) return cb(null, true);
       if (/^http:\/\/localhost:\d+$/.test(origin)) return cb(null, true);
       if (/^http:\/\/192\.168\.\d+\.\d+:\d+$/.test(origin)) return cb(null, true);
+      // 允许直接用服务器 IP/域名访问前端（例如 http://43.162.107.11），
+      // 当前端与 API 不同端口时（80 vs 8787）会触发 CORS，需要放行该来源。
+      if (/^https?:\/\/\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?$/.test(origin)) return cb(null, true);
       return cb(new Error("CORS blocked"), false);
     },
     credentials: true,

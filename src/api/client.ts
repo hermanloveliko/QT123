@@ -1,4 +1,6 @@
-export const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8787";
+const env = import.meta.env as any;
+// 生产环境默认走同源（/api），避免 https→http / 端口不通导致 Failed to fetch
+export const API_BASE = env?.VITE_API_BASE ?? (env?.DEV ? "http://localhost:8787" : "");
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {

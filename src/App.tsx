@@ -2110,7 +2110,7 @@ const HomePage = ({
     </section>
 
     {/* Consultation Box */}
-    <section className="max-w-7xl mx-auto px-4 -mt-16 relative z-10">
+    <section className="max-w-7xl mx-auto px-4 mt-8 md:mt-12 mb-8 relative z-10">
       <div
         style={consultationBoxStyle}
         className="backdrop-blur-xl shadow-2xl p-8 md:p-12 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center border-t-4 border-heat-accent rounded-3xl"

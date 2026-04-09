@@ -1,4 +1,12 @@
-export const API_BASE = (import.meta as any).env?.VITE_API_BASE || "http://localhost:8787";
+function defaultApiBase(): string {
+  // 生产环境优先走同源（/api），避免端口/协议不一致导致 Failed to fetch（尤其 https -> http 会被浏览器拦截）
+  // 如需单独 API 域名或端口，请通过 VITE_API_BASE 显式配置。
+  const env = (import.meta as any).env || {};
+  if (env.DEV) return "http://localhost:8787";
+  return "";
+}
+
+export const API_BASE = (import.meta as any).env?.VITE_API_BASE ?? defaultApiBase();
 
 export const SUPPORTED_LANGS = [
   "zh",
