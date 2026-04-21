@@ -14,7 +14,7 @@ import {
   type Product,
 } from "./lib/api";
 import { useTranslation } from "react-i18next";
-import { consumeAdminEntryUnlockFromUrl, getAdminEntrySecret, shouldExposeAdminUi } from "./lib/admin-entry";
+import { consumeAdminEntryUnlockFromUrl, shouldExposeAdminUi } from "./lib/admin-entry";
 import { GB, ES, PT, MY, CN, FR, RU, KR, TH, VN, SA, TZ } from "country-flag-icons/react/3x2";
 import { 
   Menu, 
@@ -3456,13 +3456,9 @@ const CartPage = ({
 export default function App(props?: { initialPage?: Page }) {
   const { t, i18n } = useTranslation("common");
   const [lang, setLangState] = useState<Lang>(getLang());
-  const adminSecret = getAdminEntrySecret();
   const [page, setPage] = useState<Page>(() => {
     consumeAdminEntryUnlockFromUrl();
-    const initial = props?.initialPage ?? "home";
-    const gateOk = shouldExposeAdminUi();
-    if (initial === "admin" && import.meta.env.PROD && adminSecret && !gateOk) return "home";
-    return initial;
+    return props?.initialPage ?? "home";
   });
   const [cart, setCart] = useState<{ productId: string; qty: number }[]>([]);
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -3492,14 +3488,6 @@ export default function App(props?: { initialPage?: Page }) {
       i18n.off("languageChanged", next);
     };
   }, [i18n]);
-
-  useEffect(() => {
-    if (props?.initialPage !== "admin") return;
-    if (!import.meta.env.PROD) return;
-    if (!adminSecret) return;
-    if (shouldExposeAdminUi()) return;
-    setPage("home");
-  }, [props?.initialPage, adminSecret]);
 
   // Keep active selections stable across language changes (by id)
   useEffect(() => {

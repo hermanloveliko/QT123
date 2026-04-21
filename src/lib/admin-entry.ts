@@ -50,6 +50,7 @@ export function consumeAdminEntryUnlockFromUrl(): boolean {
   }
 }
 
+/** 仅控制导航栏「管理员」按钮；/admin 路由始终可打开登录（仍需账号密码） */
 export function shouldExposeAdminUi(): boolean {
   const secret = getAdminEntrySecret();
   if (!secret) return import.meta.env.DEV;

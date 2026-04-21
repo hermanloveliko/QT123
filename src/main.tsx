@@ -5,19 +5,12 @@ import './index.css';
 import AdminApp from './admin/AdminApp.tsx';
 import { initI18n } from "./i18n";
 import { I18nextProvider } from "react-i18next";
-import { consumeAdminEntryUnlockFromUrl, getAdminEntrySecret, shouldExposeAdminUi } from "./lib/admin-entry";
+import { consumeAdminEntryUnlockFromUrl } from "./lib/admin-entry";
 
+/** 访问 /admin 始终进入后台壳子（仍需账号密码）；密钥只控制导航栏是否显示入口，见 shouldExposeAdminUi */
 const isAdminPath = window.location.pathname.startsWith("/admin");
-const adminSecret = getAdminEntrySecret();
 if (isAdminPath) consumeAdminEntryUnlockFromUrl();
-const isAdmin =
-  isAdminPath && (!import.meta.env.PROD || !adminSecret || shouldExposeAdminUi());
-
-if (isAdminPath && import.meta.env.PROD && adminSecret && !isAdmin) {
-  const url = new URL(window.location.href);
-  url.pathname = "/";
-  window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
-}
+const isAdmin = isAdminPath;
 
 const rootEl = document.getElementById("root")!;
 const root = createRoot(rootEl);
