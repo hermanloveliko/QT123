@@ -125,12 +125,30 @@ export async function apiJson<T>(path: string, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
+function normalizeDisplayImageUrl(raw: string): string {
+  const u = String(raw || "").trim();
+  if (!u) return u;
+  if (typeof window === "undefined" || window.location.protocol !== "https:") return u;
+  if (!u.startsWith("http://")) return u;
+  try {
+    const parsed = new URL(u);
+    if (parsed.protocol !== "http:") return u;
+    if (parsed.host !== window.location.host) return u;
+    parsed.protocol = "https:";
+    return parsed.toString();
+  } catch {
+    return u;
+  }
+}
+
 export function toLegacyProduct(p: ApiProduct): Product {
   const sorted = (p.images || []).slice().sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   const urls = sorted.map((i) => i.url).filter(Boolean);
-  const cover = p.imageCoverUrl || urls[0] || "https://picsum.photos/seed/material/800/600";
-  const rest = p.imageCoverUrl ? urls : urls.slice(1);
-  const gallery = [cover, ...rest.filter((u) => u !== cover)];
+  const normUrls = urls.map(normalizeDisplayImageUrl);
+  const coverPick = p.imageCoverUrl ? String(p.imageCoverUrl) : normUrls[0] || "https://picsum.photos/seed/material/800/600";
+  const cover = normalizeDisplayImageUrl(coverPick);
+  const rest = p.imageCoverUrl ? normUrls : normUrls.slice(1);
+  const gallery = [cover, ...rest.filter((u) => u && u !== cover)];
   return {
     id: p.id,
     name: p.name,

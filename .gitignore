@@ -7,3 +7,6 @@ uploads/
 *.log
 .env*
 !.env.example
+
+# 误放的 SSH/拷贝产物（勿入库）
+server/root@*

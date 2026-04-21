@@ -11,6 +11,8 @@ import { z } from "zod";
 import { prisma } from "./prisma";
 
 const app = express();
+// Behind Nginx / a load balancer, req.protocol is otherwise "http" and generated asset URLs become mixed content on HTTPS sites.
+app.set("trust proxy", 1);
 const PORT = Number(process.env.API_PORT || 8787);
 const WEB_ORIGIN = process.env.WEB_ORIGIN || "http://localhost:3000";
 const WEB_ORIGINS = Array.from(
@@ -22,6 +24,8 @@ const WEB_ORIGINS = Array.from(
   ),
 );
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || "dev-secret";
+/** 生产环境建议设置：对外访问站点的根 URL（无尾斜杠）。上传返回的图片地址将固定用此域名+协议，不依赖反代头。例：https://www.example.com */
+const PUBLIC_APP_URL = String(process.env.PUBLIC_APP_URL || "").replace(/\/+$/, "");
 const AI_KNOWLEDGE_DIR = process.env.AI_KNOWLEDGE_DIR || "C:\\Users\\李\\Desktop\\网站修改方向\\AI训练资料";
 const AI_KNOWLEDGE_MAX_CHARS = Number(process.env.AI_KNOWLEDGE_MAX_CHARS || 16000);
 
@@ -322,6 +326,29 @@ function auth(req: AuthedRequest, res: express.Response, next: express.NextFunct
   }
 }
 
+function prismaWriteConflictMessage(e: any): string | null {
+  if (e?.code !== "P2002") return null;
+  const meta = e?.meta;
+  const fields = meta?.target ?? meta?.constraint?.fields;
+  if (Array.isArray(fields) && fields.length) return `数据冲突：字段 ${fields.join(", ")} 已存在，请修改后重试`;
+  return "数据冲突：与已有记录重复，请修改后重试";
+}
+
+async function runAdminWrite<T>(res: express.Response, action: () => Promise<T>, fallbackMsg: string) {
+  try {
+    const out = await action();
+    return out;
+  } catch (e: any) {
+    const conflict = prismaWriteConflictMessage(e);
+    if (conflict) {
+      res.status(409).json({ message: conflict });
+      return null;
+    }
+    res.status(500).json({ message: e?.message || fallbackMsg });
+    return null;
+  }
+}
+
 function computeCbm(p: { cbmPerUnit: any; lengthCm: number | null; widthCm: number | null; heightCm: number | null }) {
   if (p.cbmPerUnit != null) return Number(p.cbmPerUnit);
   if (p.lengthCm && p.widthCm && p.heightCm) return (p.lengthCm * p.widthCm * p.heightCm) / 1000000;
@@ -330,6 +357,7 @@ function computeCbm(p: { cbmPerUnit: any; lengthCm: number | null; widthCm: numb
 
 const PUBLIC_SITE_SETTING_KEYS = [
   "contact",
+  "home.hero",
   "home.consultation",
   "home.systems",
   "home.projects",
@@ -424,6 +452,21 @@ app.get("/api/public/site-settings", async (req, res) => {
     map[row.key] = (loc as any)?.value ?? row.value;
   }
   res.json(map);
+});
+
+app.get("/api/public/categories", async (req, res) => {
+  const { lang, fallback } = resolveLang(req);
+  const rows = await prisma.category.findMany({
+    where: { enabled: true },
+    orderBy: { sortOrder: "asc" },
+    include: { i18n: { where: { lang: { in: [lang as any, fallback as any] } } } },
+  });
+  res.json(
+    rows.map((c) => {
+      const loc = pickLocalized((c as any).i18n, lang, fallback);
+      return { id: c.id, name: (loc as any)?.name ?? c.name, sortOrder: c.sortOrder };
+    }),
+  );
 });
 
 app.post("/api/admin/login", async (req, res) => {
@@ -893,8 +936,8 @@ app.put("/api/admin/products/:id/i18n", auth, async (req, res) => {
   res.json({ ok: true, lang: row.lang });
 });
 app.post("/api/admin/products", auth, async (req, res) => {
-  const row = await prisma.product.create({ data: req.body });
-  res.json(row);
+  const row = await runAdminWrite(res, () => prisma.product.create({ data: req.body }), "创建产品失败");
+  if (row) res.json(row);
 });
 app.put("/api/admin/products/:id", auth, async (req, res) => {
   const row = await prisma.product.update({ where: { id: req.params.id }, data: req.body });
@@ -932,8 +975,8 @@ app.put("/api/admin/categories/:id/i18n", auth, async (req, res) => {
   res.json({ ok: true });
 });
 app.post("/api/admin/categories", auth, async (req, res) => {
-  const row = await prisma.category.create({ data: req.body });
-  res.json(row);
+  const row = await runAdminWrite(res, () => prisma.category.create({ data: req.body }), "创建分类失败");
+  if (row) res.json(row);
 });
 app.put("/api/admin/categories/:id", auth, async (req, res) => {
   const row = await prisma.category.update({ where: { id: req.params.id }, data: req.body });
@@ -944,8 +987,8 @@ app.delete("/api/admin/categories/:id", auth, async (req, res) => {
   res.json({ ok: true });
 });
 app.post("/api/admin/subcategories", auth, async (req, res) => {
-  const row = await prisma.subcategory.create({ data: req.body });
-  res.json(row);
+  const row = await runAdminWrite(res, () => prisma.subcategory.create({ data: req.body }), "创建子分类失败");
+  if (row) res.json(row);
 });
 app.get("/api/admin/subcategories/:id/i18n", auth, async (req, res) => {
   const id = req.params.id;
@@ -1012,10 +1055,16 @@ app.get("/api/admin/ports", auth, async (_req, res) => {
   const rows = await prisma.port.findMany({ include: { country: true, pricing: true } });
   res.json(rows);
 });
-app.post("/api/admin/countries", auth, async (req, res) => res.json(await prisma.country.create({ data: req.body })));
+app.post("/api/admin/countries", auth, async (req, res) => {
+  const row = await runAdminWrite(res, () => prisma.country.create({ data: req.body }), "创建国家失败");
+  if (row) res.json(row);
+});
 app.put("/api/admin/countries/:id", auth, async (req, res) => res.json(await prisma.country.update({ where: { id: req.params.id }, data: req.body })));
 app.delete("/api/admin/countries/:id", auth, async (req, res) => res.json(await prisma.country.delete({ where: { id: req.params.id } })));
-app.post("/api/admin/ports", auth, async (req, res) => res.json(await prisma.port.create({ data: req.body })));
+app.post("/api/admin/ports", auth, async (req, res) => {
+  const row = await runAdminWrite(res, () => prisma.port.create({ data: req.body }), "创建港口失败");
+  if (row) res.json(row);
+});
 app.put("/api/admin/ports/:id", auth, async (req, res) => res.json(await prisma.port.update({ where: { id: req.params.id }, data: req.body })));
 app.delete("/api/admin/ports/:id", auth, async (req, res) => res.json(await prisma.port.delete({ where: { id: req.params.id } })));
 
@@ -1498,8 +1547,11 @@ app.get("/api/admin/ai-conversations", auth, async (_req, res) => {
   res.json(rows);
 });
 
-function uploadUrl(req: express.Request, filePath: string) {
-  return `${req.protocol}://${req.get("host")}/uploads/${path.basename(filePath)}`;
+function uploadUrl(_req: express.Request, filePath: string) {
+  const name = path.basename(filePath);
+  // 同源部署（前端与 API 同域名）：返回相对路径，浏览器始终按当前页面协议请求，避免 https 页面加载 http 混链导致图片被拦截。
+  if (PUBLIC_APP_URL) return `${PUBLIC_APP_URL}/uploads/${name}`;
+  return `/uploads/${name}`;
 }
 
 app.post("/api/admin/upload", auth, (req, res) => {

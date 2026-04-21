@@ -74,6 +74,32 @@ async function main() {
   });
 
   await prisma.siteSetting.upsert({
+    where: { key: "home.hero" },
+    update: {},
+    create: {
+      key: "home.hero",
+      value: {
+        heroImageUrl: "",
+        heroImageAlt: "",
+        overlayOpacity: 0.6,
+        badge: "",
+        heroTitleLine1: "",
+        heroTitleAccent: "",
+        heroDesc1: "",
+        heroDesc2: "",
+        browseCatalog: "",
+        viewProjects: "",
+        statsYearsValue: "",
+        statsYearsLabel: "",
+        statsProjectsValue: "",
+        statsProjectsLabel: "",
+        statsSatisfactionValue: "",
+        statsSatisfactionLabel: "",
+      },
+    },
+  });
+
+  await prisma.siteSetting.upsert({
     where: { key: "home.consultation" },
     update: {},
     create: {
@@ -232,29 +258,35 @@ async function main() {
     update: {},
     create: {
       key: "home.systems",
-      value: [
-        {
-          id: "s1",
-          title: "隔墙系统",
-          image: "https://picsum.photos/seed/sys1/800/600",
-          description: "青泰精密隔墙系统结合了轻钢龙骨的结构强度与石膏板的多功能性。",
-          features: ["高强度承载", "快速模块化安装", "卓越的隔音性能", "A 级防火认证"],
-        },
-        {
-          id: "s2",
-          title: "吊顶系统",
-          image: "https://picsum.photos/seed/sys2/800/600",
-          description: "涵盖铝制方通、矿棉板及石膏吊顶，为商业与工业空间提供美观且实用的顶部解决方案。",
-          features: ["轻质高强", "耐腐蚀表面处理", "便捷的检修入口", "丰富的色彩选择"],
-        },
-        {
-          id: "s3",
-          title: "特殊板材系统",
-          image: "https://picsum.photos/seed/sys3/800/600",
-          description: "针对极端环境研发的防潮、防霉、防辐射及超高硬度特殊板材。",
-          features: ["极端环境耐受", "医疗级防辐射", "超长使用寿命", "环保无甲醛"],
-        },
-      ],
+      value: {
+        label: "",
+        sectionTitle: "",
+        viewAllProducts: "",
+        cardTag: "",
+        items: [
+          {
+            id: "s1",
+            title: "隔墙系统",
+            image: "https://picsum.photos/seed/sys1/800/600",
+            description: "青泰精密隔墙系统结合了轻钢龙骨的结构强度与石膏板的多功能性。",
+            features: ["高强度承载", "快速模块化安装", "卓越的隔音性能", "A 级防火认证"],
+          },
+          {
+            id: "s2",
+            title: "吊顶系统",
+            image: "https://picsum.photos/seed/sys2/800/600",
+            description: "涵盖铝制方通、矿棉板及石膏吊顶，为商业与工业空间提供美观且实用的顶部解决方案。",
+            features: ["轻质高强", "耐腐蚀表面处理", "便捷的检修入口", "丰富的色彩选择"],
+          },
+          {
+            id: "s3",
+            title: "特殊板材系统",
+            image: "https://picsum.photos/seed/sys3/800/600",
+            description: "针对极端环境研发的防潮、防霉、防辐射及超高硬度特殊板材。",
+            features: ["极端环境耐受", "医疗级防辐射", "超长使用寿命", "环保无甲醛"],
+          },
+        ],
+      },
     },
   });
 
@@ -263,31 +295,38 @@ async function main() {
     update: {},
     create: {
       key: "home.projects",
-      value: [
-        {
-          id: "p1",
-          title: "上海中心大厦内部隔墙工程",
-          location: "上海, 中国",
-          image: "https://picsum.photos/seed/proj1/800/600",
-          description:
-            "该项目采用了我司研发的高强度轻钢龙骨系统及 A 级防火石膏板，总施工面积超过 50,000 平方米。在超高层建筑的抗震与防火性能上达到了国际领先水平。",
-        },
-        {
-          id: "p2",
-          title: "北京大兴国际机场航站楼吊顶",
-          location: "北京, 中国",
-          image: "https://picsum.photos/seed/proj2/800/600",
-          description:
-            "为机场航站楼提供了定制化的铝制方通吊顶系统，采用特殊的氟碳喷涂工艺，确保在大流量公共空间内的耐久性与美观度。",
-        },
-        {
-          id: "p3",
-          title: "新加坡滨海湾金沙酒店扩建",
-          location: "滨海湾, 新加坡",
-          image: "https://picsum.photos/seed/proj3/800/600",
-          description: "提供了全套的隔音与饰面解决方案，满足了豪华酒店对私密性与装饰美学的极高要求。",
-        },
-      ],
+      value: {
+        featuredLabel: "",
+        sectionTitle: "",
+        viewMore: "",
+        listingEyebrow: "",
+        listingTitle: "",
+        items: [
+          {
+            id: "p1",
+            title: "上海中心大厦内部隔墙工程",
+            location: "上海, 中国",
+            image: "https://picsum.photos/seed/proj1/800/600",
+            description:
+              "该项目采用了我司研发的高强度轻钢龙骨系统及 A 级防火石膏板，总施工面积超过 50,000 平方米。在超高层建筑的抗震与防火性能上达到了国际领先水平。",
+          },
+          {
+            id: "p2",
+            title: "北京大兴国际机场航站楼吊顶",
+            location: "北京, 中国",
+            image: "https://picsum.photos/seed/proj2/800/600",
+            description:
+              "为机场航站楼提供了定制化的铝制方通吊顶系统，采用特殊的氟碳喷涂工艺，确保在大流量公共空间内的耐久性与美观度。",
+          },
+          {
+            id: "p3",
+            title: "新加坡滨海湾金沙酒店扩建",
+            location: "滨海湾, 新加坡",
+            image: "https://picsum.photos/seed/proj3/800/600",
+            description: "提供了全套的隔音与饰面解决方案，满足了豪华酒店对私密性与装饰美学的极高要求。",
+          },
+        ],
+      },
     },
   });
 
@@ -370,6 +409,8 @@ async function main() {
       value: {
         heroTitle: "关于青泰",
         heroVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-construction-site-with-cranes-and-buildings-4004-large.mp4",
+        heroImageUrl: "",
+        heroOverlayOpacity: 0.4,
         profileEyebrow: "Company Profile",
         profileHeading: "二十年专注，铸就建筑之美",
         profileParagraphs: [

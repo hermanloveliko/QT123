@@ -14,6 +14,7 @@ import {
   type Product,
 } from "./lib/api";
 import { useTranslation } from "react-i18next";
+import { consumeAdminEntryUnlockFromUrl, getAdminEntrySecret, shouldExposeAdminUi } from "./lib/admin-entry";
 import { GB, ES, PT, MY, CN, FR, RU, KR, TH, VN, SA, TZ } from "country-flag-icons/react/3x2";
 import { 
   Menu, 
@@ -216,6 +217,62 @@ function getLocalizedSystems(t: (key: string) => string): System[] {
   ];
 }
 
+/** 解析站点配置 home.systems：兼容历史「纯数组」与新结构 { label, sectionTitle, …, items } */
+function parsePublicHomeSystems(raw: unknown, fallback: System[]) {
+  const z = {
+    list: fallback,
+    label: "",
+    sectionTitle: "",
+    viewAllProducts: "",
+    cardTag: "",
+  };
+  if (Array.isArray(raw) && raw.length > 0) {
+    return { ...z, list: raw as System[] };
+  }
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const o = raw as Record<string, unknown>;
+    const arr = o.items ?? o.systems;
+    const list = Array.isArray(arr) && (arr as System[]).length > 0 ? (arr as System[]) : fallback;
+    return {
+      list,
+      label: String(o.label ?? ""),
+      sectionTitle: String(o.sectionTitle ?? ""),
+      viewAllProducts: String(o.viewAllProducts ?? ""),
+      cardTag: String(o.cardTag ?? ""),
+    };
+  }
+  return z;
+}
+
+/** 解析站点配置 home.projects：兼容历史「纯数组」与新结构 */
+function parsePublicHomeProjects(raw: unknown, fallback: Project[]) {
+  const z = {
+    list: fallback,
+    featuredLabel: "",
+    sectionTitle: "",
+    viewMore: "",
+    listingEyebrow: "",
+    listingTitle: "",
+  };
+  if (Array.isArray(raw) && raw.length > 0) {
+    return { ...z, list: raw as Project[] };
+  }
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const o = raw as Record<string, unknown>;
+    const arr = o.items ?? o.projects;
+    const list = Array.isArray(arr) && (arr as Project[]).length > 0 ? (arr as Project[]) : fallback;
+    return {
+      list,
+      featuredLabel: String(o.featuredLabel ?? ""),
+      sectionTitle: String(o.sectionTitle ?? ""),
+      viewMore: String(o.viewMore ?? ""),
+      listingEyebrow: String(o.listingEyebrow ?? ""),
+      listingTitle: String(o.listingTitle ?? ""),
+    };
+  }
+  return z;
+}
+
 function getFallbackProduct(t: (key: string) => string): Product {
   return {
     id: "__loading__",
@@ -237,12 +294,14 @@ const Navbar = ({
   cartCount,
   onGetQuote,
   onAdmin,
+  showAdminButton,
 }: {
   activePage: Page;
   setPage: (p: Page) => void;
   cartCount: number;
   onGetQuote: () => void;
   onAdmin: () => void;
+  showAdminButton: boolean;
 }) => {
   const { t } = useTranslation("common");
   return (
@@ -270,13 +329,15 @@ const Navbar = ({
             <LanguageFlags variant="navbar" className="mr-2" />
           </div>
           <div className="hidden lg:flex items-center bg-gray-100 rounded-full px-4 py-2 gap-2">
-            <button
-              onClick={onAdmin}
-              className="ml-1 w-6 h-6 rounded-full bg-industrial-blue text-white text-xs font-bold flex items-center justify-center"
-              title={t("nav.admin")}
-            >
-              Q
-            </button>
+            {showAdminButton && (
+              <button
+                onClick={onAdmin}
+                className="ml-1 w-6 h-6 rounded-full bg-industrial-blue text-white text-xs font-bold flex items-center justify-center"
+                title={t("nav.admin")}
+              >
+                Q
+              </button>
+            )}
             <Search size={16} className="text-gray-400" />
             <input type="text" placeholder={t("nav.searchPlaceholder")} className="bg-transparent border-none focus:ring-0 text-sm w-40" />
           </div>
@@ -309,12 +370,16 @@ const AdminLoginModal = ({
   onClose: () => void;
   onLoggedIn: (u: AdminUser) => void;
 }) => {
-  const [username, setUsername] = useState("QT123");
-  const [password, setPassword] = useState("QT123");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const submit = async () => {
+    if (!username.trim() || !password) {
+      setErr("请输入账号和密码");
+      return;
+    }
     setErr(null);
     setLoading(true);
     try {
@@ -361,6 +426,10 @@ const AdminLoginModal = ({
                 <input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  name="qingtai-admin-username"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck={false}
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-industrial-blue"
                 />
               </div>
@@ -370,6 +439,8 @@ const AdminLoginModal = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type="password"
+                  name="qingtai-admin-password"
+                  autoComplete="new-password"
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-industrial-blue"
                 />
               </div>
@@ -495,12 +566,16 @@ function AdminTabs({ tab }: { tab: AdminTab }) {
 }
 
 function InlineAdminLogin({ onSuccess }: { onSuccess: (u: AdminUser) => void }) {
-  const [username, setUsername] = useState("QT123");
-  const [password, setPassword] = useState("QT123");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const submit = async () => {
+    if (!username.trim() || !password) {
+      setErr("请输入账号和密码");
+      return;
+    }
     setErr(null);
     setLoading(true);
     try {
@@ -525,6 +600,10 @@ function InlineAdminLogin({ onSuccess }: { onSuccess: (u: AdminUser) => void }) 
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            name="qingtai-admin-username"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
             className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-industrial-blue"
           />
         </div>
@@ -534,6 +613,8 @@ function InlineAdminLogin({ onSuccess }: { onSuccess: (u: AdminUser) => void }) 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             type="password"
+            name="qingtai-admin-password"
+            autoComplete="new-password"
             className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-industrial-blue"
           />
         </div>
@@ -546,15 +627,6 @@ function InlineAdminLogin({ onSuccess }: { onSuccess: (u: AdminUser) => void }) 
           className="px-4 py-3 rounded-xl bg-industrial-blue text-white font-bold hover:bg-heat-accent hover:text-industrial-blue transition-colors disabled:opacity-60"
         >
           {loading ? "登录中..." : "登录后台"}
-        </button>
-        <button
-          onClick={() => {
-            setUsername("QT123");
-            setPassword("QT123");
-          }}
-          className="px-4 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200"
-        >
-          使用测试账号
         </button>
       </div>
     </div>
@@ -1923,6 +1995,64 @@ const HomePage = ({
   const fallbackSystems = useMemo(() => getLocalizedSystems(t), [t, i18n.language]);
   const fallbackProjects = useMemo(() => getLocalizedProjects(t), [t, i18n.language]);
   const useSiteOverride = true;
+  const heroCfg = (publicSite["home.hero"] || {}) as Record<string, unknown>;
+  const strCfg = (v: unknown) => (v == null ? "" : String(v).trim());
+  const heroImg =
+    useSiteOverride && strCfg(heroCfg.heroImageUrl) !== ""
+      ? String(heroCfg.heroImageUrl)
+      : "https://picsum.photos/seed/construction/1920/1080";
+  const heroAlt = strCfg(heroCfg.heroImageAlt) !== "" ? String(heroCfg.heroImageAlt) : "Construction Site";
+  const heroOverlayRaw =
+    typeof heroCfg.overlayOpacity === "number" ? heroCfg.overlayOpacity : Number(heroCfg.overlayOpacity);
+  const heroOverlayOpacity = Number.isFinite(heroOverlayRaw)
+    ? Math.min(1, Math.max(0, heroOverlayRaw))
+    : 0.6;
+  const heroBadge =
+    useSiteOverride && strCfg(heroCfg.badge) !== "" ? String(heroCfg.badge) : t("home.badge");
+  const heroTitleLine1 =
+    useSiteOverride && strCfg(heroCfg.heroTitleLine1) !== ""
+      ? String(heroCfg.heroTitleLine1)
+      : t("home.heroTitleLine1");
+  const heroTitleAccent =
+    useSiteOverride && strCfg(heroCfg.heroTitleAccent) !== ""
+      ? String(heroCfg.heroTitleAccent)
+      : t("home.heroTitleAccent");
+  const heroDesc1 =
+    useSiteOverride && strCfg(heroCfg.heroDesc1) !== "" ? String(heroCfg.heroDesc1) : t("home.heroDesc1");
+  const heroDesc2 =
+    useSiteOverride && strCfg(heroCfg.heroDesc2) !== "" ? String(heroCfg.heroDesc2) : t("home.heroDesc2");
+  const heroBrowseCatalog =
+    useSiteOverride && strCfg(heroCfg.browseCatalog) !== ""
+      ? String(heroCfg.browseCatalog)
+      : t("home.browseCatalog");
+  const heroViewProjects =
+    useSiteOverride && strCfg(heroCfg.viewProjects) !== ""
+      ? String(heroCfg.viewProjects)
+      : t("home.viewProjects");
+  const statYearsVal =
+    useSiteOverride && strCfg(heroCfg.statsYearsValue) !== ""
+      ? String(heroCfg.statsYearsValue)
+      : "20+";
+  const statYearsLab =
+    useSiteOverride && strCfg(heroCfg.statsYearsLabel) !== ""
+      ? String(heroCfg.statsYearsLabel)
+      : t("home.stats.years");
+  const statProjectsVal =
+    useSiteOverride && strCfg(heroCfg.statsProjectsValue) !== ""
+      ? String(heroCfg.statsProjectsValue)
+      : "1200+";
+  const statProjectsLab =
+    useSiteOverride && strCfg(heroCfg.statsProjectsLabel) !== ""
+      ? String(heroCfg.statsProjectsLabel)
+      : t("home.stats.projects");
+  const statSatVal =
+    useSiteOverride && strCfg(heroCfg.statsSatisfactionValue) !== ""
+      ? String(heroCfg.statsSatisfactionValue)
+      : "98%";
+  const statSatLab =
+    useSiteOverride && strCfg(heroCfg.statsSatisfactionLabel) !== ""
+      ? String(heroCfg.statsSatisfactionLabel)
+      : t("home.stats.satisfaction");
   const consultation = (publicSite["home.consultation"] || {}) as Record<string, unknown>;
   const consTitle = String(
     useSiteOverride && consultation.title
@@ -1949,12 +2079,37 @@ const HomePage = ({
   const consultationBoxStyle: React.CSSProperties = {
     backgroundColor: `rgba(255, 255, 255, ${bgOpacity})`,
   };
-  const systemsRaw = publicSite["home.systems"];
-  const systemsList =
-    Array.isArray(systemsRaw) && systemsRaw.length > 0 ? (systemsRaw as System[]) : fallbackSystems;
-  const projectsRaw = publicSite["home.projects"];
-  const projectsList =
-    Array.isArray(projectsRaw) && projectsRaw.length > 0 ? (projectsRaw as Project[]) : fallbackProjects;
+  const sysPub = parsePublicHomeSystems(publicSite["home.systems"], fallbackSystems);
+  const systemsList = sysPub.list;
+  const sysSectionLabel =
+    useSiteOverride && sysPub.label.trim() !== "" ? sysPub.label : t("home.systems.label");
+  const sysSectionTitle =
+    useSiteOverride && sysPub.sectionTitle.trim() !== ""
+      ? sysPub.sectionTitle
+      : t("home.systems.sectionTitle");
+  const sysViewAll =
+    useSiteOverride && sysPub.viewAllProducts.trim() !== ""
+      ? sysPub.viewAllProducts
+      : t("home.systems.viewAllProducts");
+  const sysCardTag =
+    useSiteOverride && sysPub.cardTag.trim() !== ""
+      ? sysPub.cardTag
+      : sysPub.label.trim() !== ""
+        ? sysPub.label
+        : t("home.systems.label");
+
+  const projPub = parsePublicHomeProjects(publicSite["home.projects"], fallbackProjects);
+  const projectsList = projPub.list;
+  const projFeaturedLabel =
+    useSiteOverride && projPub.featuredLabel.trim() !== ""
+      ? projPub.featuredLabel
+      : t("home.projects.featuredLabel");
+  const projSectionTitle =
+    useSiteOverride && projPub.sectionTitle.trim() !== ""
+      ? projPub.sectionTitle
+      : t("home.projects.sectionTitle");
+  const projViewMore =
+    useSiteOverride && projPub.viewMore.trim() !== "" ? projPub.viewMore : t("home.projects.viewMore");
   const logistics = (publicSite["home.logistics"] || {}) as Record<string, unknown>;
   const logTitle = String(
     useSiteOverride && logistics.title ? logistics.title : t("home.logistics.title"),
@@ -2029,12 +2184,15 @@ const HomePage = ({
     <section className="relative h-[90vh] overflow-hidden">
       <div className="absolute inset-0">
         <img 
-          src="https://picsum.photos/seed/construction/1920/1080" 
-          alt="Construction Site" 
+          src={heroImg} 
+          alt={heroAlt} 
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-industrial-blue/60 backdrop-blur-[2px]"></div>
+        <div
+          className="absolute inset-0 backdrop-blur-[2px]"
+          style={{ backgroundColor: `rgba(0, 32, 69, ${heroOverlayOpacity})` }}
+        />
       </div>
       
       <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
@@ -2049,7 +2207,7 @@ const HomePage = ({
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 bg-heat-accent/20 text-heat-accent px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
           >
-            <Zap size={14} /> {t("home.badge")}
+            <Zap size={14} /> {heroBadge}
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -2057,8 +2215,8 @@ const HomePage = ({
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-5xl md:text-7xl font-display font-extrabold text-white leading-[1.1] mb-8"
           >
-            {t("home.heroTitleLine1")}<br />
-            <span className="text-heat-accent">{t("home.heroTitleAccent")}</span>
+            {heroTitleLine1}<br />
+            <span className="text-heat-accent">{heroTitleAccent}</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -2066,9 +2224,9 @@ const HomePage = ({
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg text-gray-300 mb-10 leading-relaxed"
           >
-            {t("home.heroDesc1")}
+            {heroDesc1}
             <br />
-            {t("home.heroDesc2")}
+            {heroDesc2}
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -2077,10 +2235,10 @@ const HomePage = ({
             className="flex flex-wrap gap-4"
           >
             <button onClick={() => setPage("catalog")} className="btn-primary text-lg px-8 py-4">
-              {t("home.browseCatalog")} <ArrowRight size={20} />
+              {heroBrowseCatalog} <ArrowRight size={20} />
             </button>
             <button onClick={() => setPage("projects")} className="btn-outline border-white text-white hover:bg-white hover:text-industrial-blue text-lg px-8 py-4">
-              {t("home.viewProjects")}
+              {heroViewProjects}
             </button>
           </motion.div>
         </div>
@@ -2089,21 +2247,21 @@ const HomePage = ({
       {/* Stats Overlay */}
       <div className="absolute bottom-0 right-0 hidden lg:flex bg-white p-10 gap-12 shadow-2xl">
         <div className="flex flex-col">
-          <span className="text-4xl font-display font-extrabold text-industrial-blue">20+</span>
+          <span className="text-4xl font-display font-extrabold text-industrial-blue">{statYearsVal}</span>
           <span className="text-xs text-gray-500 uppercase tracking-widest mt-1">
-            {t("home.stats.years")}
+            {statYearsLab}
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="text-4xl font-display font-extrabold text-industrial-blue">1200+</span>
+          <span className="text-4xl font-display font-extrabold text-industrial-blue">{statProjectsVal}</span>
           <span className="text-xs text-gray-500 uppercase tracking-widest mt-1">
-            {t("home.stats.projects")}
+            {statProjectsLab}
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="text-4xl font-display font-extrabold text-industrial-blue">98%</span>
+          <span className="text-4xl font-display font-extrabold text-industrial-blue">{statSatVal}</span>
           <span className="text-xs text-gray-500 uppercase tracking-widest mt-1">
-            {t("home.stats.satisfaction")}
+            {statSatLab}
           </span>
         </div>
       </div>
@@ -2142,13 +2300,13 @@ const HomePage = ({
         <div>
           <div className="accent-border mb-4">
             <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">
-              {t("home.systems.label")}
+              {sysSectionLabel}
             </span>
           </div>
-          <h2 className="text-4xl font-display font-extrabold text-industrial-blue">{t("home.systems.sectionTitle")}</h2>
+          <h2 className="text-4xl font-display font-extrabold text-industrial-blue">{sysSectionTitle}</h2>
         </div>
         <button onClick={() => setPage("catalog")} className="text-industrial-blue font-bold flex items-center gap-2 hover:gap-4 transition-all">
-          {t("home.systems.viewAllProducts")} <ChevronRight size={20} />
+          {sysViewAll} <ChevronRight size={20} />
         </button>
       </div>
 
@@ -2162,7 +2320,7 @@ const HomePage = ({
             <img src={system.image} alt={system.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-industrial-blue via-transparent to-transparent opacity-80"></div>
             <div className="absolute bottom-0 left-0 p-8 w-full">
-              <span className="text-heat-accent text-xs font-bold tracking-widest uppercase mb-2 block">{t("home.systems.label")}</span>
+              <span className="text-heat-accent text-xs font-bold tracking-widest uppercase mb-2 block">{sysCardTag}</span>
               <h3 className="text-2xl text-white font-display font-bold mb-4">{system.title}</h3>
               <div className="h-1 w-12 bg-heat-accent transition-all duration-300 group-hover:w-full"></div>
             </div>
@@ -2177,12 +2335,12 @@ const HomePage = ({
         <div className="flex justify-between items-end mb-16">
           <div>
             <div className="accent-border mb-4">
-              <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">{t("home.projects.featuredLabel")}</span>
+              <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">{projFeaturedLabel}</span>
             </div>
-            <h2 className="text-4xl font-display font-extrabold">{t("home.projects.sectionTitle")}</h2>
+            <h2 className="text-4xl font-display font-extrabold">{projSectionTitle}</h2>
           </div>
           <button onClick={() => setPage("projects")} className="text-heat-accent font-bold flex items-center gap-2">
-            {t("home.projects.viewMore")} <ArrowRight size={20} />
+            {projViewMore} <ArrowRight size={20} />
           </button>
         </div>
         
@@ -2290,16 +2448,22 @@ const ProjectsPage = ({
   publicSite?: Record<string, unknown>;
 }) => {
   const { t, i18n } = useTranslation("common");
+  const useSiteOverride = true;
   const fallbackProjects = useMemo(() => getLocalizedProjects(t), [t, i18n.language]);
-  const projectsRaw = publicSite["home.projects"];
-  const projectsList =
-    Array.isArray(projectsRaw) && projectsRaw.length > 0 ? (projectsRaw as Project[]) : fallbackProjects;
+  const projPub = parsePublicHomeProjects(publicSite["home.projects"], fallbackProjects);
+  const projectsList = projPub.list;
+  const listingEyebrow =
+    useSiteOverride && projPub.listingEyebrow.trim() !== ""
+      ? projPub.listingEyebrow
+      : t("projectsPage.eyebrow");
+  const listingTitle =
+    useSiteOverride && projPub.listingTitle.trim() !== "" ? projPub.listingTitle : t("projectsPage.title");
   return (
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
     <div className="accent-border mb-4">
-      <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">{t("projectsPage.eyebrow")}</span>
+      <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">{listingEyebrow}</span>
     </div>
-    <h1 className="text-4xl font-display font-extrabold text-industrial-blue mb-12">{t("projectsPage.title")}</h1>
+    <h1 className="text-4xl font-display font-extrabold text-industrial-blue mb-12">{listingTitle}</h1>
     
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
       {projectsList.map((project) => (
@@ -2365,6 +2529,10 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
   const cfg = (publicSite["about.page"] || {}) as Record<string, unknown>;
   const heroTitle = String(cfg.heroTitle ?? t("about.heroTitle"));
   const heroVideoUrl = String(cfg.heroVideoUrl || DEFAULT_ABOUT_VIDEO);
+  const heroImageUrl = String(cfg.heroImageUrl ?? "").trim();
+  const heroOv =
+    typeof cfg.heroOverlayOpacity === "number" ? cfg.heroOverlayOpacity : Number(cfg.heroOverlayOpacity);
+  const heroOverlayOpacity = Number.isFinite(heroOv) ? Math.min(1, Math.max(0, heroOv)) : 0.4;
   const profileEyebrow = String(cfg.profileEyebrow ?? t("about.profileEyebrow"));
   const profileHeading = String(cfg.profileHeading ?? t("about.profileHeading"));
   const defaultParas = [
@@ -2379,10 +2547,22 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
   return (
     <div className="pt-20">
       <section className="h-[60vh] relative overflow-hidden">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src={heroVideoUrl} type={heroVideoUrl.includes(".webm") ? "video/webm" : "video/mp4"} />
-        </video>
-        <div className="absolute inset-0 bg-industrial-blue/40 backdrop-blur-sm flex items-center justify-center">
+        {heroImageUrl ? (
+          <img
+            src={heroImageUrl}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
+            <source src={heroVideoUrl} type={heroVideoUrl.includes(".webm") ? "video/webm" : "video/mp4"} />
+          </video>
+        )}
+        <div
+          className="absolute inset-0 backdrop-blur-sm flex items-center justify-center"
+          style={{ backgroundColor: `rgba(0, 32, 69, ${heroOverlayOpacity})` }}
+        >
           <h1 className="text-6xl font-display font-extrabold text-white tracking-tighter">{heroTitle}</h1>
         </div>
       </section>
@@ -2448,6 +2628,13 @@ const AIChatModal = ({
   onAddToCartWithQty: (p: Product, qty: number) => void;
 }) => {
   const { t, i18n } = useTranslation("common");
+  const CHAT_STORAGE_KEY = useMemo(() => {
+    try {
+      return `qt_ai_chat_state_v1:${window.location.host}`;
+    } catch {
+      return "qt_ai_chat_state_v1";
+    }
+  }, []);
   const welcome = useMemo(
     () => ({
       id: "welcome",
@@ -2465,12 +2652,7 @@ const AIChatModal = ({
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    if (!isOpen) {
-      setConversationId(undefined);
-      setMessages([welcome]);
-      setInput("");
-      return;
-    }
+    // Open: ensure welcome exists and text is up-to-date.
     setMessages((prev) => {
       if (prev.length === 0) return [welcome];
       const idx = prev.findIndex((m) => m.id === "welcome");
@@ -2482,6 +2664,49 @@ const AIChatModal = ({
       return prev;
     });
   }, [isOpen, welcome]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    try {
+      const raw = localStorage.getItem(CHAT_STORAGE_KEY) || "";
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as {
+        conversationId?: string;
+        messages?: Array<{ id: string; role: "user" | "ai"; content: string }>;
+      };
+      if (parsed?.conversationId && !conversationId) setConversationId(parsed.conversationId);
+      if (Array.isArray(parsed?.messages) && parsed.messages.length > 0) {
+        // Keep welcome at the top and append stored history (cap length)
+        const stored = parsed.messages
+          .filter((m) => m && (m.role === "user" || m.role === "ai") && typeof m.content === "string")
+          .slice(-50);
+        setMessages([welcome, ...stored.filter((m) => m.id !== "welcome")]);
+      }
+    } catch {
+      // ignore corrupted storage
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  useEffect(() => {
+    // Persist chat so page refresh / domain switch doesn't wipe history.
+    try {
+      const safeMsgs = (messages || [])
+        .filter((m) => m && (m.role === "user" || m.role === "ai"))
+        .map((m) => ({ id: m.id, role: m.role, content: m.content }))
+        .slice(-60);
+      localStorage.setItem(
+        CHAT_STORAGE_KEY,
+        JSON.stringify({
+          conversationId,
+          messages: safeMsgs,
+          updatedAt: Date.now(),
+        }),
+      );
+    } catch {
+      // ignore quota or privacy mode
+    }
+  }, [CHAT_STORAGE_KEY, conversationId, messages]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -2644,18 +2869,37 @@ const CatalogPage = ({
   const ALL_KEY = "__all__";
   const [activeCatKey, setActiveCatKey] = useState<string>(ALL_KEY);
   const [sortKey, setSortKey] = useState<"default" | "priceAsc" | "priceDesc">("default");
+  const [publicCategories, setPublicCategories] = useState<Array<{ id: string; name: string; sortOrder: number }>>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    apiJson<Array<{ id: string; name: string; sortOrder: number }>>(`/api/public/categories?lang=${encodeURIComponent(i18n.language)}`)
+      .then((rows) => mounted && setPublicCategories(rows))
+      .catch(() => mounted && setPublicCategories([]));
+    return () => {
+      mounted = false;
+    };
+  }, [i18n.language]);
+
   const categories = useMemo(() => {
-    const byId = new Map<string, { key: string; label: string }>();
+    const byId = new Map<string, { key: string; label: string; sortOrder: number }>();
+    for (const c of publicCategories) {
+      if (!c?.id || !String(c.name || "").trim()) continue;
+      byId.set(`id:${c.id}`, { key: `id:${c.id}`, label: c.name, sortOrder: Number(c.sortOrder) || 0 });
+    }
     for (const p of products) {
       const id = p.categoryId || "";
       const label = p.category || "";
       if (!label) continue;
       const key = id ? `id:${id}` : `name:${label}`;
-      if (!byId.has(key)) byId.set(key, { key, label });
+      if (!byId.has(key)) byId.set(key, { key, label, sortOrder: 999999 });
     }
-    const list = Array.from(byId.values()).sort((a, b) => a.label.localeCompare(b.label));
-    return [{ key: ALL_KEY, label: t("catalog.all") }, ...list];
-  }, [products, t, i18n.language]);
+    const list = Array.from(byId.values()).sort((a, b) => {
+      if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+      return a.label.localeCompare(b.label);
+    });
+    return [{ key: ALL_KEY, label: t("catalog.all"), sortOrder: -1 }, ...list];
+  }, [products, publicCategories, t, i18n.language]);
 
   // 切语言/重拉产品后，保证当前筛选 key 仍然存在；否则回到“全部”
   useEffect(() => {
@@ -3212,7 +3456,14 @@ const CartPage = ({
 export default function App(props?: { initialPage?: Page }) {
   const { t, i18n } = useTranslation("common");
   const [lang, setLangState] = useState<Lang>(getLang());
-  const [page, setPage] = useState<Page>(props?.initialPage ?? "home");
+  const adminSecret = getAdminEntrySecret();
+  const [page, setPage] = useState<Page>(() => {
+    consumeAdminEntryUnlockFromUrl();
+    const initial = props?.initialPage ?? "home";
+    const gateOk = shouldExposeAdminUi();
+    if (initial === "admin" && import.meta.env.PROD && adminSecret && !gateOk) return "home";
+    return initial;
+  });
   const [cart, setCart] = useState<{ productId: string; qty: number }[]>([]);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
@@ -3241,6 +3492,14 @@ export default function App(props?: { initialPage?: Page }) {
       i18n.off("languageChanged", next);
     };
   }, [i18n]);
+
+  useEffect(() => {
+    if (props?.initialPage !== "admin") return;
+    if (!import.meta.env.PROD) return;
+    if (!adminSecret) return;
+    if (shouldExposeAdminUi()) return;
+    setPage("home");
+  }, [props?.initialPage, adminSecret]);
 
   // Keep active selections stable across language changes (by id)
   useEffect(() => {
@@ -3319,6 +3578,7 @@ export default function App(props?: { initialPage?: Page }) {
         cartCount={cart.reduce((a, c) => a + c.qty, 0)} 
         onGetQuote={() => setPage("cart")}
         onAdmin={() => setIsAdminLoginOpen(true)}
+        showAdminButton={shouldExposeAdminUi()}
       />
       <SidebarSocial onShowContact={() => setIsContactOpen(true)} />
       

@@ -1,5 +1,7 @@
 /** 站点配置图片建议尺寸（允许 ±tolerance 像素误差） */
 export const SITE_IMAGE_SPECS = {
+  /** 首页首屏大背景（全宽横图） */
+  heroBackground: { width: 1920, height: 1080, tolerance: 80, label: "1920×1080 px（16:9）" },
   /** 系统方案 / 工程案例封面（与历史 picsum 800×600 一致） */
   cardCover: { width: 800, height: 600, tolerance: 40, label: "800×600 px" },
   /** 物流区轮播（16:9） */

@@ -6,6 +6,7 @@ import { AdminLocalImageField, AdminLocalVideoField } from "./AdminLocalMediaFie
 /** 有固定表单字段的站点配置 key（与 server PUBLIC_SITE_SETTING_KEYS 对齐；其他 key 走 JSON） */
 export const SITE_SETTING_FORM_KEYS = [
   "contact",
+  "home.hero",
   "home.consultation",
   "home.systems",
   "home.projects",
@@ -24,13 +25,14 @@ export function hasStructuredSiteSettingForm(key: string): key is SiteSettingFor
 /** 后台配置列表展示用中文名（便于找到「关于我们」等） */
 export const SITE_SETTING_LIST_LABEL: Record<string, string> = {
   contact: "联系信息",
+  "home.hero": "首页 · 首屏大图与主文案",
   "home.consultation": "首页 · 咨询区块",
   "home.systems": "首页 · 核心系统方案",
   "home.projects": "首页/案例 · 工程案例",
   "home.logistics": "首页 · 物流与轮播图",
   footer: "全站页脚",
   "catalog.customSpec": "目录页 · 联系定制",
-  "about.page": "关于我们页 · Hero 视频与公司简介",
+  "about.page": "关于我们页 · Hero 与简介",
 };
 
 const inputClass =
@@ -41,6 +43,27 @@ type LinkPair = { label: string; href: string };
 
 function emptyContact() {
   return { phone: "", email: "", whatsapp: "", address: "" };
+}
+
+function emptyHero() {
+  return {
+    heroImageUrl: "",
+    heroImageAlt: "",
+    overlayOpacity: 0.6,
+    badge: "",
+    heroTitleLine1: "",
+    heroTitleAccent: "",
+    heroDesc1: "",
+    heroDesc2: "",
+    browseCatalog: "",
+    viewProjects: "",
+    statsYearsValue: "",
+    statsYearsLabel: "",
+    statsProjectsValue: "",
+    statsProjectsLabel: "",
+    statsSatisfactionValue: "",
+    statsSatisfactionLabel: "",
+  };
 }
 
 function emptyConsultation() {
@@ -79,6 +102,8 @@ function emptyAboutPage() {
   return {
     heroTitle: "",
     heroVideoUrl: "",
+    heroImageUrl: "",
+    heroOverlayOpacity: 0.4,
     profileEyebrow: "",
     profileHeading: "",
     profileBody: "",
@@ -102,7 +127,7 @@ function emptyFooter() {
 type SystemRow = { id: string; title: string; image: string; description: string; featuresText: string };
 type ProjectRow = { id: string; title: string; location: string; image: string; description: string };
 
-function systemsFromValue(v: unknown): SystemRow[] {
+function systemRowsFromArray(v: unknown): SystemRow[] {
   if (!Array.isArray(v)) return [];
   return v.map((raw, i) => {
     const o = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
@@ -117,7 +142,7 @@ function systemsFromValue(v: unknown): SystemRow[] {
   });
 }
 
-function projectsFromValue(v: unknown): ProjectRow[] {
+function projectRowsFromArray(v: unknown): ProjectRow[] {
   if (!Array.isArray(v)) return [];
   return v.map((raw, i) => {
     const o = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
@@ -129,6 +154,67 @@ function projectsFromValue(v: unknown): ProjectRow[] {
       description: String(o.description ?? ""),
     };
   });
+}
+
+function emptySystemsSectionMeta() {
+  return { label: "", sectionTitle: "", viewAllProducts: "", cardTag: "" };
+}
+
+function emptyProjectsSectionMeta() {
+  return {
+    featuredLabel: "",
+    sectionTitle: "",
+    viewMore: "",
+    listingEyebrow: "",
+    listingTitle: "",
+  };
+}
+
+function homeSystemsFromValue(v: unknown): {
+  rows: SystemRow[];
+  meta: ReturnType<typeof emptySystemsSectionMeta>;
+} {
+  if (Array.isArray(v)) {
+    return { rows: systemRowsFromArray(v), meta: emptySystemsSectionMeta() };
+  }
+  if (v && typeof v === "object") {
+    const o = v as Record<string, unknown>;
+    const arr = o.items ?? o.systems;
+    return {
+      rows: Array.isArray(arr) ? systemRowsFromArray(arr) : [],
+      meta: {
+        label: String(o.label ?? ""),
+        sectionTitle: String(o.sectionTitle ?? ""),
+        viewAllProducts: String(o.viewAllProducts ?? ""),
+        cardTag: String(o.cardTag ?? ""),
+      },
+    };
+  }
+  return { rows: [], meta: emptySystemsSectionMeta() };
+}
+
+function homeProjectsFromValue(v: unknown): {
+  rows: ProjectRow[];
+  meta: ReturnType<typeof emptyProjectsSectionMeta>;
+} {
+  if (Array.isArray(v)) {
+    return { rows: projectRowsFromArray(v), meta: emptyProjectsSectionMeta() };
+  }
+  if (v && typeof v === "object") {
+    const o = v as Record<string, unknown>;
+    const arr = o.items ?? o.projects;
+    return {
+      rows: Array.isArray(arr) ? projectRowsFromArray(arr) : [],
+      meta: {
+        featuredLabel: String(o.featuredLabel ?? ""),
+        sectionTitle: String(o.sectionTitle ?? ""),
+        viewMore: String(o.viewMore ?? ""),
+        listingEyebrow: String(o.listingEyebrow ?? ""),
+        listingTitle: String(o.listingTitle ?? ""),
+      },
+    };
+  }
+  return { rows: [], meta: emptyProjectsSectionMeta() };
 }
 
 function linkListFrom(v: unknown): LinkPair[] {
@@ -157,11 +243,14 @@ export function SiteSettingEditDialog({
   const [contact, setContact] = useState(emptyContact);
   const [consultation, setConsultation] = useState(emptyConsultation);
   const [systems, setSystems] = useState<SystemRow[]>([]);
+  const [systemsMeta, setSystemsMeta] = useState(emptySystemsSectionMeta);
   const [projects, setProjects] = useState<ProjectRow[]>([]);
+  const [projectsMeta, setProjectsMeta] = useState(emptyProjectsSectionMeta);
   const [logistics, setLogistics] = useState(emptyLogistics);
   const [footer, setFooter] = useState(emptyFooter);
   const [customSpec, setCustomSpec] = useState(emptyCustomSpec);
   const [aboutPage, setAboutPage] = useState(emptyAboutPage);
+  const [hero, setHero] = useState(emptyHero);
 
   const useJson = !hasStructuredSiteSettingForm(settingKey);
 
@@ -177,6 +266,27 @@ export function SiteSettingEditDialog({
         address: String(o.address ?? ""),
       });
     }
+    if (settingKey === "home.hero") {
+      setHero({
+        heroImageUrl: String(o.heroImageUrl ?? ""),
+        heroImageAlt: String(o.heroImageAlt ?? ""),
+        overlayOpacity:
+          typeof o.overlayOpacity === "number" ? o.overlayOpacity : Number(o.overlayOpacity) || 0.6,
+        badge: String(o.badge ?? ""),
+        heroTitleLine1: String(o.heroTitleLine1 ?? ""),
+        heroTitleAccent: String(o.heroTitleAccent ?? ""),
+        heroDesc1: String(o.heroDesc1 ?? ""),
+        heroDesc2: String(o.heroDesc2 ?? ""),
+        browseCatalog: String(o.browseCatalog ?? ""),
+        viewProjects: String(o.viewProjects ?? ""),
+        statsYearsValue: String(o.statsYearsValue ?? ""),
+        statsYearsLabel: String(o.statsYearsLabel ?? ""),
+        statsProjectsValue: String(o.statsProjectsValue ?? ""),
+        statsProjectsLabel: String(o.statsProjectsLabel ?? ""),
+        statsSatisfactionValue: String(o.statsSatisfactionValue ?? ""),
+        statsSatisfactionLabel: String(o.statsSatisfactionLabel ?? ""),
+      });
+    }
     if (settingKey === "home.consultation") {
       setConsultation({
         title: String(o.title ?? ""),
@@ -188,12 +298,14 @@ export function SiteSettingEditDialog({
       });
     }
     if (settingKey === "home.systems") {
-      const list = systemsFromValue(value);
-      setSystems(list.length ? list : [{ id: "s1", title: "", image: "", description: "", featuresText: "" }]);
+      const { rows, meta } = homeSystemsFromValue(value);
+      setSystemsMeta(meta);
+      setSystems(rows.length ? rows : [{ id: "s1", title: "", image: "", description: "", featuresText: "" }]);
     }
     if (settingKey === "home.projects") {
-      const list = projectsFromValue(value);
-      setProjects(list.length ? list : [{ id: "p1", title: "", location: "", image: "", description: "" }]);
+      const { rows, meta } = homeProjectsFromValue(value);
+      setProjectsMeta(meta);
+      setProjects(rows.length ? rows : [{ id: "p1", title: "", location: "", image: "", description: "" }]);
     }
     if (settingKey === "home.logistics") {
       const cards = (Array.isArray(o.cards) ? o.cards : []) as Array<{ title?: string; description?: string }>;
@@ -241,9 +353,13 @@ export function SiteSettingEditDialog({
     }
     if (settingKey === "about.page") {
       const paras = Array.isArray(o.profileParagraphs) ? o.profileParagraphs.map(String) : [];
+      const ho =
+        typeof o.heroOverlayOpacity === "number" ? o.heroOverlayOpacity : Number(o.heroOverlayOpacity);
       setAboutPage({
         heroTitle: String(o.heroTitle ?? ""),
         heroVideoUrl: String(o.heroVideoUrl ?? ""),
+        heroImageUrl: String(o.heroImageUrl ?? ""),
+        heroOverlayOpacity: Number.isFinite(ho) ? ho : 0.4,
         profileEyebrow: String(o.profileEyebrow ?? ""),
         profileHeading: String(o.profileHeading ?? ""),
         profileBody: paras.join("\n\n"),
@@ -256,30 +372,54 @@ export function SiteSettingEditDialog({
     switch (settingKey) {
       case "contact":
         return { ...contact };
+      case "home.hero":
+        return {
+          ...hero,
+          overlayOpacity: Math.min(
+            1,
+            Math.max(
+              0,
+              Number.isFinite(Number(hero.overlayOpacity)) ? Number(hero.overlayOpacity) : 0.6,
+            ),
+          ),
+        };
       case "home.consultation":
         return {
           ...consultation,
           backgroundOpacity: Math.min(1, Math.max(0, Number(consultation.backgroundOpacity) || 0)),
         };
       case "home.systems":
-        return systems.map((s) => ({
-          id: s.id.trim() || `s-${Math.random().toString(36).slice(2, 8)}`,
-          title: s.title,
-          image: s.image,
-          description: s.description,
-          features: s.featuresText
-            .split("\n")
-            .map((x) => x.trim())
-            .filter(Boolean),
-        }));
+        return {
+          label: systemsMeta.label,
+          sectionTitle: systemsMeta.sectionTitle,
+          viewAllProducts: systemsMeta.viewAllProducts,
+          cardTag: systemsMeta.cardTag,
+          items: systems.map((s) => ({
+            id: s.id.trim() || `s-${Math.random().toString(36).slice(2, 8)}`,
+            title: s.title,
+            image: s.image,
+            description: s.description,
+            features: s.featuresText
+              .split("\n")
+              .map((x) => x.trim())
+              .filter(Boolean),
+          })),
+        };
       case "home.projects":
-        return projects.map((p) => ({
-          id: p.id.trim() || `p-${Math.random().toString(36).slice(2, 8)}`,
-          title: p.title,
-          location: p.location,
-          image: p.image,
-          description: p.description,
-        }));
+        return {
+          featuredLabel: projectsMeta.featuredLabel,
+          sectionTitle: projectsMeta.sectionTitle,
+          viewMore: projectsMeta.viewMore,
+          listingEyebrow: projectsMeta.listingEyebrow,
+          listingTitle: projectsMeta.listingTitle,
+          items: projects.map((p) => ({
+            id: p.id.trim() || `p-${Math.random().toString(36).slice(2, 8)}`,
+            title: p.title,
+            location: p.location,
+            image: p.image,
+            description: p.description,
+          })),
+        };
       case "home.logistics":
         return {
           title: logistics.title,
@@ -296,6 +436,16 @@ export function SiteSettingEditDialog({
         return {
           heroTitle: aboutPage.heroTitle,
           heroVideoUrl: aboutPage.heroVideoUrl,
+          heroImageUrl: aboutPage.heroImageUrl,
+          heroOverlayOpacity: Math.min(
+            1,
+            Math.max(
+              0,
+              Number.isFinite(Number(aboutPage.heroOverlayOpacity))
+                ? Number(aboutPage.heroOverlayOpacity)
+                : 0.4,
+            ),
+          ),
           profileEyebrow: aboutPage.profileEyebrow,
           profileHeading: aboutPage.profileHeading,
           profileParagraphs: aboutPage.profileBody
@@ -321,11 +471,14 @@ export function SiteSettingEditDialog({
     contact,
     consultation,
     systems,
+    systemsMeta,
     projects,
+    projectsMeta,
     logistics,
     footer,
     customSpec,
     aboutPage,
+    hero,
   ]);
 
   const handleSave = async () => {
@@ -350,6 +503,7 @@ export function SiteSettingEditDialog({
   const title = useMemo(() => {
     const labels: Record<string, string> = {
       contact: "联系信息（弹窗 / 侧栏）",
+      "home.hero": "首页 · 首屏大图与主文案",
       "home.consultation": "首页 · 咨询区块",
       "home.systems": "首页 · 核心系统方案",
       "home.projects": "首页 / 案例 · 工程案例列表",
@@ -374,7 +528,14 @@ export function SiteSettingEditDialog({
       }}
     >
       <div
-        className={`bg-white rounded-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-gray-100 ${settingKey === "about.page" ? "max-w-3xl" : "max-w-2xl"}`}
+        className={`bg-white rounded-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-gray-100 ${
+          settingKey === "about.page" ||
+          settingKey === "home.hero" ||
+          settingKey === "home.systems" ||
+          settingKey === "home.projects"
+            ? "max-w-3xl"
+            : "max-w-2xl"
+        }`}
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center gap-2">
@@ -403,6 +564,154 @@ export function SiteSettingEditDialog({
                 onChange={(e) => setJsonText(e.target.value)}
                 className="w-full h-72 font-mono text-xs bg-white border border-gray-200 rounded-xl p-3 outline-none focus:ring-1 focus:ring-industrial-blue"
               />
+            </div>
+          )}
+
+          {settingKey === "home.hero" && (
+            <div className="space-y-4">
+              <AdminLocalImageField
+                label="首屏背景图（本地上传）"
+                hint={SITE_IMAGE_SPECS.heroBackground.label}
+                value={hero.heroImageUrl}
+                onChange={(url) => setHero({ ...hero, heroImageUrl: url })}
+                width={SITE_IMAGE_SPECS.heroBackground.width}
+                height={SITE_IMAGE_SPECS.heroBackground.height}
+                tolerance={SITE_IMAGE_SPECS.heroBackground.tolerance}
+              />
+              <div>
+                <label className={labelClass}>背景图 alt 文案（无障碍 / SEO）</label>
+                <input
+                  className={inputClass}
+                  value={hero.heroImageAlt}
+                  onChange={(e) => setHero({ ...hero, heroImageAlt: e.target.value })}
+                  placeholder="留空则使用默认说明"
+                />
+              </div>
+              <div>
+                <label className={labelClass}>蓝色遮罩透明度（0～1，越大越深）</label>
+                <input
+                  type="number"
+                  step={0.05}
+                  min={0}
+                  max={1}
+                  className={inputClass}
+                  value={hero.overlayOpacity}
+                  onChange={(e) => setHero({ ...hero, overlayOpacity: Number(e.target.value) })}
+                />
+              </div>
+              <div className="text-xs font-bold text-gray-600 border-t border-gray-100 pt-3">主文案（留空则使用翻译文件中的默认文案）</div>
+              <div>
+                <label className={labelClass}>橙色小标签</label>
+                <input className={inputClass} value={hero.badge} onChange={(e) => setHero({ ...hero, badge: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className={labelClass}>大标题 · 第一行（白色）</label>
+                  <input
+                    className={inputClass}
+                    value={hero.heroTitleLine1}
+                    onChange={(e) => setHero({ ...hero, heroTitleLine1: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>大标题 · 第二行（橙色强调）</label>
+                  <input
+                    className={inputClass}
+                    value={hero.heroTitleAccent}
+                    onChange={(e) => setHero({ ...hero, heroTitleAccent: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className={labelClass}>副标题第一段</label>
+                <textarea
+                  className={`${inputClass} min-h-[56px]`}
+                  value={hero.heroDesc1}
+                  onChange={(e) => setHero({ ...hero, heroDesc1: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>副标题第二段</label>
+                <textarea
+                  className={`${inputClass} min-h-[56px]`}
+                  value={hero.heroDesc2}
+                  onChange={(e) => setHero({ ...hero, heroDesc2: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className={labelClass}>主按钮文案（浏览目录）</label>
+                  <input
+                    className={inputClass}
+                    value={hero.browseCatalog}
+                    onChange={(e) => setHero({ ...hero, browseCatalog: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>次按钮文案（工程案例）</label>
+                  <input
+                    className={inputClass}
+                    value={hero.viewProjects}
+                    onChange={(e) => setHero({ ...hero, viewProjects: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="text-xs font-bold text-gray-600 border-t border-gray-100 pt-3">右下角数据条（数值与说明均可替换）</div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className={labelClass}>经验 · 数字</label>
+                  <input
+                    className={inputClass}
+                    value={hero.statsYearsValue}
+                    onChange={(e) => setHero({ ...hero, statsYearsValue: e.target.value })}
+                    placeholder="如 20+"
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>经验 · 说明</label>
+                  <input
+                    className={inputClass}
+                    value={hero.statsYearsLabel}
+                    onChange={(e) => setHero({ ...hero, statsYearsLabel: e.target.value })}
+                  />
+                </div>
+                <div />
+                <div>
+                  <label className={labelClass}>项目 · 数字</label>
+                  <input
+                    className={inputClass}
+                    value={hero.statsProjectsValue}
+                    onChange={(e) => setHero({ ...hero, statsProjectsValue: e.target.value })}
+                    placeholder="如 1200+"
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>项目 · 说明</label>
+                  <input
+                    className={inputClass}
+                    value={hero.statsProjectsLabel}
+                    onChange={(e) => setHero({ ...hero, statsProjectsLabel: e.target.value })}
+                  />
+                </div>
+                <div />
+                <div>
+                  <label className={labelClass}>满意度 · 数字</label>
+                  <input
+                    className={inputClass}
+                    value={hero.statsSatisfactionValue}
+                    onChange={(e) => setHero({ ...hero, statsSatisfactionValue: e.target.value })}
+                    placeholder="如 98%"
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>满意度 · 说明</label>
+                  <input
+                    className={inputClass}
+                    value={hero.statsSatisfactionLabel}
+                    onChange={(e) => setHero({ ...hero, statsSatisfactionLabel: e.target.value })}
+                  />
+                </div>
+              </div>
             </div>
           )}
 
@@ -464,6 +773,46 @@ export function SiteSettingEditDialog({
 
           {settingKey === "home.systems" && (
             <div className="space-y-4">
+              <p className="text-xs text-gray-500">
+                下方区块标题、卡片角标等与翻译文件一致时可留空；填写后覆盖前台显示。保存后数据为「对象 + items
+                列表」，旧版纯数组数据仍兼容。
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border border-gray-100 rounded-xl p-3">
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>区块小标题（如 系统方案）</label>
+                  <input
+                    className={inputClass}
+                    value={systemsMeta.label}
+                    onChange={(e) => setSystemsMeta({ ...systemsMeta, label: e.target.value })}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>区块主标题（如 核心系统解决方案）</label>
+                  <input
+                    className={inputClass}
+                    value={systemsMeta.sectionTitle}
+                    onChange={(e) => setSystemsMeta({ ...systemsMeta, sectionTitle: e.target.value })}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>右侧链接文字（如 查看全部产品）</label>
+                  <input
+                    className={inputClass}
+                    value={systemsMeta.viewAllProducts}
+                    onChange={(e) => setSystemsMeta({ ...systemsMeta, viewAllProducts: e.target.value })}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>卡片内橙色角标（默认同小标题）</label>
+                  <input
+                    className={inputClass}
+                    value={systemsMeta.cardTag}
+                    onChange={(e) => setSystemsMeta({ ...systemsMeta, cardTag: e.target.value })}
+                    placeholder="留空则使用「区块小标题」或翻译默认"
+                  />
+                </div>
+              </div>
+              <div className="text-xs font-bold text-gray-600">方案卡片列表</div>
               {systems.map((s, idx) => (
                 <div key={idx} className="border border-gray-100 rounded-xl p-3 space-y-2 relative">
                   <div className="flex justify-between items-center">
@@ -512,6 +861,54 @@ export function SiteSettingEditDialog({
 
           {settingKey === "home.projects" && (
             <div className="space-y-4">
+              <p className="text-xs text-gray-500">
+                首页「经典工程案例」区块与「工程案例」独立列表页的标题均可在此配置；留空则用翻译文件默认。
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border border-gray-100 rounded-xl p-3">
+                <div className="sm:col-span-2 text-[11px] font-bold text-gray-500 uppercase">首页区块</div>
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>小标签（如 精选案例）</label>
+                  <input
+                    className={inputClass}
+                    value={projectsMeta.featuredLabel}
+                    onChange={(e) => setProjectsMeta({ ...projectsMeta, featuredLabel: e.target.value })}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>主标题（如 经典工程案例）</label>
+                  <input
+                    className={inputClass}
+                    value={projectsMeta.sectionTitle}
+                    onChange={(e) => setProjectsMeta({ ...projectsMeta, sectionTitle: e.target.value })}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>「查看更多」链接文字</label>
+                  <input
+                    className={inputClass}
+                    value={projectsMeta.viewMore}
+                    onChange={(e) => setProjectsMeta({ ...projectsMeta, viewMore: e.target.value })}
+                  />
+                </div>
+                <div className="sm:col-span-2 text-[11px] font-bold text-gray-500 uppercase pt-2">工程案例列表页</div>
+                <div>
+                  <label className={labelClass}>页眉小标题</label>
+                  <input
+                    className={inputClass}
+                    value={projectsMeta.listingEyebrow}
+                    onChange={(e) => setProjectsMeta({ ...projectsMeta, listingEyebrow: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>页面主标题</label>
+                  <input
+                    className={inputClass}
+                    value={projectsMeta.listingTitle}
+                    onChange={(e) => setProjectsMeta({ ...projectsMeta, listingTitle: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="text-xs font-bold text-gray-600">案例卡片列表</div>
               {projects.map((p, idx) => (
                 <div key={idx} className="border border-gray-100 rounded-xl p-3 space-y-2">
                   <div className="flex justify-between items-center">
@@ -749,7 +1146,30 @@ export function SiteSettingEditDialog({
                 <label className={labelClass}>Hero 标题（关于青泰）</label>
                 <input className={inputClass} value={aboutPage.heroTitle} onChange={(e) => setAboutPage({ ...aboutPage, heroTitle: e.target.value })} />
               </div>
-              <AdminLocalVideoField label="Hero 背景视频" value={aboutPage.heroVideoUrl} onChange={(url) => setAboutPage({ ...aboutPage, heroVideoUrl: url })} />
+              <AdminLocalVideoField label="Hero 背景视频（无图时使用）" value={aboutPage.heroVideoUrl} onChange={(url) => setAboutPage({ ...aboutPage, heroVideoUrl: url })} />
+              <AdminLocalImageField
+                label="Hero 背景图（可选，上传后优先于视频显示）"
+                hint={SITE_IMAGE_SPECS.heroBackground.label}
+                value={aboutPage.heroImageUrl}
+                onChange={(url) => setAboutPage({ ...aboutPage, heroImageUrl: url })}
+                width={SITE_IMAGE_SPECS.heroBackground.width}
+                height={SITE_IMAGE_SPECS.heroBackground.height}
+                tolerance={SITE_IMAGE_SPECS.heroBackground.tolerance}
+              />
+              <div>
+                <label className={labelClass}>Hero 蓝色遮罩透明度（0～1）</label>
+                <input
+                  type="number"
+                  step={0.05}
+                  min={0}
+                  max={1}
+                  className={inputClass}
+                  value={aboutPage.heroOverlayOpacity}
+                  onChange={(e) =>
+                    setAboutPage({ ...aboutPage, heroOverlayOpacity: Number(e.target.value) })
+                  }
+                />
+              </div>
               <div>
                 <label className={labelClass}>小标题（如 Company Profile）</label>
                 <input className={inputClass} value={aboutPage.profileEyebrow} onChange={(e) => setAboutPage({ ...aboutPage, profileEyebrow: e.target.value })} />
