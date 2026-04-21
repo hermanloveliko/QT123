@@ -2528,7 +2528,7 @@ const DEFAULT_ABOUT_VIDEO =
 const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }) => {
   const { t } = useTranslation("common");
   const cfg = (publicSite["about.page"] || {}) as Record<string, unknown>;
-  const heroTitle = String(cfg.heroTitle ?? t("about.heroTitle"));
+  const heroTitle = String(cfg.heroTitle ?? t("about.heroTitle")).trim();
   const heroVideoUrl = String(cfg.heroVideoUrl || DEFAULT_ABOUT_VIDEO);
   const heroImageUrl = String(cfg.heroImageUrl ?? "").trim();
   const heroOv =
@@ -2544,6 +2544,14 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
   const profileParagraphs = Array.isArray(cfg.profileParagraphs)
     ? cfg.profileParagraphs.map(String)
     : defaultParas;
+  const [videoMuted, setVideoMuted] = useState(true);
+  const aboutVideoRef = React.useRef<HTMLVideoElement>(null);
+  const toggleMute = () => {
+    setVideoMuted((m) => {
+      if (aboutVideoRef.current) aboutVideoRef.current.muted = !m;
+      return !m;
+    });
+  };
 
   return (
     <div className="pt-20">
@@ -2556,16 +2564,31 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
             referrerPolicy="no-referrer"
           />
         ) : (
-          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
+          <video ref={aboutVideoRef} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
             <source src={normalizeMediaUrl(heroVideoUrl)} type={heroVideoUrl.includes(".webm") ? "video/webm" : "video/mp4"} />
           </video>
         )}
         <div
-          className="absolute inset-0 backdrop-blur-sm flex items-center justify-center"
+          className="absolute inset-0 flex items-center justify-center"
           style={{ backgroundColor: `rgba(0, 32, 69, ${heroOverlayOpacity})` }}
         >
-          <h1 className="text-6xl font-display font-extrabold text-white tracking-tighter">{heroTitle}</h1>
+          {heroTitle && (
+            <h1 className="text-6xl font-display font-extrabold text-white tracking-tighter">{heroTitle}</h1>
+          )}
         </div>
+        {!heroImageUrl && (
+          <button
+            onClick={toggleMute}
+            className="absolute bottom-4 right-4 z-10 bg-black/40 hover:bg-black/60 text-white rounded-full p-2 transition-colors"
+            title={videoMuted ? "开启声音" : "静音"}
+          >
+            {videoMuted ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            )}
+          </button>
+        )}
       </section>
 
       <section className="py-24 max-w-4xl mx-auto px-4">
