@@ -75,19 +75,22 @@ export function AdminLocalVideoField({
   onChange: (url: string) => void;
 }) {
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
     setBusy(true);
+    setProgress(0);
     try {
-      const url = await uploadSiteVideo(f);
+      const url = await uploadSiteVideo(f, (pct) => setProgress(pct));
       onChange(url);
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "上传失败");
     } finally {
       setBusy(false);
+      setProgress(0);
     }
   };
 
@@ -100,14 +103,24 @@ export function AdminLocalVideoField({
           <video src={value} className="w-full max-h-48 rounded-xl border border-gray-100 bg-black" controls muted playsInline />
           <label className={`${zoneClass} ${busy ? "opacity-50 pointer-events-none" : ""}`}>
             <Upload size={18} className="text-industrial-blue" />
-            <span>{busy ? "上传中…" : "更换视频"}</span>
+            <span>{busy ? `上传中… ${progress}%` : "更换视频"}</span>
+            {busy && (
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                <div className="bg-industrial-blue h-1.5 rounded-full transition-all duration-200" style={{ width: `${progress}%` }} />
+              </div>
+            )}
             <input type="file" accept="video/mp4,video/webm" className="hidden" onChange={onPick} disabled={busy} />
           </label>
         </div>
       ) : (
         <label className={`${zoneClass} ${busy ? "opacity-50 pointer-events-none" : ""}`}>
           <Upload size={20} className="text-industrial-blue" />
-          <span>{busy ? "上传中…" : "点击选择视频"}</span>
+          <span>{busy ? `上传中… ${progress}%` : "点击选择视频"}</span>
+          {busy && (
+            <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+              <div className="bg-industrial-blue h-1.5 rounded-full transition-all duration-200" style={{ width: `${progress}%` }} />
+            </div>
+          )}
           <input type="file" accept="video/mp4,video/webm" className="hidden" onChange={onPick} disabled={busy} />
         </label>
       )}

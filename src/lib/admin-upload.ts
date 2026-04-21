@@ -37,30 +37,46 @@ export function assertImageSize(
   }
 }
 
-async function postForm(path: string, file: File): Promise<{ url: string }> {
+async function postForm(
+  path: string,
+  file: File,
+  onProgress?: (pct: number) => void,
+): Promise<{ url: string }> {
   const fd = new FormData();
   fd.append("file", file);
   const token = localStorage.getItem("admin_token");
-  const headers: Record<string, string> = {};
-  if (token) headers.Authorization = `Bearer ${token}`;
-  const r = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    credentials: "include",
-    headers,
-    body: fd,
-  });
-  if (!r.ok) {
-    let msg = "上传失败";
-    try {
-      const j = (await r.json()) as { message?: string };
-      msg = j?.message || msg;
-    } catch {
-      // ignore
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE}${path}`);
+    if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.withCredentials = true;
+    if (onProgress) {
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+      });
     }
-    throw new Error(msg);
-  }
-  const data = (await r.json()) as { url: string };
-  return { url: normalizeUploadUrl(data.url) };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const data = JSON.parse(xhr.responseText) as { url: string };
+          resolve({ url: normalizeUploadUrl(data.url) });
+        } catch {
+          reject(new Error("上传失败：响应解析错误"));
+        }
+      } else {
+        let msg = "上传失败";
+        try {
+          const j = JSON.parse(xhr.responseText) as { message?: string };
+          msg = j?.message || msg;
+        } catch { /* ignore */ }
+        reject(new Error(msg));
+      }
+    };
+    xhr.onerror = () => reject(new Error("上传失败：网络错误"));
+    xhr.ontimeout = () => reject(new Error("上传超时"));
+    xhr.timeout = 300000; // 5 分钟
+    xhr.send(fd);
+  });
 }
 
 /** 站点配置用：校验尺寸后上传 */
@@ -76,8 +92,11 @@ export async function uploadSiteImage(
   return url;
 }
 
-/** 关于我们 hero 等：视频上传（服务端校验类型与大小） */
-export async function uploadSiteVideo(file: File): Promise<string> {
-  const { url } = await postForm("/api/admin/upload-video", file);
+/** 关于我们 hero 等：视频上传（服务端校验类型与大小），支持进度回调 */
+export async function uploadSiteVideo(
+  file: File,
+  onProgress?: (pct: number) => void,
+): Promise<string> {
+  const { url } = await postForm("/api/admin/upload-video", file, onProgress);
   return url;
 }
