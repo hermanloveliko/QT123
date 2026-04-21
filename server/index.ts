@@ -1549,9 +1549,14 @@ app.get("/api/admin/ai-conversations", auth, async (_req, res) => {
 
 function uploadUrl(_req: express.Request, filePath: string) {
   const name = path.basename(filePath);
-  // 同源部署（前端与 API 同域名）：返回相对路径，浏览器始终按当前页面协议请求，避免 https 页面加载 http 混链导致图片被拦截。
-  if (PUBLIC_APP_URL) return `${PUBLIC_APP_URL}/uploads/${name}`;
-  return `/uploads/${name}`;
+  // 同源部署：优先相对路径，避免写入 DB 的绝对地址与页面 https 不一致被浏览器拦截。
+  if (!PUBLIC_APP_URL) return `/uploads/${name}`;
+  let base = PUBLIC_APP_URL.replace(/\/+$/, "");
+  // 生产常见误配：PUBLIC_APP_URL 写成 http://，前台为 https 时会导致混链；本地 localhost 保持 http。
+  if (/^http:\/\/(?!127\.0\.0\.1\b)(?!localhost\b)/i.test(base)) {
+    base = `https://${base.slice("http://".length)}`;
+  }
+  return `${base}/uploads/${name}`;
 }
 
 app.post("/api/admin/upload", auth, (req, res) => {

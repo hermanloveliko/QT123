@@ -1,8 +1,9 @@
+import { normalizeMediaUrl } from "./media-url";
+
 function defaultApiBase(): string {
-  // 生产环境优先走同源（/api），避免端口/协议不一致导致 Failed to fetch（尤其 https -> http 会被浏览器拦截）
-  // 如需单独 API 域名或端口，请通过 VITE_API_BASE 显式配置。
-  const env = (import.meta as any).env || {};
-  if (env.DEV) return "http://localhost:8787";
+  // 未设置 VITE_API_BASE 时：用当前页面 origin，生产环境一般为同源 /api；
+  // 开发环境由 Vite 把 /api、/uploads 代理到本机 8787（见 vite.config.ts）。
+  // 若本机只跑前端、API 在远程服务器，必须在 .env 设置 VITE_API_BASE（无尾斜杠）。
   return "";
 }
 
@@ -126,19 +127,7 @@ export async function apiJson<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 function normalizeDisplayImageUrl(raw: string): string {
-  const u = String(raw || "").trim();
-  if (!u) return u;
-  if (typeof window === "undefined" || window.location.protocol !== "https:") return u;
-  if (!u.startsWith("http://")) return u;
-  try {
-    const parsed = new URL(u);
-    if (parsed.protocol !== "http:") return u;
-    if (parsed.host !== window.location.host) return u;
-    parsed.protocol = "https:";
-    return parsed.toString();
-  } catch {
-    return u;
-  }
+  return normalizeMediaUrl(String(raw || "").trim());
 }
 
 export function toLegacyProduct(p: ApiProduct): Product {

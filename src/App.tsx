@@ -13,6 +13,7 @@ import {
   type Port,
   type Product,
 } from "./lib/api";
+import { normalizeMediaUrl } from "./lib/media-url";
 import { useTranslation } from "react-i18next";
 import { consumeAdminEntryUnlockFromUrl, shouldExposeAdminUi } from "./lib/admin-entry";
 import { GB, ES, PT, MY, CN, FR, RU, KR, TH, VN, SA, TZ } from "country-flag-icons/react/3x2";
@@ -2184,7 +2185,7 @@ const HomePage = ({
     <section className="relative h-[90vh] overflow-hidden">
       <div className="absolute inset-0">
         <img 
-          src={heroImg} 
+          src={normalizeMediaUrl(heroImg)} 
           alt={heroAlt} 
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
@@ -2317,7 +2318,7 @@ const HomePage = ({
             className="group relative h-[500px] overflow-hidden cursor-pointer" 
             onClick={() => { setActiveSystem(system); setPage("systemDetail"); }}
           >
-            <img src={system.image} alt={system.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <img src={normalizeMediaUrl(system.image)} alt={system.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-industrial-blue via-transparent to-transparent opacity-80"></div>
             <div className="absolute bottom-0 left-0 p-8 w-full">
               <span className="text-heat-accent text-xs font-bold tracking-widest uppercase mb-2 block">{sysCardTag}</span>
@@ -2352,7 +2353,7 @@ const HomePage = ({
               onClick={() => { setActiveProject(project); setPage("projectDetail"); }}
             >
               <div className="aspect-video overflow-hidden rounded-2xl mb-6">
-                <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <img src={normalizeMediaUrl(project.image)} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
               </div>
               <h3 className="text-2xl font-display font-bold group-hover:text-heat-accent transition-colors">{project.title}</h3>
               <p className="text-gray-400 mt-2">{project.location}</p>
@@ -2404,7 +2405,7 @@ const HomePage = ({
               {slideUrls.map((src, i) => (
                 <img 
                   key={`${src}-${i}`}
-                  src={src} 
+                  src={normalizeMediaUrl(src)} 
                   alt="" 
                   className="w-1/3 h-full object-cover opacity-60 grayscale"
                 />
@@ -2473,7 +2474,7 @@ const ProjectsPage = ({
           onClick={() => { setActiveProject(project); setPage("projectDetail"); }}
         >
           <div className="aspect-video overflow-hidden rounded-3xl mb-6">
-            <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <img src={normalizeMediaUrl(project.image)} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
           </div>
           <div className="flex justify-between items-start">
             <div>
@@ -2494,7 +2495,7 @@ const ProjectDetailPage = ({ project }: { project: Project }) => {
   return (
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
     <div className="aspect-[21/9] rounded-3xl overflow-hidden mb-12">
-      <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+      <img src={normalizeMediaUrl(project.image)} alt={project.title} className="w-full h-full object-cover" />
     </div>
     <div className="max-w-3xl mx-auto">
       <div className="text-sm font-bold text-heat-accent uppercase tracking-widest mb-4">{project.location}</div>
@@ -2549,14 +2550,14 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
       <section className="h-[60vh] relative overflow-hidden">
         {heroImageUrl ? (
           <img
-            src={heroImageUrl}
+            src={normalizeMediaUrl(heroImageUrl)}
             alt=""
             className="absolute inset-0 w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
         ) : (
           <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-            <source src={heroVideoUrl} type={heroVideoUrl.includes(".webm") ? "video/webm" : "video/mp4"} />
+            <source src={normalizeMediaUrl(heroVideoUrl)} type={heroVideoUrl.includes(".webm") ? "video/webm" : "video/mp4"} />
           </video>
         )}
         <div
@@ -2588,7 +2589,7 @@ const SystemDetailPage = ({ system }: { system: System }) => {
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
       <div className="rounded-3xl overflow-hidden shadow-2xl">
-        <img src={system.image} alt={system.title} className="w-full h-full object-cover" />
+        <img src={normalizeMediaUrl(system.image)} alt={system.title} className="w-full h-full object-cover" />
       </div>
       <div>
         <div className="accent-border mb-4">
@@ -2806,7 +2807,7 @@ const AIChatModal = ({
                         }}
                         className="mt-3 first:mt-4 bg-gray-50 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-heat-accent transition-colors flex gap-3 items-center"
                       >
-                        <img src={p.image} className="w-12 h-12 object-cover rounded-lg shrink-0" alt="" />
+                        <img src={normalizeMediaUrl(p.image)} className="w-12 h-12 object-cover rounded-lg shrink-0" alt="" />
                         <div className="flex-1 min-w-0">
                           <div className="text-xs font-bold text-industrial-blue truncate">{p.name}</div>
                           <div className="text-[10px] text-gray-400">{t("ai.chat.cardHint")}</div>

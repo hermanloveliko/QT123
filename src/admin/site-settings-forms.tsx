@@ -24,7 +24,7 @@ export function hasStructuredSiteSettingForm(key: string): key is SiteSettingFor
 
 /** 后台配置列表展示用中文名（便于找到「关于我们」等） */
 export const SITE_SETTING_LIST_LABEL: Record<string, string> = {
-  contact: "联系信息",
+  contact: "联系信息（弹窗 / 页脚：电话·邮箱·WhatsApp）",
   "home.hero": "首页 · 首屏大图与主文案",
   "home.consultation": "首页 · 咨询区块",
   "home.systems": "首页 · 核心系统方案",
@@ -502,7 +502,7 @@ export function SiteSettingEditDialog({
 
   const title = useMemo(() => {
     const labels: Record<string, string> = {
-      contact: "联系信息（弹窗 / 侧栏）",
+      contact: "联系信息（弹窗 / 页脚）",
       "home.hero": "首页 · 首屏大图与主文案",
       "home.consultation": "首页 · 咨询区块",
       "home.systems": "首页 · 核心系统方案",
@@ -717,6 +717,10 @@ export function SiteSettingEditDialog({
 
           {settingKey === "contact" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <p className="sm:col-span-2 text-xs text-gray-500">
+                此处修改后，前台左侧社交条、页脚等打开的「联系方式」弹窗中的电话、邮箱、WhatsApp 会同步更新（无需填图片
+                URL）。
+              </p>
               <div className="sm:col-span-2">
                 <label className={labelClass}>电话</label>
                 <input className={inputClass} value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} />
