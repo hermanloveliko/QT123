@@ -16,19 +16,12 @@ const rootEl = document.getElementById("root")!;
 const root = createRoot(rootEl);
 
 async function boot() {
-  let i18n: any = null;
-  if (!isAdmin) {
-    i18n = await initI18n();
-  }
+  const i18n = await initI18n();
   root.render(
     <StrictMode>
-      {isAdmin ? (
-        <AdminApp />
-      ) : (
-        <I18nextProvider i18n={i18n}>
-          <App />
-        </I18nextProvider>
-      )}
+      <I18nextProvider i18n={i18n}>
+        {isAdmin ? <AdminApp /> : <App />}
+      </I18nextProvider>
     </StrictMode>,
   );
 }
