@@ -2555,7 +2555,7 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
 
   return (
     <div className="pt-20">
-      <section className="h-[60vh] relative overflow-hidden">
+      <section className="h-[40vh] relative overflow-hidden">
         {heroImageUrl ? (
           <img
             src={normalizeMediaUrl(heroImageUrl)}
