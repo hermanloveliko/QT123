@@ -61,24 +61,27 @@
     "about": "关于我们",
     "getQuote": "获取报价",
     "admin": "管理员登录",
-    "searchPlaceholder": "搜索材料..."
+    "searchPlaceholder": "搜索材料...",
+    "brandPrimary": "青泰建材",
+    "brandSub": "Qingtai Materials"
   },
   "home": {
     "badge": "建筑装饰隔墙吊顶材料专家，成立20年",
-    "heroTitleLine1": "构建未来的",
-    "heroTitleAccent": "精密基石",
+    "heroTitleLine1": "吊顶&隔墙系统专家",
+    "heroTitleAccent": "让您的成本直降30%",
     "heroDesc1": "青泰建材提供世界级的轻钢龙骨、石膏板与铝制饰面系统。",
     "heroDesc2": "通过精密工艺与全球物流，为您的宏伟蓝图保驾护航。",
     "browseCatalog": "浏览产品目录",
     "viewProjects": "查看工程案例",
+    "heroImageAlt": "建筑施工现场",
     "stats": {
       "years": "行业经验 (年)",
       "projects": "全球项目",
       "satisfaction": "客户满意度"
     },
     "consultation": {
-      "title": "需要专业材料咨询？",
-      "desc": "我们的工程师团队随时为您提供技术支持、材料选型及成本估算服务。",
+      "title": "告诉我们您的项目，免费匹配板材/龙骨 + 最优报价",
+      "desc": "无需纠结哪种板材/龙骨适合您的市场了，直接把您的吊顶或隔墙项目需求发给我们——我们将在1小时内回复。\n✅ 精准匹配产品（板材和龙骨）\n✅ 最优价格（EXW/FOB/CIF/DDP）\n✅ 样品及认证支持。您的项目值得一个真正的解决方案——免费、快速、不废话。",
       "hotlineLabel": "WhatsApp",
       "hotlineValue": "+86 138 0000 0000",
       "button": "在线预约咨询"
@@ -105,6 +108,10 @@
         {
           "title": "全程质量监控",
           "desc": "从出库到签收，每一步都经过严格的质量检查与数字化记录。"
+        },
+        {
+          "title": "实时订单追踪",
+          "desc": "下单即生成唯一订单号，物流节点在线更新；可查询船名航次、集装箱号与预计到港日。"
         }
       ],
       "track": {
@@ -120,6 +127,8 @@
     }
   },
   "about": {
+    "mute": "静音",
+    "unmute": "开启声音",
     "heroTitle": "关于青泰",
     "profileEyebrow": "Company Profile",
     "profileHeading": "二十年专注，铸就建筑之美",
@@ -227,6 +236,12 @@
   "systemDetail": {
     "eyebrow": "系统方案"
   },
+  "detail": {
+    "backToHome": "返回首页",
+    "backToCatalog": "返回产品目录",
+    "backToProjects": "返回工程案例",
+    "backToChat": "返回并继续咨询"
+  },
   "contactModal": {
     "title": "联系方式",
     "phone": "电话",
@@ -259,6 +274,7 @@
       "title": "AI 智能助手",
       "subtitle": "Qingtai AI Support",
       "cardHint": "先看卡片，点击查看详情",
+      "allProductsScroll": "本库已上架 {{count}} 件，可在下方列表中滚动查看",
       "orderNow": "一键下单",
       "inputPlaceholder": "输入您的问题...",
       "requestFailed": "请求失败：{{error}}",

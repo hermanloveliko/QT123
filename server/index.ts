@@ -166,6 +166,230 @@ function isSupportedLang(raw: string): raw is Lang {
   return (SUPPORTED_LANGS as readonly string[]).includes(raw);
 }
 
+const CJK_RE = /[\u4E00-\u9FFF\u3400-\u4DBF]/u;
+// Arabic script + its common presentation forms / digits (avoid mis-targeting CJK for ar)
+const ARABIC_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/u;
+const A2Z_RE = /[A-Za-z]/g;
+
+function hasCJK(s: string) {
+  return CJK_RE.test(s);
+}
+function hasArabic(s: string) {
+  return ARABIC_RE.test(s);
+}
+function asciiLetterRatio(s: string) {
+  const raw = String(s || "");
+  if (!raw) return 0;
+  const m = raw.match(A2Z_RE);
+  return m ? m.length / raw.length : 0;
+}
+function looksLikeEnglishProse(s: string) {
+  // Heuristic: many ASCII letters in a long string → likely English content for non-English target locales
+  if (s.length < 8) return false;
+  return asciiLetterRatio(s) > 0.2;
+}
+function looksLikeLongEnglishWithoutArabic(s: string) {
+  if (s.length < 8) return false;
+  if (hasArabic(s)) return false;
+  return asciiLetterRatio(s) > 0.2;
+}
+function isBadI18nForTargetLang(lang: Lang, out: string, base: string) {
+  const o = String(out || "");
+  const b = String(base || "");
+  if (lang === "vi") {
+    // Vietnamese target should not keep Chinese; if any CJK left, re-run with stricter rule.
+    if (hasCJK(o)) return true;
+    // If the base is Chinese and output still looks like English, try again
+    if (hasCJK(b) && !hasCJK(o) && looksLikeEnglishProse(o) && o.length > 6) return true;
+  }
+  if (lang === "ar") {
+    // Arabic page should be Arabic script for human-readable strings; CJK/English left means fix needed.
+    if (hasCJK(o)) return true;
+    if (looksLikeLongEnglishWithoutArabic(o)) return true;
+  }
+  if (lang === "sw") {
+    if (hasCJK(o)) return true;
+  }
+  return false;
+}
+
+/** Second pass: stricter target-language output when first pass still looks like wrong language. */
+async function deepseekTranslateStringsStrict(
+  targetLang: Lang,
+  texts: string[],
+  extraSystemRule: string,
+): Promise<string[]> {
+  if (texts.length === 0) return [];
+  if (!process.env.DEEPSEEK_API_KEY) {
+    throw new Error("DEEPSEEK_API_KEY 未配置，无法机器翻译");
+  }
+  const systemPrompt =
+    "You are a professional translation engine for the building materials / construction industry.\n"
+    + "Translate each input string into the TARGET LANGUAGE, keeping the original array order.\n"
+    + "Your output MUST be a strict JSON array of strings. Output ONLY the array, no extra text.\n\n"
+    + "你是建筑材料/工程领域的专业翻译引擎。\n"
+    + "把输入的字符串逐条翻译成【目标语言】，保持原数组顺序。\n"
+    + "输出必须是严格 JSON 字符串数组（只输出数组，不要解释，不要 Markdown）。\n\n"
+    + `TARGET LANGUAGE / 目标语言：${targetLang}\n`
+    + `STRICT OVERRIDES / 强约束：\n${extraSystemRule}\n`
+    + "Style / 风格：清晰、专业、适合产品目录与报价沟通；不要夸张营销。\n"
+    + "Glossary / 术语偏好（按语境选择最自然表达）：\n"
+    + "- 轻钢龙骨: light steel keel / steel framing\n"
+    + "- 石膏板: gypsum board\n"
+    + "- 水泥板: cement board\n"
+    + "- 吊顶: ceiling system\n"
+    + "- 隔墙: partition wall\n"
+    + "Rules / 要求：\n"
+    + "- Preserve numbers, units, model names (e.g. M4), currency symbols\n"
+    + "- Preserve punctuation like EXW/FOB/CIF/DDP and keep it uppercase\n";
+
+  const userPrompt = JSON.stringify({ texts }, null, 0);
+
+  const callWithRetry = async (fn: () => Promise<string>): Promise<string> => {
+    let lastErr: any = null;
+    const tries = Number(process.env.DEEPSEEK_RETRY_TIMES || 2);
+    for (let i = 0; i <= tries; i++) {
+      try {
+        return await fn();
+      } catch (e: any) {
+        lastErr = e;
+        const msg = String(e?.message || "");
+        const isTimeout = msg.includes("超时") || msg.toLowerCase().includes("timeout") || msg.toLowerCase().includes("abort");
+        const isFormat = msg.includes("不是 JSON") || msg.includes("条数不一致");
+        if (i >= tries || (!isTimeout && !isFormat)) throw e;
+        await new Promise((r) => setTimeout(r, 600 * (i + 1)));
+      }
+    }
+    throw lastErr ?? new Error("机器翻译失败");
+  };
+
+  const callOnce = async (extra: string) => {
+    const controller = new AbortController();
+    const timeoutMs = Number(process.env.DEEPSEEK_TIMEOUT_MS || 15000);
+    const timer = setTimeout(() => controller.abort(), Number.isFinite(timeoutMs) ? timeoutMs : 15000);
+    try {
+      const r = await fetch("https://api.deepseek.com/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: "deepseek-chat",
+          messages: [
+            { role: "system", content: systemPrompt + "\n" + extra + "\n" },
+            { role: "user", content: userPrompt },
+          ],
+          temperature: 0.1,
+        }),
+      });
+      const data = (await r.json()) as any;
+      const content = data?.choices?.[0]?.message?.content;
+      if (typeof content !== "string") throw new Error("机器翻译失败：无返回内容");
+      return content;
+    } catch (e: any) {
+      if (String(e?.name || "").toLowerCase().includes("abort")) {
+        throw new Error("机器翻译超时（DeepSeek 不可达或响应过慢）");
+      }
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+
+  const tryParseArray = (content: string): string[] => {
+    let arr: unknown = null;
+    try {
+      arr = JSON.parse(content);
+    } catch {
+      const m = content.match(/\[[\s\S]*\]/);
+      if (!m) throw new Error("机器翻译失败：返回不是 JSON 数组");
+      arr = JSON.parse(m[0]);
+    }
+    if (!Array.isArray(arr)) throw new Error("机器翻译失败：返回不是数组");
+    const out = arr.map((x) => String(x ?? ""));
+    if (out.length !== texts.length) throw new Error("机器翻译失败：返回条数不一致");
+    return out;
+  };
+
+  const first = await callWithRetry(() => callOnce(""));
+  try {
+    return tryParseArray(first);
+  } catch {
+    const second = await callWithRetry(() => callOnce("STRICT: Output ONLY a JSON array of strings, no other characters."));
+    return tryParseArray(second);
+  }
+}
+
+function strictBackstopRuleForLang(lang: Lang): string {
+  if (lang === "vi") {
+    return "强制：输出为越南语（Tiếng Việt），不得出现中文/日文/韩文（不得含任何 CJK 字符）。\n"
+      + "如原文为中文，必须完整意译为越南语，不要保留中文字样或中英夹杂的长英语句子。\n"
+      + "可保留：数字、mm、m、单位符号、产品型号/牌号、货币与贸易术语（EXW/FOB/CIF/USD 等）。";
+  }
+  if (lang === "ar") {
+    return "强制：输出为标准阿拉伯语（用阿拉伯文书写），不得把整段说明留在英文；不得出现中文/日文/韩文。\n"
+      + "若原文是英文/中文/混合语言，应统一改写为通顺的阿拉伯语说明。\n"
+      + "可保留：数字、mm、m、单位、型号/牌号、货币与贸易术语（EXW/FOB/CIF/USD 等）。";
+  }
+  if (lang === "sw") {
+    return "强制：输出为斯瓦希里语（Kiswahili），不得出现中文/日文/韩文（不得含 CJK 字符）。";
+  }
+  return "强制：输出仅使用目标语言，不得出现与目标语言明显不符的大段源语言。";
+}
+
+/** 按原文批量做「二遍严译」并写入缓存；供前台与后台共用。 */
+async function buildStrictI18nFixMap(lang: Lang, bases: Iterable<string>) {
+  const out = new Map<string, string>();
+  if (lang === DEFAULT_LANG) return out;
+  if (!process.env.DEEPSEEK_API_KEY) return out;
+  const cache = ((
+    (globalThis as any).__qt_i18n_strict = (globalThis as any).__qt_i18n_strict
+    || new Map<string, string>()
+  )) as Map<string, string>;
+  const rule = strictBackstopRuleForLang(lang);
+  const need: string[] = [];
+  for (const raw of bases) {
+    const b = String(raw ?? "").trim();
+    if (!b) continue;
+    const k = `${lang}::${b}`;
+    if (cache.has(k)) {
+      out.set(b, cache.get(k)!);
+      continue;
+    }
+    need.push(b);
+  }
+  if (!need.length) return out;
+  const max = Number(process.env.PUBLIC_STRICT_FIX_MAX || 100);
+  const list = (Number.isFinite(max) && max > 0 ? need.slice(0, max) : need) as string[];
+  const BATCH = 24;
+  for (let i = 0; i < list.length; i += BATCH) {
+    const chunk = list.slice(i, i + BATCH);
+    let fixed = await deepseekTranslateStringsStrict(lang, chunk, rule);
+    for (let j = 0; j < chunk.length; j++) {
+      const b = chunk[j];
+      let v = fixed[j] ?? b;
+      if (isBadI18nForTargetLang(lang, v, b)) {
+        try {
+          const one = await deepseekTranslateStringsStrict(lang, [b], rule);
+          v = one[0] ?? v;
+        } catch {
+          // use first pass
+        }
+      }
+      const k = `${lang}::${b}`;
+      if (!isBadI18nForTargetLang(lang, v, b)) {
+        cache.set(k, v);
+      } else {
+        cache.delete(k);
+      }
+      out.set(b, v);
+    }
+  }
+  return out;
+}
+
 function isPlainObject(x: unknown): x is Record<string, unknown> {
   return !!x && typeof x === "object" && !Array.isArray(x);
 }
@@ -214,39 +438,80 @@ async function deepseekTranslateStrings(opts: { targetLang: Lang; texts: string[
     throw new Error("DEEPSEEK_API_KEY 未配置，无法机器翻译");
   }
   const systemPrompt =
-    "You are a translation engine.\n"
+    "You are a professional translation engine for the building materials / construction industry.\n"
     + "Translate each input string into the TARGET LANGUAGE, keeping the original array order.\n"
     + "Your output MUST be a strict JSON array of strings. Output ONLY the array, no extra text.\n\n"
-    + "你是一个翻译引擎。\n"
+    + "你是建筑材料/工程领域的专业翻译引擎。\n"
     + "把输入的字符串逐条翻译成【目标语言】，保持原数组顺序。\n"
     + "输出必须是严格 JSON 字符串数组（只输出数组，不要解释，不要 Markdown）。\n\n"
     + `TARGET LANGUAGE / 目标语言：${targetLang}\n`
+    + "Style / 风格：清晰、专业、适合产品目录与报价沟通；不要夸张营销。\n"
+    + "Glossary / 术语偏好（按语境选择最自然表达）：\n"
+    + "- 轻钢龙骨: light steel keel / steel framing\n"
+    + "- 石膏板: gypsum board\n"
+    + "- 水泥板: cement board\n"
+    + "- 吊顶: ceiling system\n"
+    + "- 隔墙: partition wall\n"
     + "Rules / 要求：\n"
     + "- Preserve numbers, units, model names (e.g. M4), currency symbols\n"
+    + "- Preserve punctuation like EXW/FOB/CIF/DDP and keep it uppercase\n"
     + "- If a string does not need translation, return it as-is\n";
 
   const userPrompt = JSON.stringify({ texts }, null, 0);
 
+  const callWithRetry = async (fn: () => Promise<string>): Promise<string> => {
+    let lastErr: any = null;
+    const tries = Number(process.env.DEEPSEEK_RETRY_TIMES || 2);
+    for (let i = 0; i <= tries; i++) {
+      try {
+        return await fn();
+      } catch (e: any) {
+        lastErr = e;
+        const msg = String(e?.message || "");
+        const isTimeout = msg.includes("超时") || msg.toLowerCase().includes("timeout") || msg.toLowerCase().includes("abort");
+        const isFormat = msg.includes("不是 JSON") || msg.includes("条数不一致");
+        if (i >= tries || (!isTimeout && !isFormat)) throw e;
+        // backoff
+        await new Promise((r) => setTimeout(r, 600 * (i + 1)));
+      }
+    }
+    throw lastErr ?? new Error("机器翻译失败");
+  };
+
   const callOnce = async (extraRule?: string) => {
-    const r = await fetch("https://api.deepseek.com/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "deepseek-chat",
-        messages: [
-          { role: "system", content: systemPrompt + (extraRule ? `\n${extraRule}\n` : "") },
-          { role: "user", content: userPrompt },
-        ],
-        temperature: 0.1,
-      }),
-    });
-    const data = (await r.json()) as any;
-    const content = data?.choices?.[0]?.message?.content;
-    if (typeof content !== "string") throw new Error("机器翻译失败：无返回内容");
-    return content;
+    const controller = new AbortController();
+    // Admin batch may translate longer texts; default longer timeout.
+    const timeoutMs = Number(process.env.DEEPSEEK_TIMEOUT_MS || 15000);
+    const timer = setTimeout(() => controller.abort(), Number.isFinite(timeoutMs) ? timeoutMs : 12000);
+    try {
+      const r = await fetch("https://api.deepseek.com/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: "deepseek-chat",
+          messages: [
+            { role: "system", content: systemPrompt + (extraRule ? `\n${extraRule}\n` : "") },
+            { role: "user", content: userPrompt },
+          ],
+          temperature: 0.1,
+        }),
+      });
+      const data = (await r.json()) as any;
+      const content = data?.choices?.[0]?.message?.content;
+      if (typeof content !== "string") throw new Error("机器翻译失败：无返回内容");
+      return content;
+    } catch (e: any) {
+      if (String(e?.name || "").toLowerCase().includes("abort")) {
+        throw new Error("机器翻译超时（DeepSeek 不可达或响应过慢）");
+      }
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
   };
 
   const tryParseArray = (content: string): string[] => {
@@ -265,11 +530,14 @@ async function deepseekTranslateStrings(opts: { targetLang: Lang; texts: string[
   };
 
   // Retry once with stricter rule; some languages may trigger verbose outputs.
-  const first = await callOnce();
+  const first = await callWithRetry(() => callOnce());
   try {
     return tryParseArray(first);
   } catch {
-    const second = await callOnce("STRICT: Output ONLY a JSON array of strings, no other characters.");
+    // 若返回格式不规范，重试一次；若 DeepSeek 不可达/超时，上层会捕获并回退
+    const second = await callWithRetry(() =>
+      callOnce("STRICT: Output ONLY a JSON array of strings, no other characters."),
+    );
     return tryParseArray(second);
   }
 }
@@ -285,6 +553,20 @@ async function translateJsonValue(opts: { targetLang: Lang; value: unknown }): P
     const chunk = uniq.slice(i, i + BATCH);
     const translated = await deepseekTranslateStrings({ targetLang: opts.targetLang, texts: chunk });
     for (let j = 0; j < chunk.length; j++) mapping.set(chunk[j], translated[j]);
+  }
+  if (opts.targetLang !== DEFAULT_LANG) {
+    const bad: string[] = [];
+    for (const s of uniq) {
+      const t = mapping.get(s);
+      if (t && isBadI18nForTargetLang(opts.targetLang, t, s)) bad.push(s);
+    }
+    if (bad.length) {
+      const fix = await buildStrictI18nFixMap(opts.targetLang, bad);
+      for (const s of bad) {
+        const v = fix.get(s);
+        if (v != null) mapping.set(s, v);
+      }
+    }
   }
   return replaceStringsDeep(opts.value, mapping);
 }
@@ -359,6 +641,7 @@ const PUBLIC_SITE_SETTING_KEYS = [
   "contact",
   "home.hero",
   "home.consultation",
+  "home.bulletin",
   "home.systems",
   "home.projects",
   "home.logistics",
@@ -398,10 +681,39 @@ async function computePricingForItems(
     productName: string;
   }> = [];
 
+  const nameBasesToFix = new Set<string>();
   for (const it of items) {
-    const p = pm.get(it.productId);
+    const p = pm.get(it.productId) as any;
     if (!p) throw new Error(`产品不存在: ${it.productId}`);
     const loc = pickLocalized((p as any).i18n, lang, fallback);
+    const baseN = String(p.name || "");
+    const outN = (loc as any)?.name;
+    if (outN != null && String(outN).trim() !== "" && isBadI18nForTargetLang(lang, String(outN), baseN) && baseN.trim()) {
+      nameBasesToFix.add(baseN.trim());
+    } else if (!outN || String(outN).trim() === "") {
+      if (baseN.trim() && isBadI18nForTargetLang(lang, baseN, baseN)) nameBasesToFix.add(baseN.trim());
+    }
+  }
+  const nameFix = await buildStrictI18nFixMap(lang, nameBasesToFix);
+
+  for (const it of items) {
+    const p = pm.get(it.productId) as any;
+    if (!p) throw new Error(`产品不存在: ${it.productId}`);
+    const loc = pickLocalized((p as any).i18n, lang, fallback);
+    const baseN = String(p.name || "");
+    const outN = (loc as any)?.name;
+    const productName = (() => {
+      if (outN != null && String(outN).trim() !== "") {
+        const raw = String(outN);
+        return isBadI18nForTargetLang(lang, raw, baseN) && baseN.trim()
+          ? (nameFix.get(baseN.trim()) ?? raw)
+          : raw;
+      }
+      if (baseN.trim() && isBadI18nForTargetLang(lang, baseN, baseN)) {
+        return nameFix.get(baseN.trim()) ?? p.name;
+      }
+      return p.name;
+    })();
     const unitCbm = computeCbm(p);
     const lineCbm = unitCbm * it.qty;
     const lineTotalUsd = Number(p.priceUsd) * it.qty;
@@ -414,7 +726,7 @@ async function computePricingForItems(
       cbmPerUnit: unitCbm || null,
       lineCbm,
       lineTotalUsd,
-      productName: (loc as any)?.name ?? p.name,
+      productName,
     });
   }
 
@@ -461,10 +773,59 @@ app.get("/api/public/categories", async (req, res) => {
     orderBy: { sortOrder: "asc" },
     include: { i18n: { where: { lang: { in: [lang as any, fallback as any] } } } },
   });
+  const shouldAutoMt =
+    lang !== DEFAULT_LANG
+    && Boolean(process.env.DEEPSEEK_API_KEY)
+    && String(req.query.autoMt || req.query.mt || "").trim() === "1";
+
+  const mtCache = (globalThis as any).__qt_public_mt_cache as Map<string, string> | undefined;
+  const cache: Map<string, string> =
+    mtCache ?? ((globalThis as any).__qt_public_mt_cache = new Map<string, string>());
+
+  let mtMap: Map<string, string> | null = null;
+  if (shouldAutoMt) {
+    try {
+      const texts: string[] = [];
+      for (const c of rows) {
+        const loc = pickLocalized((c as any).i18n, lang, fallback);
+        if ((loc as any)?.name) continue;
+        const base = String((c as any).name || "").trim();
+        if (base) texts.push(base);
+      }
+      const uniq = Array.from(new Set(texts));
+      const need: string[] = [];
+      for (const s of uniq) if (!cache.has(`${lang}::${s}`)) need.push(s);
+      if (need.length) {
+        const BATCH = 40;
+        for (let i = 0; i < need.length; i += BATCH) {
+          const chunk = need.slice(i, i + BATCH);
+          const out = await deepseekTranslateStrings({ targetLang: lang, texts: chunk });
+          for (let j = 0; j < chunk.length; j++) cache.set(`${lang}::${chunk[j]}`, out[j]);
+        }
+      }
+      mtMap = new Map<string, string>();
+      for (const s of uniq) {
+        const v = cache.get(`${lang}::${s}`);
+        if (v != null) mtMap.set(s, v);
+      }
+    } catch {
+      mtMap = null;
+    }
+  }
+
+  const mt = (s: unknown) => {
+    const raw = String(s || "").trim();
+    if (!raw || !mtMap) return undefined;
+    return mtMap.get(raw) ?? undefined;
+  };
   res.json(
     rows.map((c) => {
       const loc = pickLocalized((c as any).i18n, lang, fallback);
-      return { id: c.id, name: (loc as any)?.name ?? c.name, sortOrder: c.sortOrder };
+      return {
+        id: c.id,
+        name: (loc as any)?.name ?? mt(c.name) ?? c.name,
+        sortOrder: c.sortOrder,
+      };
     }),
   );
 });
@@ -539,7 +900,7 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
   const schema = z.object({
     entity: z.enum(["siteSettings", "products", "categories", "subcategories", "countries", "ports"]),
     lang: z.string().min(2),
-    mode: z.enum(["empty", "copyZh", "machine"]),
+    mode: z.enum(["empty", "copyZh", "machine", "machineOverwrite"]),
     force: z.boolean().optional().default(false),
     // optional filters
     keys: z.array(z.string()).optional(),
@@ -553,6 +914,7 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
   if (lang === DEFAULT_LANG) return res.status(400).json({ message: "默认语言无需批量 i18n" });
 
   const { entity, mode, force } = parsed.data;
+  const overwrite = mode === "machineOverwrite";
   const failures: Array<{ id?: string; key?: string; message: string }> = [];
   let created = 0;
   let updated = 0;
@@ -567,7 +929,7 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
           const existing = await prisma.siteSettingI18n.findUnique({
             where: { key_lang: { key: row.key, lang: lang as any } },
           });
-          if (existing && !force) {
+          if (existing && !force && !overwrite) {
             skipped++;
             continue;
           }
@@ -575,7 +937,7 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
           let nextValue: unknown = baseValue;
           if (mode === "empty") nextValue = blankStringsDeep(baseValue);
           else if (mode === "copyZh") nextValue = baseValue;
-          else if (mode === "machine") nextValue = await translateJsonValue({ targetLang: lang, value: baseValue });
+          else if (mode === "machine" || overwrite) nextValue = await translateJsonValue({ targetLang: lang, value: baseValue });
 
           await prisma.siteSetting.upsert({ where: { key: row.key }, update: {}, create: { key: row.key, value: {} } });
           if (existing) {
@@ -607,7 +969,7 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
           const existing = await prisma.productI18n.findUnique({
             where: { productId_lang: { productId: p.id, lang: lang as any } },
           });
-          if (existing && !force) {
+          if (existing && !force && !overwrite) {
             skipped++;
             continue;
           }
@@ -618,16 +980,63 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
             name = "";
             description = "";
             specs = [];
-          } else if (mode === "machine") {
-            const texts: string[] = [p.name, p.description || "", ...(Array.isArray(p.specs) ? (p.specs as any[]).map(String) : [])].filter(
-              (x) => String(x || "").trim() !== "",
-            );
-            const translated = await deepseekTranslateStrings({ targetLang: lang, texts });
-            let idx = 0;
-            name = translated[idx++] || p.name;
-            description = (p.description || "").trim() ? (translated[idx++] || "") : "";
-            const rest = translated.slice(idx);
-            specs = rest;
+          } else if (mode === "machine" || overwrite) {
+            const baseName = String(p.name || "");
+            const baseDesc = String(p.description || "");
+            const baseSpecs = Array.isArray(p.specs) ? (p.specs as any[]).map(String) : [];
+
+            const headTexts = [baseName, baseDesc].filter((x) => String(x || "").trim() !== "");
+            if (headTexts.length) {
+              const headOut = await deepseekTranslateStrings({ targetLang: lang, texts: headTexts });
+              let hi = 0;
+              if (baseName.trim()) name = headOut[hi++] || baseName;
+              if (baseDesc.trim()) description = headOut[hi++] || "";
+            }
+
+            const outSpecs: string[] = baseSpecs.map((b) => (String(b).trim() === "" ? "" : String(b)));
+            const SPBATCH = 18;
+            for (let i = 0; i < baseSpecs.length; i += SPBATCH) {
+              const slice = baseSpecs.slice(i, i + SPBATCH);
+              const chunk: string[] = [];
+              const idxs: number[] = [];
+              for (let j = 0; j < slice.length; j++) {
+                const raw = String(slice[j] || "");
+                if (!raw.trim()) continue;
+                idxs.push(i + j);
+                chunk.push(raw);
+              }
+              if (!chunk.length) continue;
+              const out = await deepseekTranslateStrings({ targetLang: lang, texts: chunk });
+              for (let k = 0; k < idxs.length; k++) outSpecs[idxs[k]] = out[k];
+            }
+            const strictBases: string[] = [];
+            if (baseName.trim() && isBadI18nForTargetLang(lang, name, baseName)) strictBases.push(baseName.trim());
+            if (baseDesc.trim() && isBadI18nForTargetLang(lang, description, baseDesc)) strictBases.push(baseDesc.trim());
+            for (let i = 0; i < baseSpecs.length; i++) {
+              const b = String(baseSpecs[i] || "");
+              if (!b.trim()) continue;
+              if (isBadI18nForTargetLang(lang, outSpecs[i], b)) strictBases.push(b.trim());
+            }
+            if (strictBases.length) {
+              const fix = await buildStrictI18nFixMap(lang, strictBases);
+              if (baseName.trim() && isBadI18nForTargetLang(lang, name, baseName)) {
+                const v = fix.get(baseName.trim());
+                if (v != null) name = v;
+              }
+              if (baseDesc.trim() && isBadI18nForTargetLang(lang, description, baseDesc)) {
+                const v = fix.get(baseDesc.trim());
+                if (v != null) description = v;
+              }
+              for (let i = 0; i < baseSpecs.length; i++) {
+                const b = String(baseSpecs[i] || "");
+                if (!b.trim()) continue;
+                if (isBadI18nForTargetLang(lang, outSpecs[i], b)) {
+                  const v = fix.get(b.trim());
+                  if (v != null) outSpecs[i] = v;
+                }
+              }
+            }
+            specs = outSpecs;
           }
           const row = await prisma.productI18n.upsert({
             where: { productId_lang: { productId: p.id, lang: lang as any } },
@@ -653,7 +1062,7 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
           const existing = await prisma.categoryI18n.findUnique({
             where: { categoryId_lang: { categoryId: c.id, lang: lang as any } },
           });
-          if (existing && !force) {
+          if (existing && !force && !overwrite) {
             skipped++;
             continue;
           }
@@ -664,7 +1073,7 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
         }
       }
       let translatedNames: string[] = [];
-      if (mode === "machine") {
+      if (mode === "machine" || overwrite) {
         const names = targets.map((t) => t.baseName);
         const BATCH = 40;
         for (let i = 0; i < names.length; i += BATCH) {
@@ -713,7 +1122,7 @@ app.post("/api/admin/i18n/batch", auth, async (req, res) => {
         }
       }
       let translatedNames: string[] = [];
-      if (mode === "machine") {
+      if (mode === "machine" || overwrite) {
         const names = targets.map((t) => t.baseName);
         const BATCH = 40;
         for (let i = 0; i < names.length; i += BATCH) {
@@ -859,25 +1268,224 @@ app.get("/api/public/products", async (req, res) => {
     orderBy: { updatedAt: "desc" },
   });
 
+  const shouldAutoMt =
+    lang !== DEFAULT_LANG
+    && Boolean(process.env.DEEPSEEK_API_KEY)
+    && String(req.query.autoMt || req.query.mt || "").trim() === "1";
+
+  const mtCache = (globalThis as any).__qt_public_mt_cache as Map<string, string> | undefined;
+  const cache: Map<string, string> =
+    mtCache ?? ((globalThis as any).__qt_public_mt_cache = new Map<string, string>());
+
+  const translateMissing = async (texts: string[]) => {
+    const uniq = Array.from(new Set(texts.map((s) => String(s || "").trim()).filter(Boolean)));
+    const need: string[] = [];
+    for (const s of uniq) {
+      const k = `${lang}::${s}`;
+      if (!cache.has(k)) need.push(s);
+    }
+    if (need.length) {
+      const BATCH = 40;
+      for (let i = 0; i < need.length; i += BATCH) {
+        const chunk = need.slice(i, i + BATCH);
+        const out = await deepseekTranslateStrings({ targetLang: lang, texts: chunk });
+        for (let j = 0; j < chunk.length; j++) cache.set(`${lang}::${chunk[j]}`, out[j]);
+      }
+    }
+    const m = new Map<string, string>();
+    for (const s of uniq) {
+      const k = `${lang}::${s}`;
+      const v = cache.get(k);
+      if (v != null) m.set(s, v);
+    }
+    return m;
+  };
+
+  let mtMap: Map<string, string> | null = null;
+  if (shouldAutoMt) {
+    try {
+      const collect: string[] = [];
+      for (const p of rows) {
+        const loc = pickLocalized((p as any).i18n, lang, fallback);
+        if (!(loc as any)?.name) collect.push(String(p.name || ""));
+        if (!(loc as any)?.description) collect.push(String(p.description || ""));
+        if (!(loc as any)?.specs && Array.isArray((p as any).specs)) collect.push(...((p as any).specs as any[]).map(String));
+        const catLoc = pickLocalized((p as any).category?.i18n, lang, fallback);
+        if (p.category && !(catLoc as any)?.name) collect.push(String((p.category as any).name || ""));
+        const subLoc = pickLocalized((p as any).subcategory?.i18n, lang, fallback);
+        if (p.subcategory && !(subLoc as any)?.name) collect.push(String((p.subcategory as any).name || ""));
+      }
+      // 防止一次请求翻译过多导致阻塞：超过阈值直接跳过机翻
+      const MAX_PUBLIC_MT_STRINGS = Number(process.env.PUBLIC_MT_MAX_STRINGS || 120);
+      if (collect.length <= (Number.isFinite(MAX_PUBLIC_MT_STRINGS) ? MAX_PUBLIC_MT_STRINGS : 120)) {
+        mtMap = await translateMissing(collect);
+      } else {
+        mtMap = null;
+      }
+    } catch (e: any) {
+      // ignore MT failure; fall back to default fallback logic
+      mtMap = null;
+    }
+  }
+
+  let i18nStrictFix = new Map<string, string>();
+  if (lang !== DEFAULT_LANG && !process.env.DEEPSEEK_API_KEY && !(globalThis as any).__qt_warned_no_deepseek) {
+    (globalThis as any).__qt_warned_no_deepseek = true;
+    console.warn("[api] DEEPSEEK_API_KEY 未配置：无法对错误 i18n 做机翻修正，请在 .env 配置后重启 API。");
+  }
+  if (lang !== DEFAULT_LANG && process.env.DEEPSEEK_API_KEY) {
+    try {
+      const needBases = new Set<string>();
+      for (const p of rows) {
+        const loc = pickLocalized((p as any).i18n, lang, fallback);
+        const baseName = String((p as any).name || "");
+        const baseDesc = String((p as any).description || "");
+        if (loc) {
+          if ((loc as any).name != null && String((loc as any).name).trim() !== ""
+            && isBadI18nForTargetLang(lang, String((loc as any).name), baseName)) {
+            if (baseName.trim()) needBases.add(baseName.trim());
+          }
+          if (String((loc as any).description || "").trim() !== ""
+            && isBadI18nForTargetLang(lang, String((loc as any).description), baseDesc)) {
+            if (baseDesc.trim()) needBases.add(baseDesc.trim());
+          }
+          const locSpecs = (loc as any).specs;
+          const baseSpecs = (p as any).specs;
+          if (Array.isArray(locSpecs) && Array.isArray(baseSpecs)) {
+            const n = Math.min(locSpecs.length, baseSpecs.length);
+            for (let i = 0; i < n; i++) {
+              const b = String(baseSpecs[i] || "");
+              const o = String(locSpecs[i] || "");
+              if (o.trim() && isBadI18nForTargetLang(lang, o, b) && b.trim()) needBases.add(b.trim());
+            }
+          }
+        } else {
+          // 无 vi/ar 行且连 en 也没有：直接展示 Product 中文字段，需按目标语修
+          if (baseName.trim() && isBadI18nForTargetLang(lang, baseName, baseName)) needBases.add(baseName.trim());
+          if (baseDesc.trim() && isBadI18nForTargetLang(lang, baseDesc, baseDesc)) needBases.add(baseDesc.trim());
+          if (Array.isArray((p as any).specs)) {
+            for (const s of (p as any).specs as any[]) {
+              const t = String(s || "").trim();
+              if (t && isBadI18nForTargetLang(lang, t, t)) needBases.add(t);
+            }
+          }
+        }
+        const catLoc = pickLocalized((p as any).category?.i18n, lang, fallback);
+        if (p.category && (catLoc as any)?.name) {
+          const cb = String((p.category as any).name || "");
+          const o = String((catLoc as any).name || "");
+          if (o.trim() && isBadI18nForTargetLang(lang, o, cb) && cb.trim()) needBases.add(cb.trim());
+        }
+        const subLoc = pickLocalized((p as any).subcategory?.i18n, lang, fallback);
+        if (p.subcategory && (subLoc as any)?.name) {
+          const sb = String((p.subcategory as any).name || "");
+          const o = String((subLoc as any).name || "");
+          if (o.trim() && isBadI18nForTargetLang(lang, o, sb) && sb.trim()) needBases.add(sb.trim());
+        }
+      }
+      i18nStrictFix = await buildStrictI18nFixMap(lang, needBases);
+    } catch (e: any) {
+      console.warn("[api] /api/public/products i18n strict fix:", e?.message || e);
+      i18nStrictFix = new Map();
+    }
+  }
+
   const out = rows.map((p) => {
     const loc = pickLocalized((p as any).i18n, lang, fallback);
     const catLoc = pickLocalized((p as any).category?.i18n, lang, fallback);
     const subLoc = pickLocalized((p as any).subcategory?.i18n, lang, fallback);
+    const mt = (s: unknown) => {
+      const raw = String(s || "").trim();
+      if (!raw || !mtMap) return undefined;
+      return mtMap.get(raw) ?? undefined;
+    };
+    const baseName = String((p as any).name || "");
+    const baseDesc = String((p as any).description || "");
+    const nameLoc = (loc as any)?.name;
+    const descLoc = (loc as any)?.description;
+    let nameOut: string;
+    if (nameLoc != null && String(nameLoc).trim() !== "") {
+      const raw = String(nameLoc);
+      nameOut = isBadI18nForTargetLang(lang, raw, baseName) && baseName.trim()
+        ? (i18nStrictFix.get(baseName.trim()) ?? raw)
+        : raw;
+    } else {
+      const fromBase = String(p.name || "");
+      if (fromBase.trim() && isBadI18nForTargetLang(lang, fromBase, fromBase)) {
+        nameOut = i18nStrictFix.get(fromBase.trim()) ?? fromBase;
+      } else {
+        nameOut = mt(p.name) ?? p.name;
+      }
+    }
+    let descOut: string;
+    if (descLoc != null && String(descLoc) !== "") {
+      const raw = String(descLoc);
+      descOut = isBadI18nForTargetLang(lang, raw, baseDesc) && baseDesc.trim()
+        ? (i18nStrictFix.get(baseDesc.trim()) ?? raw)
+        : raw;
+    } else {
+      const fromD = String(p.description || "");
+      if (fromD.trim() && isBadI18nForTargetLang(lang, fromD, fromD)) {
+        descOut = i18nStrictFix.get(fromD.trim()) ?? fromD;
+      } else {
+        descOut = (mt(p.description) ?? p.description) as string;
+      }
+    }
+    let specsOut: any = p.specs;
+    const locSpecs = (loc as any)?.specs;
+    const baseSpecsA = (p as any).specs;
+    if (Array.isArray(locSpecs) && locSpecs.length && Array.isArray(baseSpecsA)) {
+      specsOut = locSpecs.map((line: any, i: number) => {
+        const b = String(baseSpecsA[i] ?? "");
+        const raw = String(line ?? "");
+        if (raw.trim() && b.trim() && isBadI18nForTargetLang(lang, raw, b)) {
+          return i18nStrictFix.get(b.trim()) ?? raw;
+        }
+        return raw;
+      });
+    } else if (Array.isArray(baseSpecsA) && baseSpecsA.length) {
+      specsOut = baseSpecsA.map((line: any) => {
+        const raw = String(line ?? "");
+        if (raw.trim() && isBadI18nForTargetLang(lang, raw, raw)) {
+          return i18nStrictFix.get(raw.trim()) ?? raw;
+        }
+        if (mtMap && raw.trim()) return mt(line) ?? raw;
+        return raw;
+      });
+    } else if (mtMap && Array.isArray((p as any).specs)) {
+      specsOut = (p as any).specs.map((x: any) => mt(x) ?? x);
+    }
     return {
       ...p,
-      name: (loc as any)?.name ?? p.name,
-      description: (loc as any)?.description ?? p.description,
-      specs: (loc as any)?.specs ?? p.specs,
+      name: nameOut,
+      description: descOut,
+      specs: specsOut,
       category: p.category
         ? {
             ...p.category,
-            name: (catLoc as any)?.name ?? (p.category as any).name,
+            name: (() => {
+              const cb = String((p.category as any).name || "");
+              const raw = (catLoc as any)?.name;
+              if (raw != null && String(raw).trim() !== "") {
+                const t = String(raw);
+                return isBadI18nForTargetLang(lang, t, cb) && cb.trim() ? (i18nStrictFix.get(cb.trim()) ?? t) : t;
+              }
+              return mt((p.category as any).name) ?? (p.category as any).name;
+            })(),
           }
         : null,
       subcategory: p.subcategory
         ? {
             ...p.subcategory,
-            name: (subLoc as any)?.name ?? (p.subcategory as any).name,
+            name: (() => {
+              const sb = String((p.subcategory as any).name || "");
+              const raw = (subLoc as any)?.name;
+              if (raw != null && String(raw).trim() !== "") {
+                const t = String(raw);
+                return isBadI18nForTargetLang(lang, t, sb) && sb.trim() ? (i18nStrictFix.get(sb.trim()) ?? t) : t;
+              }
+              return mt((p.subcategory as any).name) ?? (p.subcategory as any).name;
+            })(),
           }
         : null,
     };
@@ -1274,10 +1882,16 @@ app.post("/api/public/ai/chat", async (req, res) => {
       content: m.content,
     }));
 
+  const takeCatalog = Math.min(500, Math.max(1, Number(process.env.AI_CHAT_MAX_PRODUCT_CARDS || 200)));
   const products = await prisma.product.findMany({
     where: { enabled: true },
-    take: 200,
-    include: { category: true, subcategory: true },
+    take: takeCatalog,
+    orderBy: { updatedAt: "desc" },
+    include: {
+      category: true,
+      subcategory: true,
+      images: { orderBy: { sortOrder: "asc" } },
+    },
   });
   const matchedProducts = findMentionedProducts(message, products);
 
@@ -1311,7 +1925,6 @@ app.post("/api/public/ai/chat", async (req, res) => {
 
   let aiContent = fallbackReply(userMsgLang, message);
   let deepseekOk = false;
-  const toolProductIds = new Set<string>();
   let deepseekErr: string | null = null;
 
   async function runAiTool(name: string, rawArgs: string): Promise<string> {
@@ -1329,7 +1942,6 @@ app.post("/api/public/ai/chat", async (req, res) => {
         take: 12,
         include: { category: true, subcategory: true },
       });
-      for (const p of hits) toolProductIds.add(p.id);
       return JSON.stringify({
         products: hits.map((p) => ({
           id: p.id,
@@ -1356,11 +1968,17 @@ app.post("/api/public/ai/chat", async (req, res) => {
   if (process.env.DEEPSEEK_API_KEY) {
     try {
       const cardBlock =
-        matchedProducts.length > 0
-          ? userMsgLang === "zh"
-            ? `\n\n【产品卡片（必须遵守）】\n系统已从用户话里命中以下产品，前端会展示对应产品卡片。你必须先用一两句话明确引导用户「先看下方产品卡片」了解规格与价格，再回答其余问题；不要假装用户看不到卡片。\n命中产品：${matchedProducts.map((p) => p.name).join("、")}\n`
-            : `\n\n[Product Cards (MUST follow)]\nThe system matched the following products from the user's message. The frontend will display product cards. You MUST first guide the user to "check the product cards below" for specs and pricing, then answer other questions. Do not pretend the user cannot see the cards.\nMatched products: ${matchedProducts.map((p) => p.name).join(", ")}\n`
-          : "";
+        userMsgLang === "zh"
+          ? `\n\n【产品卡片（必须遵守）】\n你发出本段文字后，聊天窗口里会在这条 AI 消息**正下方**展示**当前上架的全部产品**缩略图列表（可上下滚动，含主图/名称/快捷下单），不是发在“上面的历史里”。\n`
+            + "当用户问「有没有图/图片/照片/实物/看看样子」时：请明确说「请在本条消息文字下方的产品列表里查看/滚动找」；**禁止**说「往聊天记录上翻」「之前发过你往上滑」「我上面发过图」等——那些都不存在。\n"
+            + (matchedProducts.length
+              ? `用户话里可能涉及：${matchedProducts.map((p) => p.name).join("、")}。可优先结合这些款回答，并仍提醒在下方大列表中可找到全部产品。\n`
+              : "")
+          : `\n\n[Product cards (MUST follow)]\nAfter your text, the UI shows a **scrollable list of ALL in-stock product cards directly BELOW this AI message** (not above in old chat). `
+            + 'If the user asks for photos/images: tell them to **scroll the product list under this message**; do NOT say "scroll up in the chat" or "I already sent images earlier".\n'
+            + (matchedProducts.length
+              ? `The user may refer to: ${matchedProducts.map((p) => p.name).join(", ")}. You may highlight these, and remind that the full catalog is in the list below.\n`
+              : "");
 
       const systemPrompt = userMsgLang === "zh"
         ? "【角色与风格】\n"
@@ -1496,16 +2114,15 @@ app.post("/api/public/ai/chat", async (req, res) => {
     }
   }
 
-  const toolProducts = products.filter((p) => toolProductIds.has(p.id));
-  const mergedMap = new Map<string, (typeof products)[0]>();
-  for (const p of matchedProducts) mergedMap.set(p.id, p);
-  for (const p of toolProducts) mergedMap.set(p.id, p);
-  const responseProducts = [...mergedMap.values()];
-  const matched = responseProducts[0];
+  const responseProducts = products;
+  const matched = matchedProducts[0] || null;
 
   if (!deepseekOk && responseProducts.length > 0) {
-    const names = responseProducts.map((p) => p.name).join("、");
-    aiContent = `已为您匹配：${names}。请先查看下方产品卡片了解规格与价格，需要再一键加购。`;
+    const n = responseProducts.length;
+    aiContent =
+      userMsgLang === "zh"
+        ? `已加载本库 ${n} 款上架产品。请查看本条消息下方的产品卡片（可滚动），需要可一键加购。`
+        : `Loaded ${n} in-stock products. Scroll the cards under this message for details, or add to cart.`;
   }
   if (!deepseekOk && responseProducts.length === 0 && deepseekErr) {
     // Keep user experience smooth: provide actionable fallback without exposing internal stack traces.

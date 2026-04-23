@@ -61,24 +61,27 @@
     "about": "Nosotros",
     "getQuote": "Solicitar cotización",
     "admin": "Admin",
-    "searchPlaceholder": "Buscar materiales..."
+    "searchPlaceholder": "Buscar materiales...",
+    "brandPrimary": "Qingtai Materials",
+    "brandSub": "QINGTAI MATERIALS"
   },
   "home": {
     "badge": "Expertos en materiales de construcción, 20 años",
-    "heroTitleLine1": "Construye el futuro con",
-    "heroTitleAccent": "cimientos de precisión",
+    "heroTitleLine1": "Expertos en sistemas de techo y tabiques",
+    "heroTitleAccent": "Reduce tu costo un 30%",
     "heroDesc1": "Qingtai ofrece sistemas de perfilería, placas y acabados de aluminio de clase mundial.",
     "heroDesc2": "Con fabricación de precisión y logística global, respaldamos tu visión.",
     "browseCatalog": "Ver catálogo",
     "viewProjects": "Ver proyectos",
+    "heroImageAlt": "Construcción y materiales de edificación",
     "stats": {
       "years": "Años de experiencia",
       "projects": "Proyectos globales",
       "satisfaction": "Satisfacción del cliente"
     },
     "consultation": {
-      "title": "¿Necesitas asesoría profesional sobre materiales?",
-      "desc": "Nuestro equipo de ingenieros ofrece soporte técnico, selección de materiales y estimación de costos.",
+      "title": "Cuéntanos tu proyecto: selección gratis y mejor cotización",
+      "desc": "No necesitas adivinar qué placa o perfilería encaja en tu mercado. Envíanos tus requisitos de techo/tabique y respondemos en 1 hora.\n✅ Emparejamiento preciso (placas y perfilería)\n✅ Mejor precio (EXW/FOB/CIF/DDP)\n✅ Muestras y certificaciones. Tu proyecto merece una solución real: gratis, rápida y al grano.",
       "hotlineLabel": "WhatsApp",
       "hotlineValue": "+86 138 0000 0000",
       "button": "Reservar una consulta en línea"
@@ -105,6 +108,10 @@
         {
           "title": "Control de calidad integral",
           "desc": "Desde el despacho hasta la recepción, cada paso es inspeccionado y registrado digitalmente."
+        },
+        {
+          "title": "Seguimiento de pedido en tiempo real",
+          "desc": "Se genera un ID único al pedir; los hitos logísticos se actualizan online (buque, contenedor, ETA)."
         }
       ],
       "track": {
@@ -120,6 +127,8 @@
     }
   },
   "about": {
+    "mute": "Silenciar",
+    "unmute": "Activar sonido",
     "heroTitle": "Acerca de Qingtai",
     "profileEyebrow": "Perfil de la empresa",
     "profileHeading": "Veinte años de dedicación, construyendo belleza",
@@ -226,6 +235,12 @@
   "systemDetail": {
     "eyebrow": "Solución de sistemas"
   },
+  "detail": {
+    "backToHome": "Volver al inicio",
+    "backToCatalog": "Volver al catálogo",
+    "backToProjects": "Volver a proyectos",
+    "backToChat": "Volver y continuar el chat"
+  },
   "contactModal": {
     "title": "Contacto",
     "phone": "Teléfono",
@@ -258,6 +273,7 @@
       "title": "Asistente IA",
       "subtitle": "Soporte IA Qingtai",
       "cardHint": "Toca una tarjeta para ver detalles",
+      "allProductsScroll": "{{count}} productos en stock — desplazarse por la lista de abajo",
       "orderNow": "Pedir ahora",
       "inputPlaceholder": "Escribe tu pregunta…",
       "requestFailed": "Error en la solicitud: {{error}}",

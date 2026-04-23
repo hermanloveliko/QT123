@@ -61,24 +61,27 @@
     "about": "About",
     "getQuote": "Get a quote",
     "admin": "Admin",
-    "searchPlaceholder": "Search materials..."
+    "searchPlaceholder": "Search materials...",
+    "brandPrimary": "Qingtai Materials",
+    "brandSub": "QINGTAI MATERIALS"
   },
   "home": {
     "badge": "Building materials experts, 20 years",
-    "heroTitleLine1": "Build the future with",
-    "heroTitleAccent": "precision foundations",
+    "heroTitleLine1": "Ceiling & partition system experts",
+    "heroTitleAccent": "Cut your cost by 30%",
     "heroDesc1": "Qingtai provides world-class framing, boards, and aluminum finishing systems.",
     "heroDesc2": "With precision manufacturing and global logistics, we support your vision.",
     "browseCatalog": "Browse catalog",
     "viewProjects": "View projects",
+    "heroImageAlt": "Construction and building materials",
     "stats": {
       "years": "Years in industry",
       "projects": "Global projects",
       "satisfaction": "Client satisfaction"
     },
     "consultation": {
-      "title": "Need professional material advice?",
-      "desc": "Our engineering team provides technical support, material selection, and cost estimation.",
+      "title": "Tell us your project — free matching materials & best quote",
+      "desc": "No need to guess which board or framing system fits your market. Send us your ceiling/partition requirements and we’ll reply within 1 hour.\n✅ Accurate product matching (boards & steel keels)\n✅ Best pricing (EXW/FOB/CIF/DDP)\n✅ Samples & certification support. Your project deserves a real solution — free, fast, and straight to the point.",
       "hotlineLabel": "WhatsApp",
       "hotlineValue": "+86 138 0000 0000",
       "button": "Book an online consultation"
@@ -105,6 +108,10 @@
         {
           "title": "End-to-end quality monitoring",
           "desc": "From dispatch to receipt, every step is quality-checked and digitally recorded."
+        },
+        {
+          "title": "Real-time order tracking",
+          "desc": "A unique order ID is created at checkout, with live logistics updates and sailing / ETA visibility."
         }
       ],
       "track": {
@@ -120,6 +127,8 @@
     }
   },
   "about": {
+    "mute": "Mute",
+    "unmute": "Unmute",
     "heroTitle": "About Qingtai",
     "profileEyebrow": "Company Profile",
     "profileHeading": "Twenty years of focus, building beauty",
@@ -226,6 +235,12 @@
   "systemDetail": {
     "eyebrow": "System solution"
   },
+  "detail": {
+    "backToHome": "Back to home",
+    "backToCatalog": "Back to catalog",
+    "backToProjects": "Back to projects",
+    "backToChat": "Back & continue chat"
+  },
   "contactModal": {
     "title": "Contact",
     "phone": "Phone",
@@ -258,6 +273,7 @@
       "title": "AI assistant",
       "subtitle": "Qingtai AI support",
       "cardHint": "Tap a card to view details",
+      "allProductsScroll": "{{count}} in-stock products — scroll the list below",
       "orderNow": "Order now",
       "inputPlaceholder": "Type your question…",
       "requestFailed": "Request failed: {{error}}",

@@ -14,7 +14,15 @@ import {
   type Product,
 } from "./lib/api";
 import { normalizeMediaUrl } from "./lib/media-url";
+import {
+  cmsStatValue,
+  cmsText,
+  isDefaultCmsLocale,
+  mergeProjectsWithI18n,
+  mergeSystemsWithI18n,
+} from "./lib/cms-locale";
 import { useTranslation } from "react-i18next";
+import { isSupportedLang } from "./i18n";
 import { consumeAdminEntryUnlockFromUrl, shouldExposeAdminUi } from "./lib/admin-entry";
 import { GB, ES, PT, MY, CN, FR, RU, KR, TH, VN, SA, TZ } from "country-flag-icons/react/3x2";
 import { 
@@ -42,7 +50,8 @@ import {
   Download,
   Share2,
   Info,
-  Pencil
+  Pencil,
+  ArrowLeft,
 } from "lucide-react";
 import {
   SiteSettingEditDialog,
@@ -287,6 +296,30 @@ function getFallbackProduct(t: (key: string) => string): Product {
   };
 }
 
+function DetailBackButton({ label, onBack }: { label: string; onBack: () => void }) {
+  return (
+    <div className="mb-6">
+      <button
+        type="button"
+        onClick={onBack}
+        className="inline-flex items-center gap-2 text-sm font-bold text-industrial-blue hover:text-heat-accent transition-colors"
+      >
+        <ArrowLeft size={18} className="shrink-0" />
+        {label}
+      </button>
+    </div>
+  );
+}
+
+function whatsappHref(raw: string) {
+  const s = String(raw).trim();
+  if (!s) return undefined;
+  if (/^https?:\/\//i.test(s)) return s;
+  const digits = s.replace(/[^\d+]/g, "");
+  if (!digits) return undefined;
+  return `https://wa.me/${digits.replace(/^\+/, "")}`;
+}
+
 // --- Components ---
 
 const Navbar = ({
@@ -312,8 +345,8 @@ const Navbar = ({
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setPage("home")}>
             <div className="w-10 h-10 bg-industrial-blue flex items-center justify-center text-white font-bold text-xl">Q</div>
             <div className="flex flex-col leading-none">
-              <span className="text-xl font-display font-extrabold tracking-tighter text-industrial-blue">青泰建材</span>
-              <span className="text-[10px] tracking-[0.2em] text-gray-500 uppercase">Qingtai Materials</span>
+              <span className="text-xl font-display font-extrabold tracking-tighter text-industrial-blue">{t("nav.brandPrimary")}</span>
+              <span className="text-[10px] tracking-[0.2em] text-gray-500 uppercase">{t("nav.brandSub")}</span>
             </div>
           </div>
           
@@ -950,28 +983,93 @@ function AdminProductsTab() {
   const [editing, setEditing] = useState<Row | null>(null);
   const [editLang, setEditLang] = useState<Lang>("zh");
   const [batchBusy, setBatchBusy] = useState(false);
+  const [batchNote, setBatchNote] = useState<string>("");
 
   const runBatch = async (
     entity: "products" | "categories" | "subcategories",
-    mode: "empty" | "copyZh" | "machine",
+    mode: "empty" | "copyZh" | "machine" | "machineOverwrite",
   ) => {
     if (editLang === "zh") {
       alert("请切换到非中文语言后再批量生成翻译");
       return;
     }
     if (batchBusy) return;
-    const ok = confirm(`将批量处理 ${entity}：${mode}（目标语言 ${editLang.toUpperCase()}）。继续？`);
+    const prettyMode =
+      mode === "machineOverwrite"
+        ? "machine（覆盖已有翻译）"
+        : mode;
+    const ok = confirm(`将批量处理 ${entity}：${prettyMode}（目标语言 ${editLang.toUpperCase()}）。继续？`);
     if (!ok) return;
     setBatchBusy(true);
     try {
       const r = await apiJson<any>("/api/admin/i18n/batch", {
         method: "POST",
-        body: JSON.stringify({ entity, lang: editLang, mode }),
+        // 兼容旧后端：用 force=true 实现覆盖（不依赖新增 mode）
+        body: JSON.stringify(
+          mode === "machineOverwrite"
+            ? { entity, lang: editLang, mode: "machine", force: true }
+            : { entity, lang: editLang, mode },
+        ),
       });
       alert(`批量完成：创建 ${r.created}，更新 ${r.updated}，跳过 ${r.skipped}，失败 ${r.failures?.length || 0}`);
     } catch (e: any) {
       alert(e?.message || "批量失败");
     } finally {
+      setBatchBusy(false);
+    }
+  };
+
+  const runBatchAllLangs = async () => {
+    if (batchBusy) return;
+    const langs = (SUPPORTED_LANGS as readonly Lang[]).filter((l) => l !== "zh");
+    const ok = confirm(
+      `将按顺序为 ${langs.length} 个语言执行机器翻译并写入数据库：\n- products\n- categories\n- subcategories\n\n期间请勿关闭页面。继续？`,
+    );
+    if (!ok) return;
+    setBatchBusy(true);
+    setBatchNote("准备开始…");
+    const totals = { created: 0, updated: 0, skipped: 0, failures: 0 };
+    const failDetails: Array<{ lang: string; entity: string; message: string }> = [];
+    try {
+      for (const l of langs) {
+        setBatchNote(`正在处理语言 ${l.toUpperCase()} …`);
+        for (const entity of ["categories", "subcategories", "products"] as const) {
+          setBatchNote(`正在处理 ${l.toUpperCase()} · ${entity} …`);
+          try {
+            const r = await apiJson<any>("/api/admin/i18n/batch", {
+              method: "POST",
+              body: JSON.stringify({ entity, lang: l, mode: "machine" }),
+            });
+            totals.created += Number(r.created || 0);
+            totals.updated += Number(r.updated || 0);
+            totals.skipped += Number(r.skipped || 0);
+            const fs = Array.isArray(r.failures) ? r.failures : [];
+            totals.failures += Number(fs.length || 0);
+            for (const f of fs.slice(0, 20)) {
+              failDetails.push({
+                lang: String(l || ""),
+                entity: String(entity),
+                message: String((f as any)?.message || "failed"),
+              });
+            }
+          } catch (e: any) {
+            totals.failures += 1;
+            failDetails.push({
+              lang: String(l || ""),
+              entity: String(entity),
+              message: String(e?.message || "request failed"),
+            });
+            // 不中断整体批量，继续下一项
+          }
+        }
+      }
+      const sample = failDetails.slice(0, 12).map((x) => `${x.lang.toUpperCase()} · ${x.entity}: ${x.message}`).join("\n");
+      alert(
+        `全部语言批量完成：创建 ${totals.created}，更新 ${totals.updated}，跳过 ${totals.skipped}，失败 ${totals.failures}`
+        + (failDetails.length ? `\n\n失败示例（最多 12 条）：\n${sample}\n\n建议：切到对应语言，分别点「分类翻译/产品翻译」重试补齐。` : ""),
+      );
+    } finally {
+      setBatchNote("");
       setBatchBusy(false);
     }
   };
@@ -1326,6 +1424,15 @@ function AdminProductsTab() {
         <div className="flex gap-2">
           <button
             type="button"
+            disabled={batchBusy}
+            onClick={() => void runBatchAllLangs()}
+            className="px-3 py-2 rounded-xl bg-heat-accent text-industrial-blue text-sm font-bold hover:bg-industrial-blue hover:text-white disabled:opacity-60"
+            title="一键为所有非中文语言生成分类/子分类/产品翻译（写入数据库，不覆盖已有）"
+          >
+            一键翻译全部语言
+          </button>
+          <button
+            type="button"
             disabled={batchBusy || editLang === "zh"}
             onClick={() => void runBatch("categories", "machine")}
             className="px-3 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 disabled:opacity-60"
@@ -1336,11 +1443,29 @@ function AdminProductsTab() {
           <button
             type="button"
             disabled={batchBusy || editLang === "zh"}
+            onClick={() => void runBatch("categories", "machineOverwrite")}
+            className="px-3 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 disabled:opacity-60"
+            title="分类：机器翻译并覆盖当前语言已有翻译（用于修正翻译质量）"
+          >
+            覆盖分类
+          </button>
+          <button
+            type="button"
+            disabled={batchBusy || editLang === "zh"}
             onClick={() => void runBatch("products", "machine")}
             className="px-3 py-2 rounded-xl bg-industrial-blue text-white text-sm font-bold hover:bg-heat-accent hover:text-industrial-blue disabled:opacity-60"
             title="产品：机器翻译到当前语言（不覆盖已有）"
           >
             产品翻译
+          </button>
+          <button
+            type="button"
+            disabled={batchBusy || editLang === "zh"}
+            onClick={() => void runBatch("products", "machineOverwrite")}
+            className="px-3 py-2 rounded-xl bg-industrial-blue text-white text-sm font-bold hover:bg-heat-accent hover:text-industrial-blue disabled:opacity-60"
+            title="产品：机器翻译并覆盖当前语言已有翻译（用于修正翻译质量）"
+          >
+            覆盖产品
           </button>
           <select
             value={editLang}
@@ -1358,6 +1483,11 @@ function AdminProductsTab() {
           <button type="button" onClick={() => setEditing({})} className="px-3 py-2 rounded-xl bg-industrial-blue text-white text-sm font-bold hover:bg-heat-accent hover:text-industrial-blue">新增产品</button>
         </div>
       </div>
+      {batchNote ? (
+        <div className="text-xs text-gray-500 -mt-1">
+          批量进度：{batchNote}
+        </div>
+      ) : null}
 
       <div className="overflow-auto border border-gray-100 rounded-2xl">
         <table className="min-w-[1000px] w-full text-sm">
@@ -1773,15 +1903,22 @@ const ContactModal = ({
   isOpen,
   onClose,
   contact,
+  bulletin,
 }: {
   isOpen: boolean;
   onClose: () => void;
   contact?: { phone?: string; email?: string; whatsapp?: string };
+  bulletin?: { enabled?: boolean; title?: string; bodyHtml?: string };
 }) => {
   const { t } = useTranslation("common");
   const phone = contact?.phone ?? "+86 21 5888 8888";
   const email = contact?.email ?? "info@qingtai-materials.com";
   const wa = contact?.whatsapp ?? "+86 138 0000 0000";
+  const phoneDigits = phone.replace(/[^\d+]/g, "");
+  const telHref = phoneDigits ? `tel:${phoneDigits.replace(/\+/g, "")}` : undefined;
+  const mailHref = email.trim() ? `mailto:${email.trim()}` : undefined;
+  const waLink = whatsappHref(wa);
+  const showBulletin = Boolean(bulletin?.enabled && String(bulletin?.bodyHtml || "").trim() !== "");
   return (
   <AnimatePresence>
     {isOpen && (
@@ -1797,32 +1934,66 @@ const ContactModal = ({
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="relative bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full"
+          className="relative bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full max-h-[90vh] overflow-y-auto"
         >
           <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-industrial-blue"><X size={24} /></button>
           <h3 className="text-2xl font-display font-bold text-industrial-blue mb-6">{t("contactModal.title")}</h3>
           <div className="space-y-4">
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
               <Phone className="text-heat-accent" size={20} />
-              <div>
+              <div className="min-w-0">
                 <div className="text-[10px] text-gray-400 uppercase font-bold">{t("contactModal.phone")}</div>
-                <div className="font-bold text-industrial-blue">{phone}</div>
+                {telHref ? (
+                  <a href={telHref} className="font-bold text-industrial-blue hover:underline break-all">
+                    {phone}
+                  </a>
+                ) : (
+                  <div className="font-bold text-industrial-blue">{phone}</div>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
               <Mail className="text-heat-accent" size={20} />
-              <div>
+              <div className="min-w-0">
                 <div className="text-[10px] text-gray-400 uppercase font-bold">{t("contactModal.email")}</div>
-                <div className="font-bold text-industrial-blue">{email}</div>
+                {mailHref ? (
+                  <a href={mailHref} className="font-bold text-industrial-blue hover:underline break-all">
+                    {email}
+                  </a>
+                ) : (
+                  <div className="font-bold text-industrial-blue">{email}</div>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
               <div className="w-5 h-5 flex items-center justify-center text-heat-accent font-bold">W</div>
-              <div>
+              <div className="min-w-0">
                 <div className="text-[10px] text-gray-400 uppercase font-bold">{t("contactModal.whatsapp")}</div>
-                <div className="font-bold text-industrial-blue">{wa}</div>
+                {waLink ? (
+                  <a
+                    href={waLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-bold text-industrial-blue hover:underline break-all"
+                  >
+                    {wa}
+                  </a>
+                ) : (
+                  <div className="font-bold text-industrial-blue">{wa}</div>
+                )}
               </div>
             </div>
+            {showBulletin && (
+              <div className="pt-4 border-t border-gray-200 space-y-2">
+                {String(bulletin?.title || "").trim() ? (
+                  <h4 className="text-sm font-bold text-industrial-blue">{String(bulletin?.title).trim()}</h4>
+                ) : null}
+                <div
+                  className="text-sm text-gray-600 leading-relaxed [&_a]:text-heat-accent [&_a]:underline [&_a]:break-all"
+                  dangerouslySetInnerHTML={{ __html: String(bulletin?.bodyHtml) }}
+                />
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
@@ -1849,24 +2020,25 @@ const Footer = ({
   onShowContact: () => void;
   footerCfg?: Record<string, unknown>;
 }) => {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
+  const L = i18n.language;
   const [email, setEmail] = useState("");
   const handleSend = () => {
     setEmail("");
     alert(t("footer.sentAlert"));
   };
   const tagline = String(
-    footerCfg?.tagline ?? t("footer.defaults.tagline")
+    cmsText(L, footerCfg?.tagline, t, "footer.defaults.tagline"),
   );
   const address = String(
-    footerCfg?.address ?? t("footer.defaults.address")
+    cmsText(L, footerCfg?.address, t, "footer.defaults.address"),
   );
   const phone = String(footerCfg?.phone ?? "+86 21 5888 8888");
   const mail = String(footerCfg?.email ?? "info@qingtai-materials.com");
   const copyright = String(
-    footerCfg?.copyright ?? t("footer.defaults.copyright")
+    cmsText(L, footerCfg?.copyright, t, "footer.defaults.copyright"),
   );
-  const quickLinks = (Array.isArray(footerCfg?.quickLinks) ? footerCfg!.quickLinks : []) as Array<{
+  const quickLinksCms = (Array.isArray(footerCfg?.quickLinks) ? footerCfg!.quickLinks : []) as Array<{
     label?: string;
     href?: string;
   }>;
@@ -1875,8 +2047,15 @@ const Footer = ({
     { label: t("footer.linkOfficial"), href: "#" },
     { label: t("footer.linkMic"), href: "https://qingtai.made-in-china.com" },
   ];
-  const ql = quickLinks.length ? quickLinks : defaultQuick;
-  const legalLinks = (Array.isArray(footerCfg?.legalLinks) ? footerCfg!.legalLinks : []) as Array<{
+  const ql = isDefaultCmsLocale(L)
+    ? quickLinksCms.length
+      ? quickLinksCms
+      : defaultQuick
+    : defaultQuick.map((d, i) => ({
+        href: String(quickLinksCms[i]?.href || d.href),
+        label: d.label,
+      }));
+  const legalCms = (Array.isArray(footerCfg?.legalLinks) ? footerCfg!.legalLinks : []) as Array<{
     label?: string;
     href?: string;
   }>;
@@ -1885,10 +2064,17 @@ const Footer = ({
     { label: t("footer.terms"), href: "#" },
     { label: t("footer.cookies"), href: "#" },
   ];
-  const ll = legalLinks.length ? legalLinks : defaultLegal;
-  const newsletterTitle = String(footerCfg?.newsletterTitle ?? t("footer.newsletterTitle"));
+  const ll = isDefaultCmsLocale(L)
+    ? legalCms.length
+      ? legalCms
+      : defaultLegal
+    : defaultLegal.map((d, i) => ({
+        href: String(legalCms[i]?.href || d.href),
+        label: d.label,
+      }));
+  const newsletterTitle = String(cmsText(L, footerCfg?.newsletterTitle, t, "footer.newsletterTitle"));
   const newsletterDesc = String(
-    footerCfg?.newsletterDesc ?? t("footer.newsletterDesc")
+    cmsText(L, footerCfg?.newsletterDesc, t, "footer.newsletterDesc"),
   );
 
   return (
@@ -1898,8 +2084,8 @@ const Footer = ({
           <div className="flex items-center gap-2 mb-6">
             <div className="w-10 h-10 bg-white flex items-center justify-center text-industrial-blue font-bold text-xl">Q</div>
             <div className="flex flex-col leading-none">
-              <span className="text-xl font-display font-extrabold tracking-tighter text-white">青泰建材</span>
-              <span className="text-[10px] tracking-[0.2em] text-gray-400 uppercase">Qingtai Materials</span>
+              <span className="text-xl font-display font-extrabold tracking-tighter text-white">{t("nav.brandPrimary")}</span>
+              <span className="text-[10px] tracking-[0.2em] text-gray-400 uppercase">{t("nav.brandSub")}</span>
             </div>
           </div>
           <p className="text-gray-400 text-sm leading-relaxed mb-6">
@@ -1982,93 +2168,87 @@ const Footer = ({
 const HomePage = ({
   setPage,
   onShowAIChat,
-  setActiveSystem,
-  setActiveProject,
+  onSelectSystem,
+  onSelectProject,
   publicSite = {},
 }: {
   setPage: (p: Page) => void;
   onShowAIChat: () => void;
-  setActiveSystem: (s: System) => void;
-  setActiveProject: (p: Project) => void;
+  onSelectSystem: (s: System) => void;
+  onSelectProject: (p: Project) => void;
   publicSite?: Record<string, unknown>;
 }) => {
   const { t, i18n } = useTranslation("common");
+  const L = i18n.language;
+  const [activeLogSlide, setActiveLogSlide] = useState(0);
   const fallbackSystems = useMemo(() => getLocalizedSystems(t), [t, i18n.language]);
   const fallbackProjects = useMemo(() => getLocalizedProjects(t), [t, i18n.language]);
-  const useSiteOverride = true;
-  const heroCfg = (publicSite["home.hero"] || {}) as Record<string, unknown>;
   const strCfg = (v: unknown) => (v == null ? "" : String(v).trim());
+  const heroCfg = (publicSite["home.hero"] || {}) as Record<string, unknown>;
   const heroImg =
-    useSiteOverride && strCfg(heroCfg.heroImageUrl) !== ""
-      ? String(heroCfg.heroImageUrl)
-      : "https://picsum.photos/seed/construction/1920/1080";
-  const heroAlt = strCfg(heroCfg.heroImageAlt) !== "" ? String(heroCfg.heroImageAlt) : "Construction Site";
+    strCfg(heroCfg.heroImageUrl) !== "" ? String(heroCfg.heroImageUrl) : "https://picsum.photos/seed/construction/1920/1080";
+  const heroAlt = cmsText(L, strCfg(heroCfg.heroImageAlt) ? heroCfg.heroImageAlt : null, t, "home.heroImageAlt");
   const heroOverlayRaw =
     typeof heroCfg.overlayOpacity === "number" ? heroCfg.overlayOpacity : Number(heroCfg.overlayOpacity);
   const heroOverlayOpacity = Number.isFinite(heroOverlayRaw)
     ? Math.min(1, Math.max(0, heroOverlayRaw))
     : 0.6;
-  const heroBadge =
-    useSiteOverride && strCfg(heroCfg.badge) !== "" ? String(heroCfg.badge) : t("home.badge");
-  const heroTitleLine1 =
-    useSiteOverride && strCfg(heroCfg.heroTitleLine1) !== ""
-      ? String(heroCfg.heroTitleLine1)
-      : t("home.heroTitleLine1");
-  const heroTitleAccent =
-    useSiteOverride && strCfg(heroCfg.heroTitleAccent) !== ""
-      ? String(heroCfg.heroTitleAccent)
-      : t("home.heroTitleAccent");
-  const heroDesc1 =
-    useSiteOverride && strCfg(heroCfg.heroDesc1) !== "" ? String(heroCfg.heroDesc1) : t("home.heroDesc1");
-  const heroDesc2 =
-    useSiteOverride && strCfg(heroCfg.heroDesc2) !== "" ? String(heroCfg.heroDesc2) : t("home.heroDesc2");
-  const heroBrowseCatalog =
-    useSiteOverride && strCfg(heroCfg.browseCatalog) !== ""
-      ? String(heroCfg.browseCatalog)
-      : t("home.browseCatalog");
-  const heroViewProjects =
-    useSiteOverride && strCfg(heroCfg.viewProjects) !== ""
-      ? String(heroCfg.viewProjects)
-      : t("home.viewProjects");
-  const statYearsVal =
-    useSiteOverride && strCfg(heroCfg.statsYearsValue) !== ""
-      ? String(heroCfg.statsYearsValue)
-      : "20+";
-  const statYearsLab =
-    useSiteOverride && strCfg(heroCfg.statsYearsLabel) !== ""
-      ? String(heroCfg.statsYearsLabel)
-      : t("home.stats.years");
-  const statProjectsVal =
-    useSiteOverride && strCfg(heroCfg.statsProjectsValue) !== ""
-      ? String(heroCfg.statsProjectsValue)
-      : "1200+";
-  const statProjectsLab =
-    useSiteOverride && strCfg(heroCfg.statsProjectsLabel) !== ""
-      ? String(heroCfg.statsProjectsLabel)
-      : t("home.stats.projects");
-  const statSatVal =
-    useSiteOverride && strCfg(heroCfg.statsSatisfactionValue) !== ""
-      ? String(heroCfg.statsSatisfactionValue)
-      : "98%";
-  const statSatLab =
-    useSiteOverride && strCfg(heroCfg.statsSatisfactionLabel) !== ""
-      ? String(heroCfg.statsSatisfactionLabel)
-      : t("home.stats.satisfaction");
+  const heroBadge = cmsText(L, strCfg(heroCfg.badge) ? heroCfg.badge : null, t, "home.badge");
+  const heroTitleLine1 = cmsText(L, strCfg(heroCfg.heroTitleLine1) ? heroCfg.heroTitleLine1 : null, t, "home.heroTitleLine1");
+  const heroTitleAccent = cmsText(
+    L,
+    strCfg(heroCfg.heroTitleAccent) ? heroCfg.heroTitleAccent : null,
+    t,
+    "home.heroTitleAccent",
+  );
+  const heroDesc1 = cmsText(L, strCfg(heroCfg.heroDesc1) ? heroCfg.heroDesc1 : null, t, "home.heroDesc1");
+  const heroDesc2 = cmsText(L, strCfg(heroCfg.heroDesc2) ? heroCfg.heroDesc2 : null, t, "home.heroDesc2");
+  const heroBrowseCatalog = cmsText(
+    L,
+    strCfg(heroCfg.browseCatalog) ? heroCfg.browseCatalog : null,
+    t,
+    "home.browseCatalog",
+  );
+  const heroViewProjects = cmsText(
+    L,
+    strCfg(heroCfg.viewProjects) ? heroCfg.viewProjects : null,
+    t,
+    "home.viewProjects",
+  );
+  const statYearsVal = cmsStatValue(L, strCfg(heroCfg.statsYearsValue) ? heroCfg.statsYearsValue : null, "20+");
+  const statYearsLab = cmsText(
+    L,
+    strCfg(heroCfg.statsYearsLabel) ? heroCfg.statsYearsLabel : null,
+    t,
+    "home.stats.years",
+  );
+  const statProjectsVal = cmsStatValue(
+    L,
+    strCfg(heroCfg.statsProjectsValue) ? heroCfg.statsProjectsValue : null,
+    "1200+",
+  );
+  const statProjectsLab = cmsText(
+    L,
+    strCfg(heroCfg.statsProjectsLabel) ? heroCfg.statsProjectsLabel : null,
+    t,
+    "home.stats.projects",
+  );
+  const statSatVal = cmsStatValue(
+    L,
+    strCfg(heroCfg.statsSatisfactionValue) ? heroCfg.statsSatisfactionValue : null,
+    "98%",
+  );
+  const statSatLab = cmsText(
+    L,
+    strCfg(heroCfg.statsSatisfactionLabel) ? heroCfg.statsSatisfactionLabel : null,
+    t,
+    "home.stats.satisfaction",
+  );
   const consultation = (publicSite["home.consultation"] || {}) as Record<string, unknown>;
-  const consTitle = String(
-    useSiteOverride && consultation.title
-      ? consultation.title
-      : t("home.consultation.title"),
-  );
-  const consDesc = String(
-    useSiteOverride && consultation.description
-      ? consultation.description
-      : t("home.consultation.desc"),
-  );
+  const consTitle = String(cmsText(L, consultation.title, t, "home.consultation.title"));
+  const consDesc = String(cmsText(L, consultation.description, t, "home.consultation.desc"));
   const hotlineLabel = String(
-    useSiteOverride && consultation.hotlineLabel
-      ? consultation.hotlineLabel
-      : t("home.consultation.hotlineLabel"),
+    cmsText(L, consultation.hotlineLabel, t, "home.consultation.hotlineLabel"),
   );
   const hotlineValue = String(
     consultation.hotlineValue != null && String(consultation.hotlineValue).trim() !== ""
@@ -2081,73 +2261,80 @@ const HomePage = ({
     backgroundColor: `rgba(255, 255, 255, ${bgOpacity})`,
   };
   const sysPub = parsePublicHomeSystems(publicSite["home.systems"], fallbackSystems);
-  const systemsList = sysPub.list;
-  const sysSectionLabel =
-    useSiteOverride && sysPub.label.trim() !== "" ? sysPub.label : t("home.systems.label");
-  const sysSectionTitle =
-    useSiteOverride && sysPub.sectionTitle.trim() !== ""
-      ? sysPub.sectionTitle
-      : t("home.systems.sectionTitle");
-  const sysViewAll =
-    useSiteOverride && sysPub.viewAllProducts.trim() !== ""
-      ? sysPub.viewAllProducts
-      : t("home.systems.viewAllProducts");
-  const sysCardTag =
-    useSiteOverride && sysPub.cardTag.trim() !== ""
-      ? sysPub.cardTag
-      : sysPub.label.trim() !== ""
-        ? sysPub.label
-        : t("home.systems.label");
+  const systemsList = useMemo(
+    () => mergeSystemsWithI18n(L, sysPub.list, fallbackSystems),
+    [L, sysPub.list, fallbackSystems],
+  );
+  const sysSectionLabel = cmsText(L, strCfg(sysPub.label) ? sysPub.label : null, t, "home.systems.label");
+  const sysSectionTitle = cmsText(
+    L,
+    strCfg(sysPub.sectionTitle) ? sysPub.sectionTitle : null,
+    t,
+    "home.systems.sectionTitle",
+  );
+  const sysViewAll = cmsText(
+    L,
+    strCfg(sysPub.viewAllProducts) ? sysPub.viewAllProducts : null,
+    t,
+    "home.systems.viewAllProducts",
+  );
+  const sysCardTag = (() => {
+    if (isDefaultCmsLocale(L)) {
+      if (strCfg(sysPub.cardTag) !== "") return String(sysPub.cardTag);
+      if (strCfg(sysPub.label) !== "") return String(sysPub.label);
+    }
+    return t("home.systems.label");
+  })();
 
   const projPub = parsePublicHomeProjects(publicSite["home.projects"], fallbackProjects);
-  const projectsList = projPub.list;
-  const projFeaturedLabel =
-    useSiteOverride && projPub.featuredLabel.trim() !== ""
-      ? projPub.featuredLabel
-      : t("home.projects.featuredLabel");
-  const projSectionTitle =
-    useSiteOverride && projPub.sectionTitle.trim() !== ""
-      ? projPub.sectionTitle
-      : t("home.projects.sectionTitle");
-  const projViewMore =
-    useSiteOverride && projPub.viewMore.trim() !== "" ? projPub.viewMore : t("home.projects.viewMore");
-  const logistics = (publicSite["home.logistics"] || {}) as Record<string, unknown>;
-  const logTitle = String(
-    useSiteOverride && logistics.title ? logistics.title : t("home.logistics.title"),
+  const projectsList = useMemo(
+    () => mergeProjectsWithI18n(L, projPub.list, fallbackProjects),
+    [L, projPub.list, fallbackProjects],
   );
+  const projFeaturedLabel = cmsText(
+    L,
+    strCfg(projPub.featuredLabel) ? projPub.featuredLabel : null,
+    t,
+    "home.projects.featuredLabel",
+  );
+  const projSectionTitle = cmsText(
+    L,
+    strCfg(projPub.sectionTitle) ? projPub.sectionTitle : null,
+    t,
+    "home.projects.sectionTitle",
+  );
+  const projViewMore = cmsText(
+    L,
+    strCfg(projPub.viewMore) ? projPub.viewMore : null,
+    t,
+    "home.projects.viewMore",
+  );
+  const logistics = (publicSite["home.logistics"] || {}) as Record<string, unknown>;
+  const logTitle = String(cmsText(L, logistics.title, t, "home.logistics.title"));
   const logDesc = String(
-    useSiteOverride && logistics.description
-      ? logistics.description
-      : t("home.logistics.desc"),
+    cmsText(L, logistics.description, t, "home.logistics.desc"),
   );
   const cards = (Array.isArray(logistics.cards) ? logistics.cards : []) as Array<{
     title?: string;
     description?: string;
   }>;
-  const card1 = {
-    title: String(
-      useSiteOverride && cards[0]?.title
-        ? cards[0].title
-        : t("home.logistics.cards.0.title"),
-    ),
-    description: String(
-      useSiteOverride && cards[0]?.description
-        ? cards[0].description
-        : t("home.logistics.cards.0.desc"),
-    ),
-  };
-  const card2 = {
-    title: String(
-      useSiteOverride && cards[1]?.title
-        ? cards[1].title
-        : t("home.logistics.cards.1.title"),
-    ),
-    description: String(
-      useSiteOverride && cards[1]?.description
-        ? cards[1].description
-        : t("home.logistics.cards.1.desc"),
-    ),
-  };
+  const logCardIcons = [Truck, ShieldCheck, Package];
+  const logisticsLeftCount = Math.max(cards.length, 2);
+  const logisticsLeftCards = Array.from({ length: logisticsLeftCount }, (_, i) => {
+    const c = cards[i];
+    return {
+      title: String(
+        isDefaultCmsLocale(L) && c?.title
+          ? c.title
+          : t(`home.logistics.cards.${i}.title` as "home.logistics.cards.0.title"),
+      ),
+      description: String(
+        isDefaultCmsLocale(L) && c?.description
+          ? c.description
+          : t(`home.logistics.cards.${i}.desc` as "home.logistics.cards.0.desc"),
+      ),
+    };
+  });
   const slideUrls = (() => {
     const urls = logistics.slideImageUrls;
     if (Array.isArray(urls) && urls.length > 0) return urls.map(String).filter(Boolean);
@@ -2155,29 +2342,31 @@ const HomePage = ({
     if (seeds.length > 0) return seeds.map((s) => `https://picsum.photos/seed/${encodeURIComponent(s)}/800/450`);
     return ["logistics1", "logistics2", "logistics3"].map((s) => `https://picsum.photos/seed/${s}/800/450`);
   })();
-  const trackTitle = String(
-    useSiteOverride && logistics.trackTitle
-      ? logistics.trackTitle
-      : t("home.logistics.track.title"),
-  );
+  const trackTitle = String(cmsText(L, logistics.trackTitle, t, "home.logistics.track.title"));
   const trackOrderId = String(
-    useSiteOverride && logistics.trackOrderId
-      ? logistics.trackOrderId
-      : t("home.logistics.track.orderId"),
+    cmsText(L, logistics.trackOrderId, t, "home.logistics.track.orderId"),
   );
   const trackStatus = String(
-    useSiteOverride && logistics.trackStatus
-      ? logistics.trackStatus
-      : t("home.logistics.track.status"),
+    cmsText(L, logistics.trackStatus, t, "home.logistics.track.status"),
   );
   const trackLocation = String(
-    useSiteOverride && logistics.trackLocation
-      ? logistics.trackLocation
-      : t("home.logistics.track.location"),
+    cmsText(L, logistics.trackLocation, t, "home.logistics.track.location"),
   );
   const trackEta = String(
-    useSiteOverride && logistics.trackEta ? logistics.trackEta : t("home.logistics.track.eta"),
+    cmsText(L, strCfg(logistics.trackEta) ? logistics.trackEta : null, t, "home.logistics.track.eta"),
   );
+
+  useEffect(() => {
+    setActiveLogSlide(0);
+  }, [L]);
+
+  useEffect(() => {
+    if (!slideUrls.length) return;
+    const id = window.setInterval(() => {
+      setActiveLogSlide((p) => (p + 1) % slideUrls.length);
+    }, 4500);
+    return () => window.clearInterval(id);
+  }, [slideUrls.length]);
 
   return (
   <div className="pt-20">
@@ -2316,7 +2505,7 @@ const HomePage = ({
           <div 
             key={system.id} 
             className="group relative h-[500px] overflow-hidden cursor-pointer" 
-            onClick={() => { setActiveSystem(system); setPage("systemDetail"); }}
+            onClick={() => onSelectSystem(system)}
           >
             <img src={normalizeMediaUrl(system.image)} alt={system.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-industrial-blue via-transparent to-transparent opacity-80"></div>
@@ -2350,7 +2539,7 @@ const HomePage = ({
             <div 
               key={project.id} 
               className="group cursor-pointer" 
-              onClick={() => { setActiveProject(project); setPage("projectDetail"); }}
+              onClick={() => onSelectProject(project)}
             >
               <div className="aspect-video overflow-hidden rounded-2xl mb-6">
                 <img src={normalizeMediaUrl(project.image)} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -2363,73 +2552,104 @@ const HomePage = ({
       </div>
     </section>
 
-    {/* Logistics Section */}
+    {/* Logistics Section：标题/描述全宽，下方双栏左卡片、右追踪+图同起点对齐；右栏与左栏等高架底 */}
     <section className="bg-gray-100 py-24">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div>
-          <div className="accent-border mb-4">
-            <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">{t("home.logistics.label")}</span>
-          </div>
-          <h2 className="text-4xl font-display font-extrabold text-industrial-blue mb-8">{logTitle}</h2>
-          <p className="text-gray-600 mb-10 leading-relaxed">{logDesc}</p>
-          
-          <div className="space-y-6">
-            <div className="bg-white p-6 shadow-sm flex items-center gap-6">
-              <div className="w-16 h-16 bg-gray-100 flex items-center justify-center text-industrial-blue">
-                <Truck size={32} />
-              </div>
-              <div>
-                <h4 className="font-bold text-industrial-blue">{card1.title}</h4>
-                <p className="text-sm text-gray-500">{card1.description}</p>
-              </div>
-            </div>
-            <div className="bg-white p-6 shadow-sm flex items-center gap-6">
-              <div className="w-16 h-16 bg-gray-100 flex items-center justify-center text-industrial-blue">
-                <ShieldCheck size={32} />
-              </div>
-              <div>
-                <h4 className="font-bold text-industrial-blue">{card2.title}</h4>
-                <p className="text-sm text-gray-500">{card2.description}</p>
-              </div>
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="accent-border mb-4">
+          <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">{t("home.logistics.label")}</span>
         </div>
-        
-        <div className="relative">
-          <div className="bg-industrial-blue rounded-2xl p-4 shadow-2xl overflow-hidden aspect-video">
-            <motion.div 
-              animate={{ x: ["0%", "-100%", "-200%", "0%"] }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="flex h-full w-[300%]"
-            >
-              {slideUrls.map((src, i) => (
-                <img 
-                  key={`${src}-${i}`}
-                  src={normalizeMediaUrl(src)} 
-                  alt="" 
-                  className="w-1/3 h-full object-cover opacity-60 grayscale"
-                />
-              ))}
-            </motion.div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white/10 backdrop-blur-md p-8 border border-white/20 rounded-xl max-w-sm">
-                <h4 className="text-white font-bold mb-4 flex items-center gap-2">
-                  <Package size={20} className="text-heat-accent" /> {trackTitle}
-                </h4>
-                <div className="space-y-4">
-                  <div className="flex justify-between text-xs text-gray-400">
-                    <span>{t("home.logistics.track.orderLabel")} {trackOrderId}</span>
-                    <span className="text-heat-accent">{trackStatus}</span>
+        <h2 className="text-4xl font-display font-extrabold text-industrial-blue mb-8">{logTitle}</h2>
+        <p className="text-gray-600 mb-10 leading-relaxed max-w-3xl">{logDesc}</p>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-10 xl:gap-12 items-stretch">
+          <div className="space-y-6 min-w-0">
+            {logisticsLeftCards.map((row, i) => {
+              const Icon = logCardIcons[i % logCardIcons.length];
+              return (
+                <div key={`log-card-${i}`} className="bg-white p-6 shadow-sm flex items-center gap-6">
+                  <div className="w-16 h-16 bg-gray-100 flex items-center justify-center text-industrial-blue shrink-0">
+                    <Icon size={32} />
                   </div>
-                  <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-heat-accent w-2/3"></div>
-                  </div>
-                  <div className="text-xs text-white">
-                    <p className="mb-1">{t("home.logistics.track.locationLabel")} {trackLocation}</p>
-                    <p className="text-gray-400">{t("home.logistics.track.etaLabel")} {trackEta}</p>
+                  <div className="min-w-0">
+                    <h4 className="font-bold text-industrial-blue">{row.title}</h4>
+                    <p className="text-sm text-gray-500">{row.description}</p>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+
+          <div className="min-w-0 flex flex-col gap-6 h-full">
+            <div className="bg-industrial-blue rounded-2xl p-6 shadow-xl text-white shrink-0">
+            <h4 className="font-bold mb-4 flex items-center gap-2">
+              <Package size={22} className="text-heat-accent shrink-0" /> {trackTitle}
+            </h4>
+            <div className="space-y-4">
+              <div className="flex flex-wrap justify-between gap-2 text-xs text-gray-300">
+                <span>
+                  {t("home.logistics.track.orderLabel")} {trackOrderId}
+                </span>
+                <span className="text-heat-accent font-bold">{trackStatus}</span>
               </div>
+              <div className="h-1.5 bg-white/15 rounded-full overflow-hidden">
+                <div className="h-full bg-heat-accent w-2/3 rounded-full" />
+              </div>
+              <div className="text-xs space-y-1">
+                <p>
+                  {t("home.logistics.track.locationLabel")} {trackLocation}
+                </p>
+                <p className="text-gray-300">{t("home.logistics.track.etaLabel")} {trackEta}</p>
+              </div>
+            </div>
+          </div>
+
+            <div className="relative flex-1 min-h-[220px] rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-lg">
+            {slideUrls.length > 0 ? (
+              <div className="absolute inset-0 overflow-hidden">
+                <div
+                  className="flex h-full w-full transition-transform duration-700 ease-out"
+                  style={{ transform: `translateX(-${activeLogSlide * 100}%)` }}
+                >
+                  {slideUrls.map((src, i) => (
+                    <img
+                      key={`${src}-${i}`}
+                      src={normalizeMediaUrl(src)}
+                      alt=""
+                      className="h-full w-full min-w-full shrink-0 object-cover"
+                      referrerPolicy="no-referrer"
+                      loading={i === 0 ? "eager" : "lazy"}
+                    />
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/35 hover:bg-black/50 text-white rounded-full w-9 h-9 flex items-center justify-center transition-colors"
+                  onClick={() => setActiveLogSlide((p) => (p - 1 + slideUrls.length) % slideUrls.length)}
+                  aria-label="prev"
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/35 hover:bg-black/50 text-white rounded-full w-9 h-9 flex items-center justify-center transition-colors"
+                  onClick={() => setActiveLogSlide((p) => (p + 1) % slideUrls.length)}
+                  aria-label="next"
+                >
+                  ›
+                </button>
+                <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+                  {slideUrls.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setActiveLogSlide(i)}
+                      className={`h-2 rounded-full transition-all ${i === activeLogSlide ? "w-6 bg-white" : "w-2 bg-white/55 hover:bg-white/80"}`}
+                      aria-label={`slide-${i + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null}
             </div>
           </div>
         </div>
@@ -2440,25 +2660,33 @@ const HomePage = ({
 };
 
 const ProjectsPage = ({
-  setPage,
-  setActiveProject,
+  onSelectProject,
   publicSite = {},
 }: {
-  setPage: (p: Page) => void;
-  setActiveProject: (p: Project) => void;
+  onSelectProject: (p: Project) => void;
   publicSite?: Record<string, unknown>;
 }) => {
   const { t, i18n } = useTranslation("common");
-  const useSiteOverride = true;
+  const L = i18n.language;
+  const strCfg = (v: unknown) => (v == null ? "" : String(v).trim());
   const fallbackProjects = useMemo(() => getLocalizedProjects(t), [t, i18n.language]);
   const projPub = parsePublicHomeProjects(publicSite["home.projects"], fallbackProjects);
-  const projectsList = projPub.list;
-  const listingEyebrow =
-    useSiteOverride && projPub.listingEyebrow.trim() !== ""
-      ? projPub.listingEyebrow
-      : t("projectsPage.eyebrow");
-  const listingTitle =
-    useSiteOverride && projPub.listingTitle.trim() !== "" ? projPub.listingTitle : t("projectsPage.title");
+  const projectsList = useMemo(
+    () => mergeProjectsWithI18n(L, projPub.list, fallbackProjects),
+    [L, projPub.list, fallbackProjects],
+  );
+  const listingEyebrow = cmsText(
+    L,
+    strCfg(projPub.listingEyebrow) ? projPub.listingEyebrow : null,
+    t,
+    "projectsPage.eyebrow",
+  );
+  const listingTitle = cmsText(
+    L,
+    strCfg(projPub.listingTitle) ? projPub.listingTitle : null,
+    t,
+    "projectsPage.title",
+  );
   return (
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
     <div className="accent-border mb-4">
@@ -2471,7 +2699,7 @@ const ProjectsPage = ({
         <div 
           key={project.id} 
           className="group cursor-pointer" 
-          onClick={() => { setActiveProject(project); setPage("projectDetail"); }}
+          onClick={() => onSelectProject(project)}
         >
           <div className="aspect-video overflow-hidden rounded-3xl mb-6">
             <img src={normalizeMediaUrl(project.image)} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -2490,10 +2718,19 @@ const ProjectsPage = ({
   );
 };
 
-const ProjectDetailPage = ({ project }: { project: Project }) => {
+const ProjectDetailPage = ({
+  project,
+  onBack,
+  backLabel,
+}: {
+  project: Project;
+  onBack: () => void;
+  backLabel: string;
+}) => {
   const { t } = useTranslation("common");
   return (
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
+    <DetailBackButton label={backLabel} onBack={onBack} />
     <div className="aspect-[21/9] rounded-3xl overflow-hidden mb-12">
       <img src={normalizeMediaUrl(project.image)} alt={project.title} className="w-full h-full object-cover" />
     </div>
@@ -2526,24 +2763,32 @@ const DEFAULT_ABOUT_VIDEO =
   "https://assets.mixkit.co/videos/preview/mixkit-construction-site-with-cranes-and-buildings-4004-large.mp4";
 
 const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }) => {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
+  const L = i18n.language;
   const cfg = (publicSite["about.page"] || {}) as Record<string, unknown>;
-  const heroTitle = String(cfg.heroTitle ?? t("about.heroTitle")).trim();
+  const heroTitle = String(cmsText(L, cfg.heroTitle, t, "about.heroTitle")).trim();
   const heroVideoUrl = String(cfg.heroVideoUrl || DEFAULT_ABOUT_VIDEO);
   const heroImageUrl = String(cfg.heroImageUrl ?? "").trim();
   const heroOv =
     typeof cfg.heroOverlayOpacity === "number" ? cfg.heroOverlayOpacity : Number(cfg.heroOverlayOpacity);
   const heroOverlayOpacity = Number.isFinite(heroOv) ? Math.min(1, Math.max(0, heroOv)) : 0.4;
-  const profileEyebrow = String(cfg.profileEyebrow ?? t("about.profileEyebrow"));
-  const profileHeading = String(cfg.profileHeading ?? t("about.profileHeading"));
+  const profileEyebrow = String(
+    cmsText(L, cfg.profileEyebrow, t, "about.profileEyebrow"),
+  );
+  const profileHeading = String(
+    cmsText(L, cfg.profileHeading, t, "about.profileHeading"),
+  );
   const defaultParas = [
     t("about.profileParagraphs.0"),
     t("about.profileParagraphs.1"),
     t("about.profileParagraphs.2"),
   ];
-  const profileParagraphs = Array.isArray(cfg.profileParagraphs)
-    ? cfg.profileParagraphs.map(String)
-    : defaultParas;
+  const profileParagraphs = (() => {
+    if (isDefaultCmsLocale(L) && Array.isArray(cfg.profileParagraphs) && (cfg.profileParagraphs as string[]).length) {
+      return (cfg.profileParagraphs as string[]).map(String);
+    }
+    return defaultParas;
+  })();
   const [videoMuted, setVideoMuted] = useState(true);
   const aboutVideoRef = React.useRef<HTMLVideoElement>(null);
   const toggleMute = () => {
@@ -2580,7 +2825,7 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
           <button
             onClick={toggleMute}
             className="absolute bottom-4 right-4 z-10 bg-black/40 hover:bg-black/60 text-white rounded-full p-2 transition-colors"
-            title={videoMuted ? "开启声音" : "静音"}
+            title={videoMuted ? t("about.unmute") : t("about.mute")}
           >
             {videoMuted ? (
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
@@ -2606,10 +2851,19 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
   );
 };
 
-const SystemDetailPage = ({ system }: { system: System }) => {
+const SystemDetailPage = ({
+  system,
+  onBack,
+  backLabel,
+}: {
+  system: System;
+  onBack: () => void;
+  backLabel: string;
+}) => {
   const { t } = useTranslation("common");
   return (
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
+    <DetailBackButton label={backLabel} onBack={onBack} />
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
       <div className="rounded-3xl overflow-hidden shadow-2xl">
         <img src={normalizeMediaUrl(system.image)} alt={system.title} className="w-full h-full object-cover" />
@@ -2641,14 +2895,12 @@ const SystemDetailPage = ({ system }: { system: System }) => {
 const AIChatModal = ({
   isOpen,
   onClose,
-  setPage,
-  onSetActiveProduct,
+  onOpenProductFromChat,
   onAddToCartWithQty,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  setPage: (p: Page) => void;
-  onSetActiveProduct: (p: Product) => void;
+  onOpenProductFromChat: (p: Product) => void;
   onAddToCartWithQty: (p: Product, qty: number) => void;
 }) => {
   const { t, i18n } = useTranslation("common");
@@ -2820,15 +3072,20 @@ const AIChatModal = ({
                     <p className="text-sm leading-relaxed">
                       {msg.role === "ai" ? <TypewriterText text={msg.content} /> : msg.content}
                     </p>
-                    {(msg.products?.length ? msg.products : msg.product ? [msg.product] : []).map((p) => (
+                    {(() => {
+                      const plist = msg.products?.length ? msg.products : msg.product ? [msg.product] : [];
+                      if (!plist.length) return null;
+                      return (
+                        <>
+                          <p className="mt-3 text-[10px] text-gray-500">
+                            {t("ai.chat.allProductsScroll", { count: plist.length })}
+                          </p>
+                          <div className="mt-1 max-h-64 overflow-y-auto space-y-2 pr-1 border-t border-gray-100 pt-2">
+                            {plist.map((p) => (
                       <div
                         key={p.id}
-                        onClick={() => {
-                          onSetActiveProduct(p);
-                          setPage("detail");
-                          onClose();
-                        }}
-                        className="mt-3 first:mt-4 bg-gray-50 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-heat-accent transition-colors flex gap-3 items-center"
+                        onClick={() => onOpenProductFromChat(p)}
+                        className="bg-gray-50 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-heat-accent transition-colors flex gap-3 items-center"
                       >
                         <img src={normalizeMediaUrl(p.image)} className="w-12 h-12 object-cover rounded-lg shrink-0" alt="" />
                         <div className="flex-1 min-w-0">
@@ -2846,7 +3103,11 @@ const AIChatModal = ({
                           {t("ai.chat.orderNow")}
                         </button>
                       </div>
-                    ))}
+                            ))}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               ))}
@@ -2873,17 +3134,15 @@ const AIChatModal = ({
 };
 
 const CatalogPage = ({
-  setPage,
   onAddToCart,
-  setActiveProduct,
+  onOpenProductDetail,
   products,
   productsLoading,
   publicSite = {},
   onShowCustomContact,
 }: {
-  setPage: (p: Page) => void;
   onAddToCart: (p: Product) => void;
-  setActiveProduct: (p: Product) => void;
+  onOpenProductDetail: (p: Product) => void;
   products: Product[];
   productsLoading: boolean;
   publicSite?: Record<string, unknown>;
@@ -2897,7 +3156,9 @@ const CatalogPage = ({
 
   useEffect(() => {
     let mounted = true;
-    apiJson<Array<{ id: string; name: string; sortOrder: number }>>(`/api/public/categories?lang=${encodeURIComponent(i18n.language)}`)
+    apiJson<Array<{ id: string; name: string; sortOrder: number }>>(
+      `/api/public/categories?lang=${encodeURIComponent(i18n.language)}`,
+    )
       .then((rows) => mounted && setPublicCategories(rows))
       .catch(() => mounted && setPublicCategories([]));
     return () => {
@@ -2906,17 +3167,31 @@ const CatalogPage = ({
   }, [i18n.language]);
 
   const categories = useMemo(() => {
+    const countById = new Map<string, number>();
+    for (const p of products) {
+      const id = String(p.categoryId || "").trim();
+      if (!id) continue;
+      countById.set(id, (countById.get(id) || 0) + 1);
+    }
     const byId = new Map<string, { key: string; label: string; sortOrder: number }>();
     for (const c of publicCategories) {
-      if (!c?.id || !String(c.name || "").trim()) continue;
-      byId.set(`id:${c.id}`, { key: `id:${c.id}`, label: c.name, sortOrder: Number(c.sortOrder) || 0 });
+      const id = String(c?.id || "").trim();
+      const name = String(c?.name || "").trim();
+      if (!id || !name) continue;
+      // hide empty categories
+      if ((countById.get(id) || 0) <= 0) continue;
+      byId.set(`id:${id}`, { key: `id:${id}`, label: name, sortOrder: Number(c.sortOrder) || 0 });
     }
-    for (const p of products) {
-      const id = p.categoryId || "";
-      const label = p.category || "";
-      if (!label) continue;
-      const key = id ? `id:${id}` : `name:${label}`;
-      if (!byId.has(key)) byId.set(key, { key, label, sortOrder: 999999 });
+    // 非中文时：不要用产品里的 category 字段补齐（否则会把中文“漏”到目录里）。
+    // 中文时仍兼容旧数据（比如产品带分类名，但分类表尚未配置）。
+    if (isDefaultCmsLocale(i18n.language)) {
+      for (const p of products) {
+        const id = p.categoryId || "";
+        const label = p.category || "";
+        if (!label) continue;
+        const key = id ? `id:${id}` : `name:${label}`;
+        if (!byId.has(key)) byId.set(key, { key, label, sortOrder: 999999 });
+      }
     }
     const list = Array.from(byId.values()).sort((a, b) => {
       if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
@@ -2946,11 +3221,15 @@ const CatalogPage = ({
     return base;
   }, [products, activeCatKey, sortKey]);
   const custom = (publicSite["catalog.customSpec"] || {}) as Record<string, unknown>;
-  const cTitle = String(custom.title ?? t("catalog.custom.title"));
-  const cDesc = String(
-    custom.description ?? t("catalog.custom.desc")
+  const cTitle = String(
+    cmsText(i18n.language, custom.title, t, "catalog.custom.title"),
   );
-  const cBtn = String(custom.buttonText ?? t("catalog.custom.button"));
+  const cDesc = String(
+    cmsText(i18n.language, custom.description, t, "catalog.custom.desc"),
+  );
+  const cBtn = String(
+    cmsText(i18n.language, custom.buttonText, t, "catalog.custom.button"),
+  );
 
   return (
   <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
@@ -3027,7 +3306,7 @@ const CatalogPage = ({
               </div>
               <div className="p-6 flex-1 flex flex-col">
                 <div className="text-xs font-bold text-heat-accent uppercase tracking-widest mb-2">{product.category}</div>
-                <h3 className="text-lg font-display font-bold text-industrial-blue mb-4 group-hover:text-heat-accent transition-colors cursor-pointer" onClick={() => { setActiveProduct(product); setPage("detail"); }}>
+                <h3 className="text-lg font-display font-bold text-industrial-blue mb-4 group-hover:text-heat-accent transition-colors cursor-pointer" onClick={() => onOpenProductDetail(product)}>
                   {product.name}
                 </h3>
                 <div className="space-y-2 mb-6 flex-1">
@@ -3061,7 +3340,17 @@ const CatalogPage = ({
   );
 };
 
-const ProductDetailPage = ({ product, onAddToCart }: { product: Product, onAddToCart: (p: Product) => void }) => {
+const ProductDetailPage = ({
+  product,
+  onAddToCart,
+  onBack,
+  backLabel,
+}: {
+  product: Product;
+  onAddToCart: (p: Product) => void;
+  onBack: () => void;
+  backLabel: string;
+}) => {
   const { t } = useTranslation("common");
   const [qty, setQty] = useState(1);
   const gallery = product.gallery?.length ? product.gallery : [product.image];
@@ -3073,6 +3362,7 @@ const ProductDetailPage = ({ product, onAddToCart }: { product: Product, onAddTo
   
   return (
     <div className="pt-32 pb-24 max-w-7xl mx-auto px-4">
+      <DetailBackButton label={backLabel} onBack={onBack} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         {/* Product Images */}
         <div className="space-y-6">
@@ -3482,6 +3772,12 @@ export default function App(props?: { initialPage?: Page }) {
   const [lang, setLangState] = useState<Lang>(getLang());
   const [page, setPage] = useState<Page>(() => {
     consumeAdminEntryUnlockFromUrl();
+    try {
+      const path = window.location.pathname || "/";
+      if (path === "/admin" || path.startsWith("/admin/")) return "admin";
+    } catch {
+      // ignore
+    }
     return props?.initialPage ?? "home";
   });
   const [cart, setCart] = useState<{ productId: string; qty: number }[]>([]);
@@ -3489,12 +3785,22 @@ export default function App(props?: { initialPage?: Page }) {
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
-  const systems = useMemo(() => getLocalizedSystems(t), [t, lang]);
-  const projects = useMemo(() => getLocalizedProjects(t), [t, lang]);
+  const [publicSite, setPublicSite] = useState<Record<string, unknown>>({});
+  const fallbackSystemsNav = useMemo(() => getLocalizedSystems(t), [t, lang]);
+  const fallbackProjectsNav = useMemo(() => getLocalizedProjects(t), [t, lang]);
+  const systems = useMemo(() => {
+    const parsed = parsePublicHomeSystems(publicSite["home.systems"], fallbackSystemsNav);
+    return mergeSystemsWithI18n(lang, parsed.list, fallbackSystemsNav);
+  }, [lang, publicSite, fallbackSystemsNav]);
+  const projects = useMemo(() => {
+    const parsed = parsePublicHomeProjects(publicSite["home.projects"], fallbackProjectsNav);
+    return mergeProjectsWithI18n(lang, parsed.list, fallbackProjectsNav);
+  }, [lang, publicSite, fallbackProjectsNav]);
   const [activeSystem, setActiveSystem] = useState<System>(() => systems[0]);
   const [activeProject, setActiveProject] = useState<Project>(() => projects[0]);
   const [activeProduct, setActiveProduct] = useState<Product>(() => getFallbackProduct(t));
-  const [publicSite, setPublicSite] = useState<Record<string, unknown>>({});
+  const [projectDetailSource, setProjectDetailSource] = useState<"home" | "projects">("projects");
+  const [productDetailSource, setProductDetailSource] = useState<"catalog" | "ai">("catalog");
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const productsHydrated = useRef(false);
@@ -3513,6 +3819,19 @@ export default function App(props?: { initialPage?: Page }) {
     };
   }, [i18n]);
 
+  useEffect(() => {
+    const syncLangFromUrl = () => {
+      const q = new URLSearchParams(window.location.search).get("lang");
+      if (isSupportedLang(q) && q && i18n.language !== q) {
+        void i18n.changeLanguage(q);
+        setLang(q);
+      }
+    };
+    syncLangFromUrl();
+    window.addEventListener("popstate", syncLangFromUrl);
+    return () => window.removeEventListener("popstate", syncLangFromUrl);
+  }, [i18n, page]);
+
   // Keep active selections stable across language changes (by id)
   useEffect(() => {
     setActiveSystem((prev) => systems.find((s) => s.id === prev?.id) || systems[0]);
@@ -3525,11 +3844,11 @@ export default function App(props?: { initialPage?: Page }) {
     apiJson<Record<string, unknown>>("/api/public/site-settings")
       .then(setPublicSite)
       .catch(() => setPublicSite({}));
-  }, [lang]);
+  }, [lang, i18n.language]);
 
   useEffect(() => {
     setProductsLoading(true);
-    apiJson<ApiProduct[]>("/api/public/products")
+    apiJson<ApiProduct[]>(`/api/public/products`)
       .then((rows) => {
         const list = rows.map(toLegacyProduct);
         setCatalogProducts(list);
@@ -3545,13 +3864,14 @@ export default function App(props?: { initialPage?: Page }) {
       })
       .catch(() => setCatalogProducts([]))
       .finally(() => setProductsLoading(false));
-  }, [lang]);
+  }, [lang, i18n.language]);
 
   const contactCfg = (publicSite.contact || {}) as {
     phone?: string;
     email?: string;
     whatsapp?: string;
   };
+  const bulletinCfg = (publicSite["home.bulletin"] || {}) as { enabled?: boolean; title?: string; bodyHtml?: string };
   const footerCfg = (publicSite.footer || {}) as Record<string, unknown>;
 
   const addToCart = (product: Product) => {
@@ -3604,27 +3924,51 @@ export default function App(props?: { initialPage?: Page }) {
             transition={{ duration: 0.3 }}
           >
             {page === "home" && (
-              <HomePage 
-                setPage={setPage} 
-                onShowAIChat={() => setIsAIChatOpen(true)} 
-                setActiveSystem={setActiveSystem}
-                setActiveProject={setActiveProject}
+              <HomePage
+                setPage={setPage}
+                onShowAIChat={() => setIsAIChatOpen(true)}
+                onSelectSystem={(s) => {
+                  setActiveSystem(s);
+                  setPage("systemDetail");
+                }}
+                onSelectProject={(p) => {
+                  setProjectDetailSource("home");
+                  setActiveProject(p);
+                  setPage("projectDetail");
+                }}
                 publicSite={publicSite}
               />
             )}
             {page === "admin" && <AdminPage onBack={() => setPage("home")} />}
             {page === "catalog" && (
-              <CatalogPage 
-                setPage={setPage} 
-                onAddToCart={addToCart} 
-                setActiveProduct={setActiveProduct}
+              <CatalogPage
+                onAddToCart={addToCart}
+                onOpenProductDetail={(p) => {
+                  setProductDetailSource("catalog");
+                  setActiveProduct(p);
+                  setPage("detail");
+                }}
                 products={catalogProducts}
                 productsLoading={productsLoading}
                 publicSite={publicSite}
                 onShowCustomContact={() => setIsContactOpen(true)}
               />
             )}
-            {page === "detail" && <ProductDetailPage product={activeProduct} onAddToCart={addToCart} />}
+            {page === "detail" && (
+              <ProductDetailPage
+                product={activeProduct}
+                onAddToCart={addToCart}
+                onBack={() => {
+                  if (productDetailSource === "ai") {
+                    setPage("home");
+                    setIsAIChatOpen(true);
+                  } else {
+                    setPage("catalog");
+                  }
+                }}
+                backLabel={productDetailSource === "ai" ? t("detail.backToChat") : t("detail.backToCatalog")}
+              />
+            )}
             {page === "cart" && (
               <CartPage
                 cart={cart}
@@ -3635,11 +3979,30 @@ export default function App(props?: { initialPage?: Page }) {
               />
             )}
             {page === "projects" && (
-              <ProjectsPage setPage={setPage} setActiveProject={setActiveProject} publicSite={publicSite} />
+              <ProjectsPage
+                onSelectProject={(p) => {
+                  setProjectDetailSource("projects");
+                  setActiveProject(p);
+                  setPage("projectDetail");
+                }}
+                publicSite={publicSite}
+              />
             )}
-            {page === "projectDetail" && <ProjectDetailPage project={activeProject} />}
+            {page === "projectDetail" && (
+              <ProjectDetailPage
+                project={activeProject}
+                onBack={() => setPage(projectDetailSource === "home" ? "home" : "projects")}
+                backLabel={projectDetailSource === "home" ? t("detail.backToHome") : t("detail.backToProjects")}
+              />
+            )}
             {page === "about" && <AboutPage publicSite={publicSite} />}
-            {page === "systemDetail" && <SystemDetailPage system={activeSystem} />}
+            {page === "systemDetail" && (
+              <SystemDetailPage
+                system={activeSystem}
+                onBack={() => setPage("home")}
+                backLabel={t("detail.backToHome")}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
       </main>
@@ -3648,12 +4011,17 @@ export default function App(props?: { initialPage?: Page }) {
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
         contact={contactCfg}
+        bulletin={bulletinCfg}
       />
       <AIChatModal
         isOpen={isAIChatOpen}
         onClose={() => setIsAIChatOpen(false)}
-        setPage={setPage}
-        onSetActiveProduct={setActiveProduct}
+        onOpenProductFromChat={(p) => {
+          setProductDetailSource("ai");
+          setActiveProduct(p);
+          setPage("detail");
+          setIsAIChatOpen(false);
+        }}
         onAddToCartWithQty={addToCartWithQty}
       />
       <AdminLoginModal

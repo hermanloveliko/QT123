@@ -61,24 +61,27 @@
     "about": "Kuhusu",
     "getQuote": "Pata nukuu",
     "admin": "Msimamizi",
-    "searchPlaceholder": "Tafuta vifaa..."
+    "searchPlaceholder": "Tafuta vifaa...",
+    "brandPrimary": "Qingtai Materials",
+    "brandSub": "QINGTAI MATERIALS"
   },
   "home": {
     "badge": "Wataalamu wa vifaa vya ujenzi, miaka 20",
-    "heroTitleLine1": "Jenga kesho kwa",
-    "heroTitleAccent": "msingi sahihi",
+    "heroTitleLine1": "Wataalamu wa mifumo ya dari na partitions",
+    "heroTitleAccent": "Punguza gharama kwa 30%",
     "heroDesc1": "Qingtai hutoa mifumo ya fremu, bodi na kumalizia ya alumini ya kiwango cha dunia.",
     "heroDesc2": "Kwa utengenezaji sahihi na usafirishaji wa kimataifa, tunaunga mkono maono yako.",
     "browseCatalog": "Vinjari katalogi",
     "viewProjects": "Tazama miradi",
+    "heroImageAlt": "Eneo la ujenzi na vifaa",
     "stats": {
       "years": "Miaka ya uzoefu",
       "projects": "Miradi ya kimataifa",
       "satisfaction": "Kuridhika kwa wateja"
     },
     "consultation": {
-      "title": "Unahitaji ushauri wa kitaalamu wa vifaa?",
-      "desc": "Timu yetu ya uhandisi hutoa msaada wa kiufundi, uteuzi wa vifaa, na makadirio ya gharama.",
+      "title": "Tuambie mradi wako — ulinganisho wa bure & nukuu bora",
+      "desc": "Huna haja ya kubashiri ni bodi au mfumo wa fremu gani unaofaa kwa soko lako. Tuma mahitaji ya dari/partition na tutajibu ndani ya saa 1.\n✅ Ulinganisho sahihi wa bidhaa (bodi & fremu/keel)\n✅ Bei bora (EXW/FOB/CIF/DDP)\n✅ Sampuli na msaada wa vyeti. Mradi wako unastahili suluhisho la kweli — bure, haraka na moja kwa moja.",
       "hotlineLabel": "WhatsApp",
       "hotlineValue": "+86 138 0000 0000",
       "button": "Weka miadi ya ushauri mtandaoni"
@@ -105,6 +108,10 @@
         {
           "title": "Ufuatiliaji wa ubora wa mwisho hadi mwisho",
           "desc": "Kuanzia kusafirisha hadi kupokea, kila hatua hukaguliwa ubora na kurekodiwa kidijitali."
+        },
+        {
+          "title": "Ufuatiliaji wa oda wa wakati halisi",
+          "desc": "Nambari ya oda inapatikana mara oda inapowekwa; hatua za usafiri zinasasishwa mtandaoni."
         }
       ],
       "track": {
@@ -120,6 +127,8 @@
     }
   },
   "about": {
+    "mute": "Zima sauti",
+    "unmute": "Washa sauti",
     "heroTitle": "Kuhusu Qingtai",
     "profileEyebrow": "Wasifu wa kampuni",
     "profileHeading": "Miaka ishirini ya umakini, kujenga uzuri",
@@ -226,6 +235,12 @@
   "systemDetail": {
     "eyebrow": "Suluhisho la mfumo"
   },
+  "detail": {
+    "backToHome": "Rudi mwanzo",
+    "backToCatalog": "Rudi katalogi",
+    "backToProjects": "Rudi miradi",
+    "backToChat": "Rudi na endelea mazungumzo"
+  },
   "contactModal": {
     "title": "Mawasiliano",
     "phone": "Simu",
@@ -258,6 +273,7 @@
       "title": "Msaidizi wa AI",
       "subtitle": "Qingtai AI Support",
       "cardHint": "Gusa kadi ili kuona maelezo",
+      "allProductsScroll": "Bidhaa {{count}} — sogeza orodha hapa chini",
       "orderNow": "Agiza sasa",
       "inputPlaceholder": "Andika swali lako…",
       "requestFailed": "Ombi limeshindwa: {{error}}",

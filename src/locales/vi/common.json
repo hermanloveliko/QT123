@@ -61,24 +61,27 @@
     "about": "Giới thiệu",
     "getQuote": "Nhận báo giá",
     "admin": "Quản trị",
-    "searchPlaceholder": "Tìm vật liệu..."
+    "searchPlaceholder": "Tìm vật liệu...",
+    "brandPrimary": "Qingtai Materials",
+    "brandSub": "QINGTAI MATERIALS"
   },
   "home": {
     "badge": "Chuyên gia vật liệu xây dựng, 20 năm",
-    "heroTitleLine1": "Xây dựng tương lai với",
-    "heroTitleAccent": "nền tảng chính xác",
+    "heroTitleLine1": "Chuyên gia hệ trần & vách ngăn",
+    "heroTitleAccent": "Giảm chi phí của bạn 30%",
     "heroDesc1": "Qingtai cung cấp hệ khung, tấm và hệ hoàn thiện nhôm đẳng cấp thế giới.",
     "heroDesc2": "Với sản xuất chính xác và logistics toàn cầu, chúng tôi đồng hành cùng tầm nhìn của bạn.",
     "browseCatalog": "Xem danh mục",
     "viewProjects": "Xem dự án",
+    "heroImageAlt": "Công trường và vật liệu xây dựng",
     "stats": {
       "years": "Kinh nghiệm (năm)",
       "projects": "Dự án toàn cầu",
       "satisfaction": "Hài lòng khách hàng"
     },
     "consultation": {
-      "title": "Cần tư vấn vật liệu chuyên nghiệp?",
-      "desc": "Đội ngũ kỹ sư của chúng tôi hỗ trợ kỹ thuật, lựa chọn vật liệu và ước tính chi phí.",
+      "title": "Cho chúng tôi biết dự án của bạn — ghép vật liệu miễn phí & báo giá tốt nhất",
+      "desc": "Không cần đoán loại tấm hay hệ khung nào phù hợp với thị trường của bạn. Gửi yêu cầu trần/vách ngăn, chúng tôi sẽ phản hồi trong 1 giờ.\n✅ Ghép sản phẩm chính xác (tấm & khung/keel)\n✅ Giá tốt nhất (EXW/FOB/CIF/DDP)\n✅ Hỗ trợ mẫu & chứng nhận. Dự án của bạn xứng đáng có giải pháp thực sự — miễn phí, nhanh và đi thẳng vấn đề.",
       "hotlineLabel": "WhatsApp",
       "hotlineValue": "+86 138 0000 0000",
       "button": "Đặt lịch tư vấn online"
@@ -105,6 +108,10 @@
         {
           "title": "Giám sát chất lượng xuyên suốt",
           "desc": "Từ xuất kho đến nhận hàng, mỗi bước đều được kiểm tra chất lượng và ghi nhận số hóa."
+        },
+        {
+          "title": "Theo dõi đơn hàng thời gian thực",
+          "desc": "Mã đơn duy nhất khi đặt hàng; cập nhật mốc logistics (tàu, cont, dự kiến đến) trực tuyến."
         }
       ],
       "track": {
@@ -120,6 +127,8 @@
     }
   },
   "about": {
+    "mute": "Tắt tiếng",
+    "unmute": "Bật tiếng",
     "heroTitle": "Về Qingtai",
     "profileEyebrow": "Hồ sơ công ty",
     "profileHeading": "Hai mươi năm tập trung, kiến tạo vẻ đẹp",
@@ -226,6 +235,12 @@
   "systemDetail": {
     "eyebrow": "Giải pháp hệ thống"
   },
+  "detail": {
+    "backToHome": "Về trang chủ",
+    "backToCatalog": "Về mục lục sản phẩm",
+    "backToProjects": "Về công trình",
+    "backToChat": "Quay lại & tiếp tục chat"
+  },
   "contactModal": {
     "title": "Liên hệ",
     "phone": "Điện thoại",
@@ -258,6 +273,7 @@
       "title": "Trợ lý AI",
       "subtitle": "Qingtai AI Support",
       "cardHint": "Chạm vào thẻ để xem chi tiết",
+      "allProductsScroll": "{{count}} sản phẩm — cuộn danh sách bên dưới",
       "orderNow": "Đặt ngay",
       "inputPlaceholder": "Nhập câu hỏi của bạn…",
       "requestFailed": "Yêu cầu thất bại: {{error}}",

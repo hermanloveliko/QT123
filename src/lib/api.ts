@@ -106,7 +106,8 @@ export async function apiJson<T>(path: string, init?: RequestInit): Promise<T> {
         ? window.location.origin
         : "http://localhost";
   const url = new URL(path, base);
-  if (!url.searchParams.get("lang")) url.searchParams.set("lang", lang);
+  // 始终用当前语言覆盖 URL 上的 lang，避免陈旧查询参数导致接口仍按旧语言返回（翻译不生效）
+  url.searchParams.set("lang", lang);
 
   const res = await fetch(url.toString(), {
     credentials: "include",

@@ -61,24 +61,27 @@
     "about": "À propos",
     "getQuote": "Obtenir un devis",
     "admin": "Admin",
-    "searchPlaceholder": "Rechercher des matériaux..."
+    "searchPlaceholder": "Rechercher des matériaux...",
+    "brandPrimary": "Qingtai Materials",
+    "brandSub": "QINGTAI MATERIALS"
   },
   "home": {
     "badge": "Experts en matériaux, 20 ans",
-    "heroTitleLine1": "Construire l'avenir avec",
-    "heroTitleAccent": "une base de précision",
+    "heroTitleLine1": "Experts en systèmes de plafond et cloisons",
+    "heroTitleAccent": "Réduisez vos coûts de 30%",
     "heroDesc1": "Qingtai fournit des ossatures, plaques et systèmes de finition aluminium de classe mondiale.",
     "heroDesc2": "Fabrication de précision et logistique mondiale pour accompagner votre vision.",
     "browseCatalog": "Voir le catalogue",
     "viewProjects": "Voir les projets",
+    "heroImageAlt": "Chantier et matériaux de construction",
     "stats": {
       "years": "Années d'expérience",
       "projects": "Projets mondiaux",
       "satisfaction": "Satisfaction client"
     },
     "consultation": {
-      "title": "Besoin de conseils professionnels sur les matériaux ?",
-      "desc": "Notre équipe d'ingénieurs fournit un support technique, une aide au choix des matériaux et une estimation des coûts.",
+      "title": "Parlez-nous de votre projet — sélection gratuite & meilleur devis",
+      "desc": "Inutile d’hésiter sur la plaque ou l’ossature adaptée à votre marché. Envoyez-nous vos besoins plafond/cloison et nous répondrons sous 1 heure.\n✅ Appariement précis (plaques & ossatures/rails)\n✅ Meilleurs prix (EXW/FOB/CIF/DDP)\n✅ Échantillons & certifications. Votre projet mérite une vraie solution — gratuite, rapide, et sans bla-bla.",
       "hotlineLabel": "WhatsApp",
       "hotlineValue": "+86 138 0000 0000",
       "button": "Réserver une consultation en ligne"
@@ -105,6 +108,10 @@
         {
           "title": "Contrôle qualité de bout en bout",
           "desc": "De l'expédition à la réception, chaque étape est contrôlée et enregistrée numériquement."
+        },
+        {
+          "title": "Suivi de commande en temps réel",
+          "desc": "Un numéro unique est généré à la commande ; les étapes logistiques sont mises à jour en ligne (navire, conteneur, ETA)."
         }
       ],
       "track": {
@@ -120,6 +127,8 @@
     }
   },
   "about": {
+    "mute": "Couper le son",
+    "unmute": "Activer le son",
     "heroTitle": "À propos de Qingtai",
     "profileEyebrow": "Profil de l'entreprise",
     "profileHeading": "Vingt ans de spécialisation, bâtir la beauté",
@@ -226,6 +235,12 @@
   "systemDetail": {
     "eyebrow": "Solution système"
   },
+  "detail": {
+    "backToHome": "Retour à l'accueil",
+    "backToCatalog": "Retour au catalogue",
+    "backToProjects": "Retour aux réalisations",
+    "backToChat": "Retour et continuer le chat"
+  },
   "contactModal": {
     "title": "Contact",
     "phone": "Téléphone",
@@ -258,6 +273,7 @@
       "title": "Assistant IA",
       "subtitle": "Support IA Qingtai",
       "cardHint": "Touchez une carte pour voir les détails",
+      "allProductsScroll": "{{count}} produits en stock — faites défiler la liste ci-dessous",
       "orderNow": "Commander",
       "inputPlaceholder": "Saisissez votre question…",
       "requestFailed": "Échec de la requête : {{error}}",

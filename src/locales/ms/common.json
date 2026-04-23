@@ -61,24 +61,27 @@
     "about": "Tentang",
     "getQuote": "Dapatkan sebut harga",
     "admin": "Admin",
-    "searchPlaceholder": "Cari bahan..."
+    "searchPlaceholder": "Cari bahan...",
+    "brandPrimary": "Qingtai Materials",
+    "brandSub": "QINGTAI MATERIALS"
   },
   "home": {
     "badge": "Pakar bahan binaan, 20 tahun",
-    "heroTitleLine1": "Bina masa depan dengan",
-    "heroTitleAccent": "asas ketepatan",
+    "heroTitleLine1": "Pakar sistem siling & sekatan",
+    "heroTitleAccent": "Kurangkan kos anda 30%",
     "heroDesc1": "Qingtai menyediakan sistem rangka, papan dan kemasan aluminium bertaraf dunia.",
     "heroDesc2": "Dengan pembuatan tepat dan logistik global, kami menyokong visi anda.",
     "browseCatalog": "Lihat katalog",
     "viewProjects": "Lihat projek",
+    "heroImageAlt": "Tapak pembinaan dan bahan",
     "stats": {
       "years": "Tahun pengalaman industri",
       "projects": "Projek global",
       "satisfaction": "Kepuasan pelanggan"
     },
     "consultation": {
-      "title": "Perlukan nasihat bahan yang profesional?",
-      "desc": "Pasukan kejuruteraan kami menyediakan sokongan teknikal, pemilihan bahan, dan anggaran kos.",
+      "title": "Kongsi projek anda — padanan percuma & sebut harga terbaik",
+      "desc": "Tak perlu teka papan atau rangka mana sesuai untuk pasaran anda. Hantar keperluan siling/partition dan kami akan balas dalam 1 jam.\n✅ Padanan tepat (papan & rangka/keel)\n✅ Harga terbaik (EXW/FOB/CIF/DDP)\n✅ Sokongan sampel & pensijilan. Projek anda perlukan penyelesaian sebenar — percuma, cepat dan terus terang.",
       "hotlineLabel": "WhatsApp",
       "hotlineValue": "+86 138 0000 0000",
       "button": "Tempah konsultasi dalam talian"
@@ -105,6 +108,10 @@
         {
           "title": "Pemantauan kualiti dari hujung ke hujung",
           "desc": "Dari penghantaran hingga penerimaan, setiap langkah disemak kualitinya dan direkodkan secara digital."
+        },
+        {
+          "title": "Penjejakan pesanan masa nyata",
+          "desc": "ID pesanan unik dicipta semasa pesanan; kemaskini logistik (kapal, kontena, ETA) dalam talian."
         }
       ],
       "track": {
@@ -120,6 +127,8 @@
     }
   },
   "about": {
+    "mute": "Redamkan",
+    "unmute": "Hidupkan bunyi",
     "heroTitle": "Tentang Qingtai",
     "profileEyebrow": "Profil Syarikat",
     "profileHeading": "Dua puluh tahun fokus, membina keindahan",
@@ -226,6 +235,12 @@
   "systemDetail": {
     "eyebrow": "Penyelesaian sistem"
   },
+  "detail": {
+    "backToHome": "Kembali ke laman utama",
+    "backToCatalog": "Kembali ke katalog",
+    "backToProjects": "Kembali ke projek",
+    "backToChat": "Kembali & terus sembang"
+  },
   "contactModal": {
     "title": "Hubungi",
     "phone": "Telefon",
@@ -258,6 +273,7 @@
       "title": "Pembantu AI",
       "subtitle": "Sokongan AI Qingtai",
       "cardHint": "Ketik kad untuk lihat butiran",
+      "allProductsScroll": "{{count}} produk — tatal senarai di bawah",
       "orderNow": "Buat pesanan",
       "inputPlaceholder": "Taip soalan anda…",
       "requestFailed": "Permintaan gagal: {{error}}",

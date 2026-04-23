@@ -114,6 +114,19 @@ async function main() {
     },
   });
 
+  await prisma.siteSetting.upsert({
+    where: { key: "home.bulletin" },
+    update: {},
+    create: {
+      key: "home.bulletin",
+      value: {
+        enabled: false,
+        title: "",
+        bodyHtml: "",
+      },
+    },
+  });
+
   const cSteel = await ensureCategory("轻钢龙骨", 1);
   const cGypsum = await ensureCategory("石膏板", 2);
   const cAl = await ensureCategory("铝制饰面", 3);
@@ -347,6 +360,11 @@ async function main() {
           {
             title: "全程质量监控",
             description: "从出库到签收，每一步都经过严格的质量检查与数字化记录。",
+          },
+          {
+            title: "实时订单追踪",
+            description:
+              "下单即生成唯一订单号，物流节点在线更新；可查询船名航次、集装箱号与预计到港日。",
           },
         ],
         slideImageUrls: [] as string[],

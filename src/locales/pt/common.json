@@ -61,24 +61,27 @@
     "about": "Sobre",
     "getQuote": "Solicitar orçamento",
     "admin": "Admin",
-    "searchPlaceholder": "Pesquisar materiais..."
+    "searchPlaceholder": "Pesquisar materiais...",
+    "brandPrimary": "Qingtai Materials",
+    "brandSub": "QINGTAI MATERIALS"
   },
   "home": {
     "badge": "Especialistas em materiais de construção, 20 anos",
-    "heroTitleLine1": "Construa o futuro com",
-    "heroTitleAccent": "precisão",
+    "heroTitleLine1": "Especialistas em sistemas de forro e divisórias",
+    "heroTitleAccent": "Reduza seu custo em 30%",
     "heroDesc1": "A Qingtai fornece sistemas de perfis, placas e acabamento em alumínio de padrão mundial.",
     "heroDesc2": "Com manufatura de precisão e logística global, apoiamos a sua visão.",
     "browseCatalog": "Ver catálogo",
     "viewProjects": "Ver projetos",
+    "heroImageAlt": "Construção e materiais de edificação",
     "stats": {
       "years": "Anos de experiência",
       "projects": "Projetos globais",
       "satisfaction": "Satisfação do cliente"
     },
     "consultation": {
-      "title": "Precisa de consultoria profissional sobre materiais?",
-      "desc": "Nossa equipe de engenheiros oferece suporte técnico, seleção de materiais e estimativa de custos.",
+      "title": "Conte seu projeto — seleção grátis e melhor orçamento",
+      "desc": "Não precisa adivinhar qual placa ou perfil se encaixa no seu mercado. Envie seus requisitos de forro/divisórias e responderemos em 1 hora.\n✅ Combinação precisa (placas e perfis/estruturas)\n✅ Melhor preço (EXW/FOB/CIF/DDP)\n✅ Amostras e certificações. Seu projeto merece uma solução de verdade — grátis, rápida e direta.",
       "hotlineLabel": "WhatsApp",
       "hotlineValue": "+86 138 0000 0000",
       "button": "Agendar uma consulta online"
@@ -105,6 +108,10 @@
         {
           "title": "Monitoramento de qualidade integral",
           "desc": "Do despacho ao recebimento, cada etapa é inspecionada e registrada digitalmente."
+        },
+        {
+          "title": "Rastreamento de pedido em tempo real",
+          "desc": "Pedido cria ID único; nós logísticos atualizam online (navio, contêiner, previsão)."
         }
       ],
       "track": {
@@ -120,6 +127,8 @@
     }
   },
   "about": {
+    "mute": "Silenciar",
+    "unmute": "Ativar som",
     "heroTitle": "Sobre a Qingtai",
     "profileEyebrow": "Perfil da empresa",
     "profileHeading": "Vinte anos de dedicação, construindo beleza",
@@ -226,6 +235,12 @@
   "systemDetail": {
     "eyebrow": "Solução de sistemas"
   },
+  "detail": {
+    "backToHome": "Voltar ao início",
+    "backToCatalog": "Voltar ao catálogo",
+    "backToProjects": "Voltar a projetos",
+    "backToChat": "Voltar e continuar o chat"
+  },
   "contactModal": {
     "title": "Contato",
     "phone": "Telefone",
@@ -258,6 +273,7 @@
       "title": "Assistente IA",
       "subtitle": "Suporte IA Qingtai",
       "cardHint": "Toque em um cartão para ver detalhes",
+      "allProductsScroll": "{{count}} produtos em estoque — role a lista abaixo",
       "orderNow": "Pedir agora",
       "inputPlaceholder": "Digite sua pergunta…",
       "requestFailed": "Falha na solicitação: {{error}}",

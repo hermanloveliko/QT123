@@ -8,6 +8,7 @@ export const SITE_SETTING_FORM_KEYS = [
   "contact",
   "home.hero",
   "home.consultation",
+  "home.bulletin",
   "home.systems",
   "home.projects",
   "home.logistics",
@@ -27,6 +28,7 @@ export const SITE_SETTING_LIST_LABEL: Record<string, string> = {
   contact: "联系信息（弹窗 / 页脚：电话·邮箱·WhatsApp）",
   "home.hero": "首页 · 首屏大图与主文案",
   "home.consultation": "首页 · 咨询区块",
+  "home.bulletin": "联系弹窗 · 补充说明与链接区",
   "home.systems": "首页 · 核心系统方案",
   "home.projects": "首页/案例 · 工程案例",
   "home.logistics": "首页 · 物流与轮播图",
@@ -80,11 +82,16 @@ function emptyCustomSpec() {
   return { title: "", description: "", buttonText: "", note: "" };
 }
 
+function emptyBulletin() {
+  return { enabled: false, title: "", bodyHtml: "" as string };
+}
+
 function emptyLogistics() {
   return {
     title: "",
     description: "",
     cards: [
+      { title: "", description: "" },
       { title: "", description: "" },
       { title: "", description: "" },
     ] as Array<{ title: string; description: string }>,
@@ -251,6 +258,7 @@ export function SiteSettingEditDialog({
   const [customSpec, setCustomSpec] = useState(emptyCustomSpec);
   const [aboutPage, setAboutPage] = useState(emptyAboutPage);
   const [hero, setHero] = useState(emptyHero);
+  const [bulletin, setBulletin] = useState(emptyBulletin);
 
   const useJson = !hasStructuredSiteSettingForm(settingKey);
 
@@ -295,6 +303,13 @@ export function SiteSettingEditDialog({
           typeof o.backgroundOpacity === "number" ? o.backgroundOpacity : Number(o.backgroundOpacity) || 0.45,
         hotlineLabel: String(o.hotlineLabel ?? "WhatsApp"),
         hotlineValue: String(o.hotlineValue ?? ""),
+      });
+    }
+    if (settingKey === "home.bulletin") {
+      setBulletin({
+        enabled: Boolean(o.enabled),
+        title: String(o.title ?? ""),
+        bodyHtml: String(o.bodyHtml ?? ""),
       });
     }
     if (settingKey === "home.systems") {
@@ -388,6 +403,8 @@ export function SiteSettingEditDialog({
           ...consultation,
           backgroundOpacity: Math.min(1, Math.max(0, Number(consultation.backgroundOpacity) || 0)),
         };
+      case "home.bulletin":
+        return { ...bulletin };
       case "home.systems":
         return {
           label: systemsMeta.label,
@@ -479,6 +496,7 @@ export function SiteSettingEditDialog({
     customSpec,
     aboutPage,
     hero,
+    bulletin,
   ]);
 
   const handleSave = async () => {
@@ -505,6 +523,7 @@ export function SiteSettingEditDialog({
       contact: "联系信息（弹窗 / 页脚）",
       "home.hero": "首页 · 首屏大图与主文案",
       "home.consultation": "首页 · 咨询区块",
+      "home.bulletin": "联系弹窗 · 补充说明与可点击链接",
       "home.systems": "首页 · 核心系统方案",
       "home.projects": "首页 / 案例 · 工程案例列表",
       "home.logistics": "首页 · 全球物流与追踪",
@@ -775,6 +794,41 @@ export function SiteSettingEditDialog({
             </div>
           )}
 
+          {settingKey === "home.bulletin" && (
+            <div className="space-y-3">
+              <p className="text-xs text-gray-500">
+                内容显示在侧栏/社交区打开的「联系方式」弹窗下方。可填写 HTML 链接，例如：{" "}
+                <code className="text-industrial-blue">&lt;a href=&quot;https://...&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot;&gt;文字&lt;/a&gt;</code>
+              </p>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={bulletin.enabled}
+                  onChange={(e) => setBulletin((b) => ({ ...b, enabled: e.target.checked }))}
+                />
+                <span>在前台弹窗中显示本区块</span>
+              </label>
+              <div>
+                <label className={labelClass}>小标题</label>
+                <input
+                  className={inputClass}
+                  value={bulletin.title}
+                  onChange={(e) => setBulletin((b) => ({ ...b, title: e.target.value }))}
+                  placeholder="如：官方渠道 / 下载资料"
+                />
+              </div>
+              <div>
+                <label className={labelClass}>正文（HTML，链接可点跳转）</label>
+                <textarea
+                  className={`${inputClass} min-h-[120px] font-mono text-xs`}
+                  value={bulletin.bodyHtml}
+                  onChange={(e) => setBulletin((b) => ({ ...b, bodyHtml: e.target.value }))}
+                  placeholder={`<p>请访问 <a href="https://..." target="_blank" rel="noreferrer">官网</a> 了解详情。</p>`}
+                />
+              </div>
+            </div>
+          )}
+
           {settingKey === "home.systems" && (
             <div className="space-y-4">
               <p className="text-xs text-gray-500">
@@ -992,7 +1046,31 @@ export function SiteSettingEditDialog({
               >
                 + 添加卡片
               </button>
-              <div className="text-xs font-bold text-gray-600">右侧轮播图（本地上传，{SITE_IMAGE_SPECS.logisticsSlide.label}）</div>
+              <div className="text-xs font-bold text-gray-600">右侧 · 订单追踪示例（与前台「追踪模块」一致）</div>
+              <p className="text-[11px] text-gray-400">此区块对应首页物流右侧蓝色追踪卡片，并非左侧列表里的第三张文案卡片。</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className={labelClass}>追踪卡片标题</label>
+                  <input className={inputClass} value={logistics.trackTitle} onChange={(e) => setLogistics({ ...logistics, trackTitle: e.target.value })} />
+                </div>
+                <div>
+                  <label className={labelClass}>示例订单号</label>
+                  <input className={inputClass} value={logistics.trackOrderId} onChange={(e) => setLogistics({ ...logistics, trackOrderId: e.target.value })} />
+                </div>
+                <div>
+                  <label className={labelClass}>状态文案</label>
+                  <input className={inputClass} value={logistics.trackStatus} onChange={(e) => setLogistics({ ...logistics, trackStatus: e.target.value })} />
+                </div>
+                <div>
+                  <label className={labelClass}>当前位置</label>
+                  <input className={inputClass} value={logistics.trackLocation} onChange={(e) => setLogistics({ ...logistics, trackLocation: e.target.value })} />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>预计到达</label>
+                  <input className={inputClass} value={logistics.trackEta} onChange={(e) => setLogistics({ ...logistics, trackEta: e.target.value })} />
+                </div>
+              </div>
+              <div className="text-xs font-bold text-gray-600">右侧 · 轮播图（本地上传，{SITE_IMAGE_SPECS.logisticsSlide.label}）</div>
               <p className="text-[11px] text-gray-400">由旧 seed 同步来的外链图可逐张重新上传替换为本地文件。</p>
               {logistics.slideImageUrls.map((url, idx) => (
                 <div key={`slide-${idx}`} className="border border-gray-100 rounded-xl p-3 space-y-2 relative">
@@ -1034,28 +1112,6 @@ export function SiteSettingEditDialog({
               >
                 <Plus size={16} /> 添加一张轮播图
               </button>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className={labelClass}>追踪卡片标题</label>
-                  <input className={inputClass} value={logistics.trackTitle} onChange={(e) => setLogistics({ ...logistics, trackTitle: e.target.value })} />
-                </div>
-                <div>
-                  <label className={labelClass}>示例订单号</label>
-                  <input className={inputClass} value={logistics.trackOrderId} onChange={(e) => setLogistics({ ...logistics, trackOrderId: e.target.value })} />
-                </div>
-                <div>
-                  <label className={labelClass}>状态文案</label>
-                  <input className={inputClass} value={logistics.trackStatus} onChange={(e) => setLogistics({ ...logistics, trackStatus: e.target.value })} />
-                </div>
-                <div>
-                  <label className={labelClass}>当前位置</label>
-                  <input className={inputClass} value={logistics.trackLocation} onChange={(e) => setLogistics({ ...logistics, trackLocation: e.target.value })} />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className={labelClass}>预计到达</label>
-                  <input className={inputClass} value={logistics.trackEta} onChange={(e) => setLogistics({ ...logistics, trackEta: e.target.value })} />
-                </div>
-              </div>
             </div>
           )}
 
