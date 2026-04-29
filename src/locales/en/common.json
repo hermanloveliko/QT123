@@ -136,7 +136,19 @@
       "Founded in 2006 and headquartered in Shanghai, China, Qingtai has been dedicated to R&D, production, and sales of partition and ceiling materials for two decades.",
       "As a leading system solution provider, we deliver high-quality steel framing, gypsum boards, and aluminum finishes—backed by precise technical support and a reliable global logistics network.",
       "Our products have been applied in over 1,200 landmark projects worldwide, including supertall buildings, international airports, five-star hotels, and large industrial facilities."
-    ]
+    ],
+    "faqTitle": "FAQ – Custom Ceiling & Acoustic Panels | Factory Direct Answers",
+    "faqDescription": "Frequently asked questions about MOQ, lead time, custom perforation, shipping, payment terms, and samples. Everything you need to know before ordering from QingTai.",
+    "faq": {
+      "q1": "What is your MOQ?",
+      "a1": "MOQ depends on product type and customization scope. Send your specs and quantity for exact guidance.",
+      "q2": "How long is lead time for custom perforation and colors?",
+      "a2": "Standard orders are usually 7–15 days, while customized orders are typically 15–30 days.",
+      "q3": "What shipping and payment terms do you support?",
+      "a3": "We support common shipping methods and flexible payment terms based on project and order scale.",
+      "q4": "Can you provide samples before bulk order?",
+      "a4": "Yes. Samples and color cards are available for pre-production confirmation."
+    }
   },
   "catalog": {
     "title": "Building materials products",

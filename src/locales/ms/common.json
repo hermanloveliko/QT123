@@ -56,7 +56,7 @@
   },
   "nav": {
     "home": "Utama",
-    "catalog": "Katalog",
+    "catalog": "Produk",
     "projects": "Projek",
     "about": "Tentang",
     "getQuote": "Dapatkan sebut harga",
@@ -136,10 +136,22 @@
       "Ditubuhkan pada 2006 dan beribu pejabat di Shanghai, China, Qingtai telah berfokus pada R&D, pengeluaran dan jualan bahan partition dan siling selama dua dekad.",
       "Sebagai penyedia penyelesaian sistem terkemuka, kami membekalkan rangka keluli, papan gipsum, dan kemasan aluminium berkualiti tinggi—disokong oleh sokongan teknikal yang tepat serta rangkaian logistik global yang boleh dipercayai.",
       "Produk kami telah digunakan dalam lebih 1,200 projek mercu tanda di seluruh dunia, termasuk bangunan super tinggi, lapangan terbang antarabangsa, hotel lima bintang, dan kemudahan industri berskala besar."
-    ]
+    ],
+    "faqTitle": "Soalan Lazim – Panel Akustik dan Siling Tersuai | Kilang Terus",
+    "faqDescription": "Soalan lazim tentang MOQ, masa penghantaran, penebukan tersuai, pengangkutan, terma pembayaran dan sampel. Semua yang anda perlu tahu sebelum membuat pesanan dari QingTai.",
+    "faq": {
+      "q1": "Apakah MOQ anda?",
+      "a1": "MOQ bergantung pada jenis produk dan skop penyesuaian. Sila hantar spesifikasi dan kuantiti untuk panduan yang tepat.",
+      "q2": "Berapa lamakah masa penghantaran untuk penebukan dan warna tersuai?",
+      "a2": "Pesanan standard biasanya 7–15 hari, manakala pesanan tersuai biasanya 15–30 hari.",
+      "q3": "Apakah terma penghantaran dan pembayaran yang anda tawarkan?",
+      "a3": "Kami menyediakan kaedah penghantaran yang biasa dan terma pembayaran yang fleksibel berdasarkan projek dan saiz pesanan.",
+      "q4": "Bolehkah anda sediakan sampel sebelum pesanan pukal?",
+      "a4": "Ya. Sampel dan kad warna tersedia untuk pengesahan sebelum pengeluaran."
+    }
   },
   "catalog": {
-    "title": "Katalog bahan binaan",
+    "title": "Produk bahan binaan",
     "categoriesTitle": "Kategori",
     "all": "Semua bahan",
     "sort": {

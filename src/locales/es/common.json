@@ -56,7 +56,7 @@
   },
   "nav": {
     "home": "Inicio",
-    "catalog": "Catálogo",
+    "catalog": "Productos",
     "projects": "Proyectos",
     "about": "Nosotros",
     "getQuote": "Solicitar cotización",
@@ -136,10 +136,22 @@
       "Fundada en 2006 y con sede en Shanghái, China, Qingtai se ha dedicado durante dos décadas a la I+D, producción y venta de materiales para tabiques y techos.",
       "Como proveedor líder de soluciones integrales, ofrecemos perfilería de acero, placas de yeso y acabados de aluminio de alta calidad, respaldados por soporte técnico preciso y una red logística global confiable.",
       "Nuestros productos se han aplicado en más de 1200 proyectos emblemáticos en todo el mundo, incluyendo rascacielos, aeropuertos internacionales, hoteles de cinco estrellas y grandes instalaciones industriales."
-    ]
+    ],
+    "faqTitle": "Preguntas frecuentes – Techos acústicos y paneles perforados a medida | Fabricación directa",
+    "faqDescription": "Preguntas frecuentes sobre MOQ, plazos de entrega, perforación a medida, envío, condiciones de pago y muestras. Todo lo que necesitas antes de pedir a QingTai.",
+    "faq": {
+      "q1": "¿Cuál es su MOQ?",
+      "a1": "El MOQ depende del tipo de producto y del alcance de la personalización. Envíenos sus especificaciones y cantidad para obtener la guía exacta.",
+      "q2": "¿Cuánto tarda la entrega para perforación y colores a medida?",
+      "a2": "Los pedidos estándar suelen tardar entre 7 y 15 días; los pedidos personalizados normalmente entre 15 y 30 días.",
+      "q3": "¿Qué condiciones de envío y pago ofrecen?",
+      "a3": "Ofrecemos métodos de envío habituales y condiciones de pago flexibles según el proyecto y el tamaño del pedido.",
+      "q4": "¿Pueden proporcionar muestras antes del pedido al por mayor?",
+      "a4": "Sí. Hay muestras y tarjetas de color disponibles para la confirmación previa a la producción."
+    }
   },
   "catalog": {
-    "title": "Catálogo de materiales de construcción",
+    "title": "Productos de materiales de construcción",
     "categoriesTitle": "Categorías",
     "all": "Todos los materiales",
     "sort": {

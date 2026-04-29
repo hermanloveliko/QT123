@@ -56,7 +56,7 @@
   },
   "nav": {
     "home": "Trang chủ",
-    "catalog": "Danh mục",
+    "catalog": "Sản phẩm",
     "projects": "Dự án",
     "about": "Giới thiệu",
     "getQuote": "Nhận báo giá",
@@ -136,10 +136,22 @@
       "Thành lập năm 2006 và đặt trụ sở tại Thượng Hải, Trung Quốc, Qingtai đã tập trung vào R&D, sản xuất và kinh doanh vật liệu vách ngăn và trần suốt hai thập kỷ.",
       "Là nhà cung cấp giải pháp hệ thống hàng đầu, chúng tôi mang đến hệ khung thép, tấm thạch cao và hoàn thiện nhôm chất lượng cao—được hậu thuẫn bởi hỗ trợ kỹ thuật chính xác và mạng lưới logistics toàn cầu đáng tin cậy.",
       "Sản phẩm của chúng tôi đã được ứng dụng trong hơn 1.200 dự án biểu tượng trên toàn thế giới, bao gồm các tòa nhà siêu cao tầng, sân bay quốc tế, khách sạn 5 sao và các cơ sở công nghiệp quy mô lớn."
-    ]
+    ],
+    "faqTitle": "Câu hỏi thường gặp – Thi công & tấm hút âm thanh tùy chỉnh | Nhà máy cung cấp trực tiếp",
+    "faqDescription": "Câu hỏi thường gặp về MOQ, thời gian giao hàng, đục lỗ tùy chỉnh, vận chuyển, điều khoản thanh toán và mẫu. Tất cả những gì bạn cần biết trước khi đặt hàng từ QingTai.",
+    "faq": {
+      "q1": "MOQ của bạn là gì?",
+      "a1": "MOQ phụ thuộc vào loại sản phẩm và phạm vi tùy chỉnh. Hãy gửi thông số và số lượng để chúng tôi tư vấn chính xác.",
+      "q2": "Thời gian giao hàng cho đục lỗ và màu sắc tùy chỉnh là bao lâu?",
+      "a2": "Đơn hàng tiêu chuẩn thường mất 7–15 ngày. Đối với đơn tùy chỉnh, thời gian thường là 15–30 ngày.",
+      "q3": "Bạn hỗ trợ những điều khoản vận chuyển và thanh toán nào?",
+      "a3": "Chúng tôi hỗ trợ các phương thức vận chuyển phổ biến và linh hoạt về điều khoản thanh toán theo dự án và quy mô đơn hàng.",
+      "q4": "Có thể cung cấp mẫu trước khi đặt số lượng lớn không?",
+      "a4": "Có. Chúng tôi có thể cung cấp mẫu và thẻ màu để xác nhận trước khi sản xuất hàng loạt."
+    }
   },
   "catalog": {
-    "title": "Danh mục vật liệu xây dựng",
+    "title": "Sản phẩm vật liệu xây dựng",
     "categoriesTitle": "Danh mục",
     "all": "Tất cả vật liệu",
     "sort": {

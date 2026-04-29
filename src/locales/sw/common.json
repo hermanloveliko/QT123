@@ -56,7 +56,7 @@
   },
   "nav": {
     "home": "Nyumbani",
-    "catalog": "Katalogi",
+    "catalog": "Bidhaa",
     "projects": "Miradi",
     "about": "Kuhusu",
     "getQuote": "Pata nukuu",
@@ -136,10 +136,22 @@
       "Ilianzishwa mwaka 2006 na makao makuu Shanghai, China, Qingtai imejikita katika R&D, uzalishaji na mauzo ya vifaa vya kuta za mgawanyo na dari kwa zaidi ya miongo miwili.",
       "Kama mtoa suluhisho la mifumo anayeongoza, tunatoa fremu za chuma, mabao ya gypsum, na kumalizia ya alumini yenye ubora wa juu—ikiungwa mkono na msaada sahihi wa kiufundi na mtandao wa usafirishaji wa kimataifa unaoaminika.",
       "Bidhaa zetu zimetumika katika zaidi ya miradi 1,200 ya alama duniani kote, ikiwemo majengo marefu sana, viwanja vya ndege vya kimataifa, hoteli za nyota tano, na vifaa vikubwa vya viwandani."
-    ]
+    ],
+    "faqTitle": "Maswali Yanayoulizwa Mara kwa Mara – Paneli za sauti na dari maalum | Kiwanda Hutoa Moja kwa Moja",
+    "faqDescription": "Maswali yanayoulizwa mara kwa mara kuhusu MOQ, muda wa kuwasili, kutoboa maalum, usafirishaji, masharti ya malipo na sampuli. Unachohitaji kujua kabla ya kuagiza kutoka QingTai.",
+    "faq": {
+      "q1": "MOQ yako ni nini?",
+      "a1": "MOQ inategemea aina ya bidhaa na upeo wa ubinafsishaji. Tafadhali tuma vipimo vyako na kiasi ili upate mwongozo sahihi.",
+      "q2": "Muda wa kuwasili kwa kutoboa na rangi maalum ni muda gani?",
+      "a2": "Agizo la kawaida kwa kawaida huchukua siku 7–15, wakati agizo la kubinafsishwa kwa kawaida huchukua siku 15–30.",
+      "q3": "Ni masharti gani ya usafirishaji na malipo mnaweza kutoa?",
+      "a3": "Tunatoa njia za kawaida za usafirishaji na masharti ya malipo yanayobadilika kulingana na mradi na ukubwa wa agizo.",
+      "q4": "Mnaweza kutoa sampuli kabla ya agizo la wingi?",
+      "a4": "Ndiyo. Sampuli na kadi za rangi zinapatikana kwa uthibitisho kabla ya uzalishaji."
+    }
   },
   "catalog": {
-    "title": "Katalogi ya vifaa vya ujenzi",
+    "title": "Bidhaa za vifaa vya ujenzi",
     "categoriesTitle": "Kategoria",
     "all": "Vifaa vyote",
     "sort": {

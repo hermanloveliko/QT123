@@ -2800,31 +2800,14 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
     }
     return defaultParas;
   })();
-  const faqTitle = String(
-    cfg.faqTitle
-      ?? (L.startsWith("zh")
-        ? "FAQ – 吊顶与吸音板定制常见问题（工厂直供）"
-        : "FAQ – Custom Ceiling & Acoustic Panels | Factory Direct Answers"),
-  ).trim();
-  const faqDescription = String(
-    cfg.faqDescription
-      ?? (L.startsWith("zh")
-        ? "关于起订量、交期、定制打孔、运输、付款条款和样品政策的常见问题。在下单前你需要了解的内容都在这里。"
-        : "Frequently asked questions about MOQ, lead time, custom perforation, shipping, payment terms, and samples. Everything you need to know before ordering from QingTai."),
-  ).trim();
-  const defaultFaqItems = L.startsWith("zh")
-    ? [
-        { question: "最小起订量（MOQ）是多少？", answer: "不同品类和定制要求对应不同 MOQ，请提供规格与数量后获取准确建议。" },
-        { question: "定制打孔与颜色交期多久？", answer: "常规订单一般 7-15 天，含定制打孔/颜色通常 15-30 天。" },
-        { question: "运输和付款条款怎么安排？", answer: "支持海运等常见贸易方式，付款条款可按项目需求协商确认。" },
-        { question: "是否可以先做样品？", answer: "支持样品和色卡确认，便于你在大货前完成技术与外观校验。" },
-      ]
-    : [
-        { question: "What is your MOQ?", answer: "MOQ depends on product type and customization scope. Send your specs and quantity for exact MOQ guidance." },
-        { question: "How long is lead time for custom perforation and colors?", answer: "Standard orders are usually 7-15 days, while customized orders are typically 15-30 days." },
-        { question: "What shipping and payment terms do you support?", answer: "We support common shipping methods and flexible payment terms based on project and order scale." },
-        { question: "Can you provide samples before bulk order?", answer: "Yes. Samples and color cards are available for pre-production confirmation." },
-      ];
+  const faqTitle = String(cfg.faqTitle ?? t("about.faqTitle")).trim();
+  const faqDescription = String(cfg.faqDescription ?? t("about.faqDescription")).trim();
+  const defaultFaqItems = [
+    { question: String(t("about.faq.q1")).trim(), answer: String(t("about.faq.a1")).trim() },
+    { question: String(t("about.faq.q2")).trim(), answer: String(t("about.faq.a2")).trim() },
+    { question: String(t("about.faq.q3")).trim(), answer: String(t("about.faq.a3")).trim() },
+    { question: String(t("about.faq.q4")).trim(), answer: String(t("about.faq.a4")).trim() },
+  ].filter((x) => x.question || x.answer);
   const faqItems = (() => {
     const arr = Array.isArray(cfg.faqItems) ? (cfg.faqItems as Array<Record<string, unknown>>) : [];
     if (isDefaultCmsLocale(L) && arr.length) {

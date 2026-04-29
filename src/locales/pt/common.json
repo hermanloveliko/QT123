@@ -56,7 +56,7 @@
   },
   "nav": {
     "home": "Início",
-    "catalog": "Catálogo",
+    "catalog": "Produtos",
     "projects": "Projetos",
     "about": "Sobre",
     "getQuote": "Solicitar orçamento",
@@ -136,10 +136,22 @@
       "Fundada em 2006 e sediada em Xangai, China, a Qingtai se dedica há duas décadas à pesquisa, desenvolvimento, produção e vendas de materiais para divisórias e tetos.",
       "Como fornecedora líder de soluções integradas, oferecemos perfis de aço, placas de gesso e acabamentos de alumínio de alta qualidade, apoiados por suporte técnico preciso e uma rede logística global confiável.",
       "Nossos produtos foram aplicados em mais de 1200 projetos emblemáticos em todo o mundo, incluindo arranha-céus, aeroportos internacionais, hotéis cinco estrelas e grandes instalações industriais."
-    ]
+    ],
+    "faqTitle": "Perguntas frequentes – Painéis acústicos e tetos sob medida | Atendimento direto da fábrica",
+    "faqDescription": "Perguntas frequentes sobre MOQ, prazos de entrega, perfuração sob medida, transporte, condições de pagamento e amostras. Tudo o que você precisa saber antes de pedir à QingTai.",
+    "faq": {
+      "q1": "Qual é o seu MOQ?",
+      "a1": "O MOQ depende do tipo do produto e do escopo de personalização. Envie suas especificações e quantidade para orientações exatas.",
+      "q2": "Quanto tempo leva o prazo de entrega para perfuração e cores sob medida?",
+      "a2": "Os pedidos padrão normalmente levam de 7 a 15 dias, enquanto os pedidos personalizados geralmente levam de 15 a 30 dias.",
+      "q3": "Quais são as condições de envio e pagamento que vocês oferecem?",
+      "a3": "Oferecemos métodos de envio comuns e condições de pagamento flexíveis com base no projeto e no tamanho do pedido.",
+      "q4": "Vocês podem fornecer amostras antes do pedido em grande quantidade?",
+      "a4": "Sim. Amostras e cartões de cor estão disponíveis para confirmação antes da produção."
+    }
   },
   "catalog": {
-    "title": "Catálogo de materiais de construção",
+    "title": "Produtos de materiais de construção",
     "categoriesTitle": "Categorias",
     "all": "Todos os materiais",
     "sort": {

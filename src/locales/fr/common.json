@@ -56,7 +56,7 @@
   },
   "nav": {
     "home": "Accueil",
-    "catalog": "Catalogue",
+    "catalog": "Produits",
     "projects": "Projets",
     "about": "À propos",
     "getQuote": "Obtenir un devis",
@@ -136,10 +136,22 @@
       "Fondée en 2006 et basée à Shanghai, en Chine, Qingtai se consacre depuis deux décennies à la R&D, la production et la vente de matériaux de cloisons et de plafonds.",
       "En tant que fournisseur leader de solutions systèmes intégrées, nous proposons des ossatures métalliques, des plaques de plâtre et des finitions aluminium de haute qualité, soutenus par un support technique précis et un réseau logistique mondial fiable.",
       "Nos produits ont été utilisés dans plus de 1 200 projets emblématiques à travers le monde, notamment des gratte-ciels, des aéroports internationaux, des hôtels cinq étoiles et de grandes installations industrielles."
-    ]
+    ],
+    "faqTitle": "FAQ – Panneaux acoustiques & plafonds sur mesure | Usine directe",
+    "faqDescription": "Questions fréquentes concernant le MOQ, les délais, le perçage sur mesure, l'expédition, les conditions de paiement et les échantillons. Tout ce que vous devez savoir avant de commander chez QingTai.",
+    "faq": {
+      "q1": "Quel est votre MOQ ?",
+      "a1": "Le MOQ dépend du type de produit et de l'étendue de la personnalisation. Envoyez vos spécifications et votre quantité pour obtenir des conseils précis.",
+      "q2": "Quel est le délai de livraison pour le perçage sur mesure et les couleurs ?",
+      "a2": "Les commandes standard prennent généralement 7 à 15 jours. Pour le perçage sur mesure, les couleurs de peinture ou finition bois, comptez souvent 15 à 30 jours.",
+      "q3": "Quelles sont vos conditions de livraison et de paiement ?",
+      "a3": "Nous proposons des méthodes d'expédition courantes et des conditions de paiement flexibles selon le projet et l'échelle de commande.",
+      "q4": "Pouvez-vous fournir des échantillons avant une commande en gros ?",
+      "a4": "Oui. Des échantillons et cartes de couleurs sont disponibles pour la confirmation avant la production de masse."
+    }
   },
   "catalog": {
-    "title": "Catalogue de matériaux de construction",
+    "title": "Produits de matériaux de construction",
     "categoriesTitle": "Catégories",
     "all": "Tous les matériaux",
     "sort": {
