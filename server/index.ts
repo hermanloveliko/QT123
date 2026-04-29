@@ -455,7 +455,7 @@ async function deepseekTranslateStrings(opts: { targetLang: Lang; texts: string[
     + "Rules / 要求：\n"
     + "- Preserve numbers, units, model names (e.g. M4), currency symbols\n"
     + "- Preserve punctuation like EXW/FOB/CIF/DDP and keep it uppercase\n"
-    + "- If a string does not need translation, return it as-is\n";
+    + "- 强制翻译：除模型/单位/数字/货币/贸易术语外，任何包含源语言文字的内容都必须翻译成目标语言，不要原样返回源语言（避免中英夹杂/不翻译的短语）。\n";
 
   const userPrompt = JSON.stringify({ texts }, null, 0);
 
@@ -629,6 +629,29 @@ async function runAdminWrite<T>(res: express.Response, action: () => Promise<T>,
     res.status(500).json({ message: e?.message || fallbackMsg });
     return null;
   }
+}
+
+/** 只保留 Product 可写的标量字段，避免把 list 接口里的 category / images 等一起 POST 进 Prisma 导致写入失败。 */
+function pickProductWriteData(body: any): Record<string, unknown> {
+  const allowed = new Set([
+    "name",
+    "categoryId",
+    "subcategoryId",
+    "priceUsd",
+    "enabled",
+    "imageCoverUrl",
+    "specs",
+    "description",
+    "lengthCm",
+    "widthCm",
+    "heightCm",
+    "cbmPerUnit",
+  ]);
+  const o: Record<string, unknown> = {};
+  for (const k of Object.keys(body || {})) {
+    if (allowed.has(k)) o[k] = body[k];
+  }
+  return o;
 }
 
 function computeCbm(p: { cbmPerUnit: any; lengthCm: number | null; widthCm: number | null; heightCm: number | null }) {

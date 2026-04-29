@@ -56,7 +56,7 @@
   },
   "nav": {
     "home": "Home",
-    "catalog": "Catalog",
+    "catalog": "Products",
     "projects": "Projects",
     "about": "About",
     "getQuote": "Get a quote",
@@ -139,7 +139,7 @@
     ]
   },
   "catalog": {
-    "title": "Building materials catalog",
+    "title": "Building materials products",
     "categoriesTitle": "Categories",
     "all": "All materials",
     "sort": {

@@ -114,6 +114,9 @@ function emptyAboutPage() {
     profileEyebrow: "",
     profileHeading: "",
     profileBody: "",
+    faqTitle: "",
+    faqDescription: "",
+    faqItems: [{ question: "", answer: "" }] as Array<{ question: string; answer: string }>,
   };
 }
 
@@ -368,6 +371,11 @@ export function SiteSettingEditDialog({
     }
     if (settingKey === "about.page") {
       const paras = Array.isArray(o.profileParagraphs) ? o.profileParagraphs.map(String) : [];
+      const faqRows = Array.isArray(o.faqItems)
+        ? (o.faqItems as Array<Record<string, unknown>>)
+            .map((x) => ({ question: String(x.question ?? ""), answer: String(x.answer ?? "") }))
+            .filter((x) => x.question || x.answer)
+        : [];
       const ho =
         typeof o.heroOverlayOpacity === "number" ? o.heroOverlayOpacity : Number(o.heroOverlayOpacity);
       setAboutPage({
@@ -378,6 +386,9 @@ export function SiteSettingEditDialog({
         profileEyebrow: String(o.profileEyebrow ?? ""),
         profileHeading: String(o.profileHeading ?? ""),
         profileBody: paras.join("\n\n"),
+        faqTitle: String(o.faqTitle ?? ""),
+        faqDescription: String(o.faqDescription ?? ""),
+        faqItems: faqRows.length ? faqRows : [{ question: "", answer: "" }],
       });
     }
   }, [open, settingKey, value]);
@@ -469,6 +480,11 @@ export function SiteSettingEditDialog({
             .split(/\n\n+/)
             .map((x) => x.trim())
             .filter(Boolean),
+          faqTitle: aboutPage.faqTitle,
+          faqDescription: aboutPage.faqDescription,
+          faqItems: aboutPage.faqItems
+            .map((x) => ({ question: String(x.question || "").trim(), answer: String(x.answer || "").trim() }))
+            .filter((x) => x.question || x.answer),
         };
       case "footer":
         return {
@@ -1246,6 +1262,78 @@ export function SiteSettingEditDialog({
                   onChange={(e) => setAboutPage({ ...aboutPage, profileBody: e.target.value })}
                 />
               </div>
+              <div className="text-xs font-bold text-gray-600 border-t border-gray-100 pt-3">FAQ（显示在关于我们页面下方）</div>
+              <div>
+                <label className={labelClass}>FAQ 区块标题</label>
+                <input
+                  className={inputClass}
+                  value={aboutPage.faqTitle}
+                  onChange={(e) => setAboutPage({ ...aboutPage, faqTitle: e.target.value })}
+                  placeholder="如：常见问题 / FAQ"
+                />
+              </div>
+              <div>
+                <label className={labelClass}>FAQ 区块描述</label>
+                <textarea
+                  className={`${inputClass} min-h-[64px]`}
+                  value={aboutPage.faqDescription}
+                  onChange={(e) => setAboutPage({ ...aboutPage, faqDescription: e.target.value })}
+                />
+              </div>
+              {aboutPage.faqItems.map((row, idx) => (
+                <div key={idx} className="border border-gray-100 rounded-xl p-3 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-gray-500">FAQ #{idx + 1}</span>
+                    <button
+                      type="button"
+                      className="text-red-500 p-1 hover:bg-red-50 rounded-lg"
+                      onClick={() =>
+                        setAboutPage((prev) => ({
+                          ...prev,
+                          faqItems: prev.faqItems.filter((_, i) => i !== idx),
+                        }))
+                      }
+                      disabled={aboutPage.faqItems.length <= 1}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                  <input
+                    className={inputClass}
+                    value={row.question}
+                    onChange={(e) =>
+                      setAboutPage((prev) => ({
+                        ...prev,
+                        faqItems: prev.faqItems.map((x, i) => (i === idx ? { ...x, question: e.target.value } : x)),
+                      }))
+                    }
+                    placeholder="问题（Question）"
+                  />
+                  <textarea
+                    className={`${inputClass} min-h-[72px]`}
+                    value={row.answer}
+                    onChange={(e) =>
+                      setAboutPage((prev) => ({
+                        ...prev,
+                        faqItems: prev.faqItems.map((x, i) => (i === idx ? { ...x, answer: e.target.value } : x)),
+                      }))
+                    }
+                    placeholder="回答（Answer）"
+                  />
+                </div>
+              ))}
+              <button
+                type="button"
+                className="flex items-center gap-2 text-xs font-bold text-industrial-blue border border-dashed border-industrial-blue/40 rounded-xl px-3 py-2 w-full justify-center hover:bg-industrial-blue/5"
+                onClick={() =>
+                  setAboutPage((prev) => ({
+                    ...prev,
+                    faqItems: [...prev.faqItems, { question: "", answer: "" }],
+                  }))
+                }
+              >
+                <Plus size={16} /> 添加 FAQ
+              </button>
             </div>
           )}
 

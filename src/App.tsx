@@ -60,6 +60,17 @@ import {
   hasStructuredSiteSettingForm,
 } from "./admin/site-settings-forms";
 import { motion, AnimatePresence } from "motion/react";
+import {
+  applyMarketingDocumentSeo,
+  buildMarketingPath,
+  CATALOG_ALL_KEY,
+  matchCategoryKeyForMarketingSlug,
+  parseMarketingPath,
+  resolveStaticSeoKey,
+  updateCanonical,
+  updateHreflangTags,
+  type MarketingSlug,
+} from "./lib/seo-marketing";
 
 // --- Types ---
 type Page =
@@ -324,14 +335,14 @@ function whatsappHref(raw: string) {
 
 const Navbar = ({
   activePage,
-  setPage,
+  navigate,
   cartCount,
   onGetQuote,
   onAdmin,
   showAdminButton,
 }: {
   activePage: Page;
-  setPage: (p: Page) => void;
+  navigate: (p: Page, opts?: { catalogSlug?: MarketingSlug | null; product?: Product }) => void;
   cartCount: number;
   onGetQuote: () => void;
   onAdmin: () => void;
@@ -342,7 +353,7 @@ const Navbar = ({
     <nav className="fixed top-0 left-0 right-0 z-50 glass-nav">
       <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setPage("home")}>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("home")}>
             <div className="w-10 h-10 bg-industrial-blue flex items-center justify-center text-white font-bold text-xl">Q</div>
             <div className="flex flex-col leading-none">
               <span className="text-xl font-display font-extrabold tracking-tighter text-industrial-blue">{t("nav.brandPrimary")}</span>
@@ -351,10 +362,10 @@ const Navbar = ({
           </div>
           
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <button onClick={() => setPage("home")} className={`${activePage === "home" ? "text-industrial-blue" : "text-gray-500"} hover:text-industrial-blue transition-colors`}>{t("nav.home")}</button>
-            <button onClick={() => setPage("catalog")} className={`${activePage === "catalog" ? "text-industrial-blue" : "text-gray-500"} hover:text-industrial-blue transition-colors`}>{t("nav.catalog")}</button>
-            <button onClick={() => setPage("projects")} className={`${activePage === "projects" ? "text-industrial-blue" : "text-gray-500"} hover:text-industrial-blue transition-colors`}>{t("nav.projects")}</button>
-            <button onClick={() => setPage("about")} className={`${activePage === "about" ? "text-industrial-blue" : "text-gray-500"} hover:text-industrial-blue transition-colors`}>{t("nav.about")}</button>
+            <button onClick={() => navigate("home")} className={`${activePage === "home" ? "text-industrial-blue" : "text-gray-500"} hover:text-industrial-blue transition-colors`}>{t("nav.home")}</button>
+            <button onClick={() => navigate("catalog")} className={`${activePage === "catalog" ? "text-industrial-blue" : "text-gray-500"} hover:text-industrial-blue transition-colors`}>{t("nav.catalog")}</button>
+            <button onClick={() => navigate("projects")} className={`${activePage === "projects" ? "text-industrial-blue" : "text-gray-500"} hover:text-industrial-blue transition-colors`}>{t("nav.projects")}</button>
+            <button onClick={() => navigate("about")} className={`${activePage === "about" ? "text-industrial-blue" : "text-gray-500"} hover:text-industrial-blue transition-colors`}>{t("nav.about")}</button>
           </div>
         </div>
 
@@ -375,7 +386,7 @@ const Navbar = ({
             <Search size={16} className="text-gray-400" />
             <input type="text" placeholder={t("nav.searchPlaceholder")} className="bg-transparent border-none focus:ring-0 text-sm w-40" />
           </div>
-          <button onClick={() => setPage("cart")} className="relative p-2 text-industrial-blue hover:bg-gray-100 rounded-full transition-colors">
+          <button onClick={() => navigate("cart")} className="relative p-2 text-industrial-blue hover:bg-gray-100 rounded-full transition-colors">
             <ShoppingCart size={24} />
             {cartCount > 0 && (
               <span className="absolute top-0 right-0 bg-heat-accent text-industrial-blue text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
@@ -2789,6 +2800,43 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
     }
     return defaultParas;
   })();
+  const faqTitle = String(
+    cfg.faqTitle
+      ?? (L.startsWith("zh")
+        ? "FAQ – 吊顶与吸音板定制常见问题（工厂直供）"
+        : "FAQ – Custom Ceiling & Acoustic Panels | Factory Direct Answers"),
+  ).trim();
+  const faqDescription = String(
+    cfg.faqDescription
+      ?? (L.startsWith("zh")
+        ? "关于起订量、交期、定制打孔、运输、付款条款和样品政策的常见问题。在下单前你需要了解的内容都在这里。"
+        : "Frequently asked questions about MOQ, lead time, custom perforation, shipping, payment terms, and samples. Everything you need to know before ordering from QingTai."),
+  ).trim();
+  const defaultFaqItems = L.startsWith("zh")
+    ? [
+        { question: "最小起订量（MOQ）是多少？", answer: "不同品类和定制要求对应不同 MOQ，请提供规格与数量后获取准确建议。" },
+        { question: "定制打孔与颜色交期多久？", answer: "常规订单一般 7-15 天，含定制打孔/颜色通常 15-30 天。" },
+        { question: "运输和付款条款怎么安排？", answer: "支持海运等常见贸易方式，付款条款可按项目需求协商确认。" },
+        { question: "是否可以先做样品？", answer: "支持样品和色卡确认，便于你在大货前完成技术与外观校验。" },
+      ]
+    : [
+        { question: "What is your MOQ?", answer: "MOQ depends on product type and customization scope. Send your specs and quantity for exact MOQ guidance." },
+        { question: "How long is lead time for custom perforation and colors?", answer: "Standard orders are usually 7-15 days, while customized orders are typically 15-30 days." },
+        { question: "What shipping and payment terms do you support?", answer: "We support common shipping methods and flexible payment terms based on project and order scale." },
+        { question: "Can you provide samples before bulk order?", answer: "Yes. Samples and color cards are available for pre-production confirmation." },
+      ];
+  const faqItems = (() => {
+    const arr = Array.isArray(cfg.faqItems) ? (cfg.faqItems as Array<Record<string, unknown>>) : [];
+    if (isDefaultCmsLocale(L) && arr.length) {
+      return arr
+        .map((x) => ({
+          question: String(x.question ?? "").trim(),
+          answer: String(x.answer ?? "").trim(),
+        }))
+        .filter((x) => x.question || x.answer);
+    }
+    return defaultFaqItems;
+  })();
   const [videoMuted, setVideoMuted] = useState(true);
   const aboutVideoRef = React.useRef<HTMLVideoElement>(null);
   const toggleMute = () => {
@@ -2844,6 +2892,25 @@ const AboutPage = ({ publicSite = {} }: { publicSite?: Record<string, unknown> }
         <div className="space-y-8 text-lg text-gray-600 leading-relaxed">
           {profileParagraphs.map((text, i) => (
             <p key={i}>{text}</p>
+          ))}
+        </div>
+      </section>
+
+      <section className="pb-24 max-w-4xl mx-auto px-4">
+        <div className="accent-border mb-8">
+          <span className="text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">
+            {faqTitle || "FAQ"}
+          </span>
+        </div>
+        {faqDescription ? (
+          <p className="text-gray-600 mb-8 leading-relaxed">{faqDescription}</p>
+        ) : null}
+        <div className="space-y-4">
+          {faqItems.map((item, idx) => (
+            <div key={`${item.question}-${idx}`} className="border border-gray-100 rounded-2xl p-5 bg-white">
+              <h3 className="text-lg font-bold text-industrial-blue mb-2">{item.question}</h3>
+              <p className="text-gray-600 leading-relaxed">{item.answer}</p>
+            </div>
           ))}
         </div>
       </section>
@@ -3140,6 +3207,8 @@ const CatalogPage = ({
   productsLoading,
   publicSite = {},
   onShowCustomContact,
+  forcedMarketingSlug,
+  onClearMarketingSlug,
 }: {
   onAddToCart: (p: Product) => void;
   onOpenProductDetail: (p: Product) => void;
@@ -3147,12 +3216,35 @@ const CatalogPage = ({
   productsLoading: boolean;
   publicSite?: Record<string, unknown>;
   onShowCustomContact: () => void;
+  forcedMarketingSlug?: MarketingSlug | null;
+  /** 用户从营销落地页点「全部分类」时回到 /products/ */
+  onClearMarketingSlug?: () => void;
 }) => {
   const { t, i18n } = useTranslation("common");
-  const ALL_KEY = "__all__";
-  const [activeCatKey, setActiveCatKey] = useState<string>(ALL_KEY);
+  const [activeCatKey, setActiveCatKey] = useState<string>(CATALOG_ALL_KEY);
   const [sortKey, setSortKey] = useState<"default" | "priceAsc" | "priceDesc">("default");
   const [publicCategories, setPublicCategories] = useState<Array<{ id: string; name: string; sortOrder: number }>>([]);
+  const normalizeCategoryLabel = useCallback(
+    (label: string) => {
+      const raw = String(label || "").trim();
+      if (!raw) return raw;
+      if (!i18n.language.startsWith("vi")) return raw;
+      const map: Record<string, string> = {
+        "Light steel keel": "Khung thép nhẹ",
+        "Gypsum board": "Tấm thạch cao",
+        "Soundproof material": "Vật liệu cách âm",
+        "Mineral wool board ceiling": "Trần bông khoáng",
+        "Aluminum U-shape Baffle": "Thanh nhôm chữ U",
+        "Aluminum square tubes": "Ống nhôm vuông",
+        "Calcium silicate board": "Tấm canxi silicat",
+        "Fire-retardant plywood": "Ván ép chống cháy",
+        "Cement board": "Tấm xi măng",
+        "Aluminum ceiling": "Trần nhôm",
+      };
+      return map[raw] || raw;
+    },
+    [i18n.language],
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -3180,7 +3272,7 @@ const CatalogPage = ({
       if (!id || !name) continue;
       // hide empty categories
       if ((countById.get(id) || 0) <= 0) continue;
-      byId.set(`id:${id}`, { key: `id:${id}`, label: name, sortOrder: Number(c.sortOrder) || 0 });
+      byId.set(`id:${id}`, { key: `id:${id}`, label: normalizeCategoryLabel(name), sortOrder: Number(c.sortOrder) || 0 });
     }
     // 非中文时：不要用产品里的 category 字段补齐（否则会把中文“漏”到目录里）。
     // 中文时仍兼容旧数据（比如产品带分类名，但分类表尚未配置）。
@@ -3190,26 +3282,32 @@ const CatalogPage = ({
         const label = p.category || "";
         if (!label) continue;
         const key = id ? `id:${id}` : `name:${label}`;
-        if (!byId.has(key)) byId.set(key, { key, label, sortOrder: 999999 });
+        if (!byId.has(key)) byId.set(key, { key, label: normalizeCategoryLabel(label), sortOrder: 999999 });
       }
     }
     const list = Array.from(byId.values()).sort((a, b) => {
       if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
       return a.label.localeCompare(b.label);
     });
-    return [{ key: ALL_KEY, label: t("catalog.all"), sortOrder: -1 }, ...list];
-  }, [products, publicCategories, t, i18n.language]);
+    return [{ key: CATALOG_ALL_KEY, label: t("catalog.all"), sortOrder: -1 }, ...list];
+  }, [products, publicCategories, t, i18n.language, normalizeCategoryLabel]);
 
   // 切语言/重拉产品后，保证当前筛选 key 仍然存在；否则回到“全部”
   useEffect(() => {
-    if (activeCatKey === ALL_KEY) return;
+    if (activeCatKey === CATALOG_ALL_KEY) return;
     if (categories.some((c) => c.key === activeCatKey)) return;
-    setActiveCatKey(ALL_KEY);
+    setActiveCatKey(CATALOG_ALL_KEY);
   }, [activeCatKey, categories]);
+
+  useEffect(() => {
+    if (!forcedMarketingSlug) return;
+    const matched = matchCategoryKeyForMarketingSlug(forcedMarketingSlug, categories);
+    if (matched && matched !== activeCatKey) setActiveCatKey(matched);
+  }, [forcedMarketingSlug, categories, activeCatKey]);
 
   const filtered = useMemo(() => {
     const base =
-      activeCatKey === ALL_KEY
+      activeCatKey === CATALOG_ALL_KEY
         ? products.slice()
         : products.filter((p) => {
             if (activeCatKey.startsWith("id:")) return `id:${p.categoryId || ""}` === activeCatKey;
@@ -3241,7 +3339,10 @@ const CatalogPage = ({
             <li key={cat.key}>
               <button
                 type="button"
-                onClick={() => setActiveCatKey(cat.key)}
+                onClick={() => {
+                  setActiveCatKey(cat.key);
+                  if (cat.key === CATALOG_ALL_KEY && forcedMarketingSlug) onClearMarketingSlug?.();
+                }}
                 className={`w-full text-left py-2 px-4 rounded-lg transition-colors ${
                   activeCatKey === cat.key
                     ? "bg-industrial-blue text-white font-bold"
@@ -3769,6 +3870,13 @@ const CartPage = ({
 
 export default function App(props?: { initialPage?: Page }) {
   const { t, i18n } = useTranslation("common");
+  const initialMarketingRoute = useMemo(() => {
+    try {
+      return parseMarketingPath(window.location.pathname || "/");
+    } catch {
+      return { kind: "home" } as const;
+    }
+  }, []);
   const [lang, setLangState] = useState<Lang>(getLang());
   const [page, setPage] = useState<Page>(() => {
     consumeAdminEntryUnlockFromUrl();
@@ -3778,8 +3886,19 @@ export default function App(props?: { initialPage?: Page }) {
     } catch {
       // ignore
     }
+    if (initialMarketingRoute.kind === "catalog") return "catalog";
+    if (initialMarketingRoute.kind === "detail") return "detail";
+    if (initialMarketingRoute.kind === "about") return "about";
+    if (initialMarketingRoute.kind === "cart") return "cart";
+    if (initialMarketingRoute.kind === "projects") return "projects";
     return props?.initialPage ?? "home";
   });
+  const [catalogSlug, setCatalogSlug] = useState<MarketingSlug | null>(
+    initialMarketingRoute.kind === "catalog" ? initialMarketingRoute.slug || null : null,
+  );
+  const [requestedProductId, setRequestedProductId] = useState<string | null>(
+    initialMarketingRoute.kind === "detail" ? initialMarketingRoute.productId : null,
+  );
   const [cart, setCart] = useState<{ productId: string; qty: number }[]>([]);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
@@ -3804,6 +3923,7 @@ export default function App(props?: { initialPage?: Page }) {
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const productsHydrated = useRef(false);
+  const productsLoadedOnce = useRef(false);
 
   useEffect(() => {
     const next = (lng: string) => {
@@ -3819,18 +3939,57 @@ export default function App(props?: { initialPage?: Page }) {
     };
   }, [i18n]);
 
+  /** 首次加载：仅从 URL 读 lang（不要用 pathname 覆盖页面状态，否则会与 navigate/replaceState 打架导致闪烁） */
   useEffect(() => {
-    const syncLangFromUrl = () => {
-      const q = new URLSearchParams(window.location.search).get("lang");
+    try {
+      const url = new URL(window.location.href);
+      const q = url.searchParams.get("lang");
       if (isSupportedLang(q) && q && i18n.language !== q) {
         void i18n.changeLanguage(q);
         setLang(q);
       }
+    } catch {
+      // ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 仅挂载时同步一次 query lang
+  }, []);
+
+  /** 浏览器前进后退：同步 lang + pathname → 页面状态 */
+  useEffect(() => {
+    const onPopState = () => {
+      try {
+        const url = new URL(window.location.href);
+        const q = url.searchParams.get("lang");
+        if (isSupportedLang(q) && q && i18n.language !== q) {
+          void i18n.changeLanguage(q);
+          setLang(q);
+        }
+        const route = parseMarketingPath(url.pathname);
+        if (route.kind === "catalog") {
+          setCatalogSlug(route.slug || null);
+          setPage("catalog");
+        } else if (route.kind === "detail") {
+          setRequestedProductId(route.productId);
+          setPage("detail");
+        } else if (route.kind === "about") setPage("about");
+        else if (route.kind === "contact") {
+          setPage("home");
+          setIsContactOpen(true);
+        }
+        else if (route.kind === "faq") setPage("home");
+        else if (route.kind === "cart") setPage("cart");
+        else if (route.kind === "projects") setPage("projects");
+        else {
+          setCatalogSlug(null);
+          setPage("home");
+        }
+      } catch {
+        // ignore
+      }
     };
-    syncLangFromUrl();
-    window.addEventListener("popstate", syncLangFromUrl);
-    return () => window.removeEventListener("popstate", syncLangFromUrl);
-  }, [i18n, page]);
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [i18n]);
 
   // Keep active selections stable across language changes (by id)
   useEffect(() => {
@@ -3844,14 +4003,15 @@ export default function App(props?: { initialPage?: Page }) {
     apiJson<Record<string, unknown>>("/api/public/site-settings")
       .then(setPublicSite)
       .catch(() => setPublicSite({}));
-  }, [lang, i18n.language]);
+  }, [i18n.language]);
 
   useEffect(() => {
-    setProductsLoading(true);
+    if (!productsLoadedOnce.current) setProductsLoading(true);
     apiJson<ApiProduct[]>(`/api/public/products`)
       .then((rows) => {
         const list = rows.map(toLegacyProduct);
         setCatalogProducts(list);
+        productsLoadedOnce.current = true;
         if (list.length > 0) {
           const keepId = activeProduct?.id;
           const keep = keepId ? list.find((p) => p.id === keepId) : undefined;
@@ -3862,9 +4022,67 @@ export default function App(props?: { initialPage?: Page }) {
           }
         }
       })
-      .catch(() => setCatalogProducts([]))
+      .catch(() => {
+        if (!productsLoadedOnce.current) setCatalogProducts([]);
+      })
       .finally(() => setProductsLoading(false));
-  }, [lang, i18n.language]);
+  }, [i18n.language]);
+
+  useEffect(() => {
+    if (!requestedProductId) return;
+    const hit = catalogProducts.find((p) => p.id === requestedProductId);
+    if (!hit) return;
+    setActiveProduct(hit);
+    setProductDetailSource("catalog");
+    setPage("detail");
+    setRequestedProductId(null);
+  }, [requestedProductId, catalogProducts]);
+
+  const navigate = useCallback((p: Page, opts?: { catalogSlug?: MarketingSlug | null; product?: Product }) => {
+    if (p === "catalog") {
+      if (opts && "catalogSlug" in opts) setCatalogSlug(opts.catalogSlug ?? null);
+      else setCatalogSlug(null);
+    } else if (p !== "detail") {
+      setCatalogSlug(null);
+    }
+    if (p === "detail" && opts?.product) {
+      setActiveProduct(opts.product);
+      setProductDetailSource("catalog");
+    }
+    setPage(p);
+  }, []);
+
+  useEffect(() => {
+    // 这些视图仍用内存路由，同步成 `/` 会把地址栏打断并造成闪烁
+    if (page === "projectDetail" || page === "systemDetail" || page === "admin") {
+      return;
+    }
+
+    let nextPath = "/";
+    if (page === "catalog") {
+      nextPath = catalogSlug ? buildMarketingPath("catalog", { catalogSlug }) : buildMarketingPath("catalog");
+    } else if (page === "detail") {
+      const pid =
+        activeProduct?.id && activeProduct.id !== "__loading__"
+          ? activeProduct.id
+          : requestedProductId;
+      nextPath = pid ? buildMarketingPath("detail", { productId: pid }) : buildMarketingPath("catalog");
+    } else if (page === "about") nextPath = buildMarketingPath("about");
+    else if (page === "cart") nextPath = buildMarketingPath("cart");
+    else if (page === "projects") nextPath = buildMarketingPath("projects");
+    else nextPath = buildMarketingPath("home");
+
+    const url = new URL(window.location.href);
+    if (url.pathname !== nextPath) window.history.replaceState(null, "", `${nextPath}${url.search}`);
+    updateCanonical(url.origin, nextPath, url.search);
+    updateHreflangTags(url.origin, nextPath, url.searchParams);
+    applyMarketingDocumentSeo({
+      lang: i18n.language || lang,
+      staticKey: resolveStaticSeoKey({ page, catalogSlug }),
+      product:
+        page === "detail" && activeProduct?.id && activeProduct.id !== "__loading__" ? activeProduct : null,
+    });
+  }, [page, catalogSlug, activeProduct, requestedProductId, i18n.language, lang]);
 
   const contactCfg = (publicSite.contact || {}) as {
     phone?: string;
@@ -3906,9 +4124,9 @@ export default function App(props?: { initialPage?: Page }) {
     <div className="min-h-screen flex flex-col">
       <Navbar 
         activePage={page} 
-        setPage={setPage} 
+        navigate={navigate}
         cartCount={cart.reduce((a, c) => a + c.qty, 0)} 
-        onGetQuote={() => setPage("cart")}
+        onGetQuote={() => navigate("cart")}
         onAdmin={() => setIsAdminLoginOpen(true)}
         showAdminButton={shouldExposeAdminUi()}
       />
@@ -3925,33 +4143,35 @@ export default function App(props?: { initialPage?: Page }) {
           >
             {page === "home" && (
               <HomePage
-                setPage={setPage}
+                setPage={(p) => navigate(p)}
                 onShowAIChat={() => setIsAIChatOpen(true)}
                 onSelectSystem={(s) => {
                   setActiveSystem(s);
-                  setPage("systemDetail");
+                  navigate("systemDetail");
                 }}
                 onSelectProject={(p) => {
                   setProjectDetailSource("home");
                   setActiveProject(p);
-                  setPage("projectDetail");
+                  navigate("projectDetail");
                 }}
                 publicSite={publicSite}
               />
             )}
-            {page === "admin" && <AdminPage onBack={() => setPage("home")} />}
+            {page === "admin" && <AdminPage onBack={() => navigate("home")} />}
             {page === "catalog" && (
               <CatalogPage
                 onAddToCart={addToCart}
                 onOpenProductDetail={(p) => {
                   setProductDetailSource("catalog");
                   setActiveProduct(p);
-                  setPage("detail");
+                  navigate("detail", { product: p });
                 }}
                 products={catalogProducts}
                 productsLoading={productsLoading}
                 publicSite={publicSite}
                 onShowCustomContact={() => setIsContactOpen(true)}
+                forcedMarketingSlug={catalogSlug}
+                onClearMarketingSlug={() => navigate("catalog")}
               />
             )}
             {page === "detail" && (
@@ -3960,10 +4180,10 @@ export default function App(props?: { initialPage?: Page }) {
                 onAddToCart={addToCart}
                 onBack={() => {
                   if (productDetailSource === "ai") {
-                    setPage("home");
+                    navigate("home");
                     setIsAIChatOpen(true);
                   } else {
-                    setPage("catalog");
+                    navigate("catalog");
                   }
                 }}
                 backLabel={productDetailSource === "ai" ? t("detail.backToChat") : t("detail.backToCatalog")}
@@ -3975,7 +4195,7 @@ export default function App(props?: { initialPage?: Page }) {
                 catalogProducts={catalogProducts}
                 onUpdateQty={updateQty}
                 onRemove={removeFromCart}
-                onBrowseCatalog={() => setPage("catalog")}
+                onBrowseCatalog={() => navigate("catalog")}
               />
             )}
             {page === "projects" && (
@@ -3983,7 +4203,7 @@ export default function App(props?: { initialPage?: Page }) {
                 onSelectProject={(p) => {
                   setProjectDetailSource("projects");
                   setActiveProject(p);
-                  setPage("projectDetail");
+                  navigate("projectDetail");
                 }}
                 publicSite={publicSite}
               />
@@ -3991,7 +4211,7 @@ export default function App(props?: { initialPage?: Page }) {
             {page === "projectDetail" && (
               <ProjectDetailPage
                 project={activeProject}
-                onBack={() => setPage(projectDetailSource === "home" ? "home" : "projects")}
+                onBack={() => navigate(projectDetailSource === "home" ? "home" : "projects")}
                 backLabel={projectDetailSource === "home" ? t("detail.backToHome") : t("detail.backToProjects")}
               />
             )}
@@ -3999,7 +4219,7 @@ export default function App(props?: { initialPage?: Page }) {
             {page === "systemDetail" && (
               <SystemDetailPage
                 system={activeSystem}
-                onBack={() => setPage("home")}
+                onBack={() => navigate("home")}
                 backLabel={t("detail.backToHome")}
               />
             )}
@@ -4019,7 +4239,7 @@ export default function App(props?: { initialPage?: Page }) {
         onOpenProductFromChat={(p) => {
           setProductDetailSource("ai");
           setActiveProduct(p);
-          setPage("detail");
+          navigate("detail", { product: p });
           setIsAIChatOpen(false);
         }}
         onAddToCartWithQty={addToCartWithQty}
@@ -4029,7 +4249,7 @@ export default function App(props?: { initialPage?: Page }) {
         onClose={() => setIsAdminLoginOpen(false)}
         onLoggedIn={(u) => {
           setAdminUser(u);
-          setPage("admin");
+          navigate("admin");
         }}
       />
 

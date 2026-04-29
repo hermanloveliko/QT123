@@ -131,6 +131,20 @@ function normalizeDisplayImageUrl(raw: string): string {
   return normalizeMediaUrl(String(raw || "").trim());
 }
 
+const CJK_RE = /[\u3400-\u9FFF]/u;
+
+function containsCjk(s: string) {
+  return CJK_RE.test(String(s || ""));
+}
+
+function sanitizeForNonZh(raw: string, fallback: string) {
+  const text = String(raw || "").trim();
+  if (!text) return fallback;
+  const current = getLang();
+  if (current !== "zh" && containsCjk(text)) return fallback;
+  return text;
+}
+
 export function toLegacyProduct(p: ApiProduct): Product {
   const sorted = (p.images || []).slice().sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   const urls = sorted.map((i) => i.url).filter(Boolean);
@@ -139,15 +153,29 @@ export function toLegacyProduct(p: ApiProduct): Product {
   const cover = normalizeDisplayImageUrl(coverPick);
   const rest = p.imageCoverUrl ? normUrls : normUrls.slice(1);
   const gallery = [cover, ...rest.filter((u) => u && u !== cover)];
+  const fallbackCategory = String(p.category?.name || p.subcategory?.name || "building materials");
+  const fallbackName = containsCjk(fallbackCategory) ? "Building materials product" : `${fallbackCategory} product`;
+  const safeName = sanitizeForNonZh(String(p.name || ""), fallbackName);
+  const safeDesc = sanitizeForNonZh(
+    String(p.description || ""),
+    "Please contact us for localized product details.",
+  );
+  const safeSpecs = (Array.isArray(p.specs) ? (p.specs as string[]) : []).map((line) =>
+    sanitizeForNonZh(String(line || ""), "Custom specification available."),
+  );
+
   return {
     id: p.id,
-    name: p.name,
-    category: p.category?.name || p.subcategory?.name || "—",
+    name: safeName,
+    category: sanitizeForNonZh(
+      String(p.category?.name || p.subcategory?.name || "—"),
+      "Building materials",
+    ),
     categoryId: p.category?.id || p.subcategory?.id || null,
     price: Number(p.priceUsd) || 0,
     image: cover,
-    specs: Array.isArray(p.specs) ? (p.specs as string[]) : [],
-    description: p.description || "",
+    specs: safeSpecs,
+    description: safeDesc,
     lengthCm: p.lengthCm ?? null,
     widthCm: p.widthCm ?? null,
     heightCm: p.heightCm ?? null,
