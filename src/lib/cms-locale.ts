@@ -71,15 +71,6 @@ export function mergeProjectsWithI18n(
   return cmsList.map((item) => {
     const id = String(item.id || "");
     const fb = fallback.find((f) => f.id === id);
-    if (fb && (id === "p1" || id === "p2" || id === "p3")) {
-      return {
-        ...item,
-        title: fb.title,
-        location: fb.location,
-        description: fb.description,
-        image: (item.image || "").trim() ? item.image : fb.image,
-      };
-    }
     if (fb) {
       return { ...item, image: (item.image || "").trim() ? item.image : fb.image };
     }
