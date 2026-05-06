@@ -261,8 +261,8 @@ export function buildProductSeoEn(product: Product): {
   const application = inferApplication(product);
 
   const title = truncateChars(
-    `${name} | Custom Aluminum / Acoustic Panel Manufacturer | QingTai`,
-    60,
+    `${name}_Products_QINGTAI GROUP CO., LTD.`,
+    80,
   );
 
   const description = truncateChars(
@@ -347,10 +347,6 @@ export function applyMarketingDocumentSeo(opts: {
   staticKey?: MarketingStaticSeoKey | "product";
   product?: Product | null;
 }) {
-  const lang = String(opts.lang || "").toLowerCase();
-  const isEn = lang === "en" || lang.startsWith("en-");
-  if (!isEn) return;
-
   if (opts.staticKey === "product" && opts.product && opts.product.id !== "__loading__") {
     const p = buildProductSeoEn(opts.product);
     document.title = p.title;
