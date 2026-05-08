@@ -3888,6 +3888,7 @@ export default function App(props?: { initialPage?: Page }) {
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [publicSite, setPublicSite] = useState<Record<string, unknown>>({});
+  const [publicSiteReady, setPublicSiteReady] = useState(false);
   const fallbackSystemsNav = useMemo(() => getLocalizedSystems(t), [t, lang]);
   const fallbackProjectsNav = useMemo(() => getLocalizedProjects(t), [t, lang]);
   const systems = useMemo(() => {
@@ -3984,8 +3985,14 @@ export default function App(props?: { initialPage?: Page }) {
 
   useEffect(() => {
     apiJson<Record<string, unknown>>("/api/public/site-settings")
-      .then(setPublicSite)
-      .catch(() => setPublicSite({}));
+      .then((data) => {
+        setPublicSite(data);
+        setPublicSiteReady(true);
+      })
+      .catch(() => {
+        setPublicSite({});
+        setPublicSiteReady(true);
+      });
   }, [i18n.language]);
 
   useEffect(() => {
@@ -4116,6 +4123,12 @@ export default function App(props?: { initialPage?: Page }) {
       <SidebarSocial onShowContact={() => setIsContactOpen(true)} />
       
       <main className="flex-grow">
+        {!publicSiteReady && (
+          <div className="flex items-center justify-center min-h-[80vh]">
+            <div className="w-10 h-10 border-4 border-industrial-blue border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+        {publicSiteReady && (
         <AnimatePresence mode="wait">
           <motion.div
             key={page}
@@ -4208,6 +4221,7 @@ export default function App(props?: { initialPage?: Page }) {
             )}
           </motion.div>
         </AnimatePresence>
+        )}
       </main>
 
       <ContactModal
