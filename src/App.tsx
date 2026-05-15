@@ -84,7 +84,7 @@ type Page =
   | "systemDetail"
   | "admin";
 
-type AdminTab = "settings" | "products" | "ports" | "pricing" | "orders" | "ai";
+type AdminTab = "settings" | "products" | "ports" | "pricing" | "orders" | "ai" | "visitors";
 
 const LANG_FLAG_ITEMS: Array<{
   lang: Lang;
@@ -592,6 +592,7 @@ const AdminPage = ({
         <TabButton id="pricing" label="费率" />
         <TabButton id="orders" label="订单" />
         <TabButton id="ai" label="AI记录" />
+        <TabButton id="visitors" label="访问日志" />
       </div>
 
       <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
@@ -607,6 +608,7 @@ function AdminTabs({ tab }: { tab: AdminTab }) {
   if (tab === "ports") return <AdminPortsTab />;
   if (tab === "pricing") return <AdminPricingTab />;
   if (tab === "orders") return <AdminOrdersTab />;
+  if (tab === "visitors") return <AdminVisitorsTab />;
   return <AdminAiTab />;
 }
 
@@ -1855,6 +1857,189 @@ function AdminOrdersTab() {
               <div className="text-xs text-gray-500">附加费：{JSON.stringify(active.fixedFees || [])}</div>
             </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminVisitorsTab() {
+  const [stats, setStats] = useState<{
+    enabled?: boolean;
+    sessions_24h?: number;
+    sessions_7d?: number;
+    sessions_total?: number;
+    events_24h?: number;
+  } | null>(null);
+  const [rows, setRows] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [active, setActive] = useState<any | null>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const limit = 50;
+
+  const loadList = (off: number) => {
+    setLoading(true);
+    apiJson<{ items: any[]; total: number }>(`/api/admin/visitor-log/sessions?limit=${limit}&offset=${off}`)
+      .then((r) => {
+        setRows(r.items || []);
+        setTotal(r.total || 0);
+      })
+      .catch(() => {
+        setRows([]);
+        setTotal(0);
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    apiJson<any>("/api/admin/visitor-log/stats").then(setStats).catch(() => setStats({ enabled: false }));
+    loadList(0);
+  }, []);
+
+  useEffect(() => {
+    if (!active) { setEvents([]); return; }
+    setEventsLoading(true);
+    apiJson<{ items: any[] }>(`/api/admin/visitor-log/sessions/${active.id}/events`)
+      .then((r) => setEvents(r.items || []))
+      .catch(() => setEvents([]))
+      .finally(() => setEventsLoading(false));
+  }, [active?.id]);
+
+  const fmtDuration = (sec: number) => {
+    if (!sec || sec < 1) return "<1s";
+    if (sec < 60) return `${sec}s`;
+    if (sec < 3600) return `${Math.floor(sec / 60)}m ${sec % 60}s`;
+    return `${Math.floor(sec / 3600)}h ${Math.floor((sec % 3600) / 60)}m`;
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="border border-gray-100 rounded-2xl p-4">
+          <div className="text-xs text-gray-500">近 24 小时会话</div>
+          <div className="text-2xl font-bold text-industrial-blue mt-1">{stats?.sessions_24h ?? "-"}</div>
+        </div>
+        <div className="border border-gray-100 rounded-2xl p-4">
+          <div className="text-xs text-gray-500">近 7 天会话</div>
+          <div className="text-2xl font-bold text-industrial-blue mt-1">{stats?.sessions_7d ?? "-"}</div>
+        </div>
+        <div className="border border-gray-100 rounded-2xl p-4">
+          <div className="text-xs text-gray-500">累计会话</div>
+          <div className="text-2xl font-bold text-industrial-blue mt-1">{stats?.sessions_total ?? "-"}</div>
+        </div>
+        <div className="border border-gray-100 rounded-2xl p-4">
+          <div className="text-xs text-gray-500">近 24 小时请求</div>
+          <div className="text-2xl font-bold text-industrial-blue mt-1">{stats?.events_24h ?? "-"}</div>
+        </div>
+      </div>
+
+      {stats && stats.enabled === false && (
+        <div className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+          访客日志当前已通过环境变量关闭（VISITOR_LOG_ENABLED=false）。
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="border border-gray-100 rounded-2xl overflow-hidden">
+          <div className="bg-gray-50 px-4 py-3 text-xs font-bold text-gray-500 uppercase flex justify-between items-center">
+            <span>会话列表（共 {total}）</span>
+            <span className="text-[10px] text-gray-400 font-normal">IP 已截尾匿名化（/24）</span>
+          </div>
+          {loading ? (
+            <div className="p-4 text-sm text-gray-500">加载中...</div>
+          ) : rows.length === 0 ? (
+            <div className="p-4 text-sm text-gray-500">暂无数据。请确认数据库已建好 visitor_log schema。</div>
+          ) : (
+            <div className="divide-y max-h-[520px] overflow-auto">
+              {rows.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setActive(s)}
+                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 ${active?.id === s.id ? "bg-gray-50" : ""}`}
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="font-mono text-xs text-gray-700">{s.ip_prefix}</div>
+                    <div className="text-xs text-gray-400">{new Date(s.last_seen).toLocaleString()}</div>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 truncate">{s.entry_path || "/"}</div>
+                  <div className="flex gap-3 text-[11px] text-gray-400 mt-1">
+                    <span>{s.request_count} 个请求</span>
+                    <span>停留 {fmtDuration(Number(s.duration_sec) || 0)}</span>
+                    {s.country && <span>{s.country}{s.city ? ` · ${s.city}` : ""}</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="bg-gray-50 px-4 py-2 flex justify-between items-center text-xs text-gray-500">
+            <button
+              disabled={offset === 0}
+              onClick={() => { const o = Math.max(0, offset - limit); setOffset(o); loadList(o); }}
+              className="px-3 py-1 rounded-lg bg-white border border-gray-200 disabled:opacity-40"
+            >
+              上一页
+            </button>
+            <span>{offset + 1} - {Math.min(offset + limit, total)}</span>
+            <button
+              disabled={offset + limit >= total}
+              onClick={() => { const o = offset + limit; setOffset(o); loadList(o); }}
+              className="px-3 py-1 rounded-lg bg-white border border-gray-200 disabled:opacity-40"
+            >
+              下一页
+            </button>
+          </div>
+        </div>
+
+        <div className="border border-gray-100 rounded-2xl overflow-hidden">
+          <div className="bg-gray-50 px-4 py-3 text-xs font-bold text-gray-500 uppercase">操作记录</div>
+          <div className="p-4">
+            {!active ? (
+              <div className="text-sm text-gray-500">点击左侧会话查看请求轨迹。</div>
+            ) : (
+              <div className="space-y-3">
+                <div className="text-xs text-gray-500 space-y-1">
+                  <div>IP（截尾）：<span className="font-mono">{active.ip_prefix}</span></div>
+                  <div>首次：{new Date(active.first_seen).toLocaleString()}</div>
+                  <div>最近：{new Date(active.last_seen).toLocaleString()}</div>
+                  <div>停留时长：{fmtDuration(Number(active.duration_sec) || 0)}</div>
+                  <div>请求总数：{active.request_count}</div>
+                  {active.referer && <div className="break-all">来源：{active.referer}</div>}
+                  {active.ua_raw && <div className="break-all text-gray-400">UA：{active.ua_raw}</div>}
+                </div>
+                <div className="border border-gray-100 rounded-xl overflow-hidden">
+                  <div className="bg-gray-50 px-3 py-2 text-xs font-bold text-gray-500 uppercase">请求轨迹</div>
+                  {eventsLoading ? (
+                    <div className="p-3 text-xs text-gray-500">加载中...</div>
+                  ) : events.length === 0 ? (
+                    <div className="p-3 text-xs text-gray-500">无记录</div>
+                  ) : (
+                    <div className="divide-y max-h-[400px] overflow-auto">
+                      {events.map((e) => (
+                        <div key={e.id} className="px-3 py-2 text-xs">
+                          <div className="flex justify-between items-center">
+                            <span className="font-mono">
+                              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] mr-2 ${e.method === "GET" ? "bg-blue-50 text-blue-700" : "bg-green-50 text-green-700"}`}>
+                                {e.method}
+                              </span>
+                              <span className="text-gray-700">{e.path}</span>
+                            </span>
+                            <span className="text-gray-400">{new Date(e.ts).toLocaleTimeString()}</span>
+                          </div>
+                          <div className="flex gap-3 text-[10px] text-gray-400 mt-1 ml-12">
+                            <span>HTTP {e.status}</span>
+                            <span>{e.duration_ms}ms</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

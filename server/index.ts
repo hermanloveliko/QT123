@@ -9,6 +9,7 @@ import path from "path";
 import fs from "fs";
 import { z } from "zod";
 import { prisma } from "./prisma";
+import { visitorLogger, mountVisitorLogRoutes } from "./visitor-log";
 
 const app = express();
 // Behind Nginx / a load balancer, req.protocol is otherwise "http" and generated asset URLs become mixed content on HTTPS sites.
@@ -136,6 +137,7 @@ app.use(
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
 app.use("/uploads", express.static(path.resolve("uploads")));
+app.use(visitorLogger);
 
 const SUPPORTED_LANGS = ["zh", "en", "fr", "es", "pt", "ru", "ko", "ms", "th", "vi", "ar", "sw"] as const;
 type Lang = (typeof SUPPORTED_LANGS)[number];
@@ -2221,5 +2223,6 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 if (!fs.existsSync(path.resolve("uploads"))) fs.mkdirSync(path.resolve("uploads"), { recursive: true });
+mountVisitorLogRoutes(app, auth);
 app.listen(PORT, () => console.log(`[api] listening on http://localhost:${PORT}`));
 
